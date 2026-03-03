@@ -1,6 +1,4 @@
-# Personal Android Project Template
-
-[//]: # (TODO Update title.  )
+# Doggone It - Dog Breed Identifier
 
 ## Summary
 
@@ -8,8 +6,4 @@
 
 ## Credits, copyrights, and license information
 
-[//]: # (TODO Include author)
-
-&copy; 2026 by (_author_).
-
-[//]: # (TODO Add license info)
+&copy; 2026 by Kevin Dilts. All rights reserved.

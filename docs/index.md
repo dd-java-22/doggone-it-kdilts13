@@ -14,15 +14,56 @@ order: 0
 
 ## Summary
 
-[//]: # (TODO Replace this paragraph with one or more paragraphs summarizing the purpose and operation of the Android app you propose to develop in this project.)
+Doggone It – Dog Breed Identifier is a mobile application that allows users to identify dog breeds using a photo taken with their device camera or selected from the device gallery. The application performs on-device image classification to generate likely breed matches and presents the results in a clear, user-friendly interface.
+
+In addition to identifying breeds, the application allows users to save scans locally, attach notes, and view historical results. For each identified breed, the application retrieves additional breed information from a public dog-breed information API, providing educational details such as temperament, origin, and other characteristics.
+
+The application combines device integration, on-device machine learning inference, local persistence, and external API consumption while maintaining a clean, multiscreen architecture.
 
 ## Intended users and user stories
 
-[//]: # (TODO Write a bullet list here, including at least 2 different types of intended users. Along with each type of intended user, include at least 1 _user story_. A user story is usually just 1 simple sentence &#40;no more than 2 sentences&#41;, in the voice of the intended user, stating a specific task that the user performs using the app, and the benefit that will be obtained. See rubric for required form.)
+As a curious dog owner, I want to take or upload a photo of a dog and see likely breed matches so that I can quickly satisfy my curiosity.
+
+As a dog park visitor, I want to save identified dogs with notes and timestamps so that I can remember which dogs I have met.
+
+As a prospective adopter, I want to view detailed breed information and mark favorite breeds so that I can compare options later.
+
+As a casual learner, I want to browse and filter my scan history so that I can review previously identified breeds.
+
+Stretch Goal:
+As a dog lover, I want to generate a stylized cartoon version of a saved photo so that I can create a fun keepsake image.
 
 ## Functionality
 
-[//]: # (TODO List &#40;using a bullet list---or ordered list, if order is relevant&#41; the key functional aspects that will be provided by the app---i.e., tell us what the user will be able to do using the app. This should not simply be a re-statement of the [summary]&#40;#summary&#41;, but should instead provide a more specific articulation of the functionality and user experience. )
+### Core functionality includes:
+
+- Capture a photo using the device camera
+
+- Select an existing photo from the device gallery
+
+- Perform on-device breed classification using a TensorFlow Lite model
+
+- Display top predicted breeds with confidence values
+
+- Save scan results to a local SQLite database
+
+- Attach optional notes to saved scans
+
+- View scan history in a searchable and sortable list
+
+- Mark scans or breeds as favorites
+
+- Retrieve breed details from an external dog-breed API
+
+- Cache retrieved breed information locally for offline viewing
+
+- Manage user preferences such as sorting behavior and display options
+
+### Stretch goals include:
+
+- Generating a locally processed “cartoon-style” portrait when saving a scan
+
+- Expanding classification support to include cats
 
 ## Persistent data
 
@@ -30,7 +71,26 @@ order: 0
 
 ## Device/external services
 
-[//]: # (TODO If the client component will need to access special services of the client device &#40;e.g., sensors, contacts, messaging&#41;, list them here using a bullet list. Also, if the client component will need to access already-existing external services &#40;e.g., real-time weather data, Open Movie Database, Open Trivia Database&#41;, those should also be listed here.)
+### Device Services
+- Camera (photo capture)
+
+- Device gallery access (photo selection)
+
+- Local storage for image references
+
+- SQLite database for persistent data storage
+
+- SharedPreferences or DataStore for user settings
+
+### External Services
+- **TheDogAPI (primary source for breed facts)**: Used to retrieve dog breed details (e.g., temperament, origin, breed group, and other descriptive attributes). TheDogAPI describes itself as a free service; it requires an API key, and the free plan is rate-limited (e.g., 10 requests per minute).
+
+
+- **Dog CEO Dog API (optional / supplemental)**: Used for breed lists and/or breed images if needed for browsing or UI presentation. Dog CEO’s API is openly accessible and provides endpoints for random dog images and breed-based image retrieval.
+
+Both APIs provide free access appropriate for a student project within their rate limits. Retrieved breed information will be cached locally in the application’s SQLite database to minimize repeated network requests and ensure that previously viewed breed details remain available offline.
+
+The application will not require user accounts and will function offline for previously saved scans and cached breed data.
 
 ## Stretch goals and possible enhancements 
 
