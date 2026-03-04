@@ -24,7 +24,7 @@ import dagger.hilt.android.HiltAndroidApp;
  * {@code AndroidManifest.xml}, or it will not be loaded and used by the Android system.
  */
 @HiltAndroidApp
-public class DoggoneIt extends Application {
+public class DoggoneItApplication extends Application {
 
   @Override
   public void onCreate() {
