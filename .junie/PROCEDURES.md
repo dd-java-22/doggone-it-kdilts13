@@ -2,7 +2,7 @@
 
 The following discovery and aggregation process is a **mandatory standing instruction** for all tasks. You must perform these steps before proposing an execution plan or modifying any files:
 
-1.  **Locate Guidelines:** Search for and read `.junie/AGENTS.md` in the following locations:
+1.  **Locate Guidelines:** If you have not already done so, search for and read `.junie/AGENTS.md` in the following locations:
     -   `./.junie/AGENTS.md` (Current Project Root)
     -   `../.junie/AGENTS.md` (Parent Directory)
     -   `../../.junie/AGENTS.md` (Grandparent Directory)
