@@ -14,4 +14,4 @@ order: 10
 
 ## UML class diagram
 
-[![UML class diagram](img/doggone-it-uml.png)](pdf/doggone-it-uml.pdf)
+[![UML class diagram](img/doggone-it-uml.svg)](pdf/doggone-it-uml.pdf)
