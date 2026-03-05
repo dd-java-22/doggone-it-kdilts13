@@ -14,4 +14,4 @@ order: 10
 
 ## UML class diagram
 
-[//]: # (TODO Use Markdown or Liquid include to show UML class diagram in SVG format, linking to PDF format. )
+[![UML class diagram](img/doggone-it-uml.png)](pdf/doggone-it-uml.pdf)
