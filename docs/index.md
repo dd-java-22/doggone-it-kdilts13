@@ -22,16 +22,21 @@ The application combines device integration, on-device machine learning inferenc
 
 ## Intended users and user stories
 
-As a curious dog owner, I want to take or upload a photo of a dog and see likely breed matches so that I can quickly satisfy my curiosity.
+**1. Dog owner:**
+  - As a curious dog owner, I want to take or upload a photo of a dog and see likely breed matches so that I can quickly satisfy my curiosity.
 
-As a dog park visitor, I want to save identified dogs with notes and timestamps so that I can remember which dogs I have met.
+**2. Dog park visitor:**
+  - As a dog park visitor, I want to save identified dogs with notes and timestamps so that I can remember which dogs I have met.
 
-As a prospective adopter, I want to view detailed breed information and mark favorite breeds so that I can compare options later.
+**3. Prospective adopter:**
+  - As a prospective adopter, I want to view detailed breed information and mark favorite breeds so that I can compare options later.
 
-As a casual learner, I want to browse and filter my scan history so that I can review previously identified breeds.
+**4. Casual learner:**
+  - As a casual learner, I want to browse and filter my scan history so that I can review previously identified breeds.
 
-Stretch Goal:
-As a dog lover, I want to generate a stylized cartoon version of a saved photo so that I can create a fun keepsake image.
+### Stretch Goal:
+**5. Dog lover:**
+  - As a dog lover, I want to generate a stylized cartoon version of a saved photo so that I can create a fun keepsake image.
 
 ## Functionality
 
@@ -67,31 +72,53 @@ As a dog lover, I want to generate a stylized cartoon version of a saved photo s
 
 ## Persistent data
 
-[//]: # (TODO Using a bullet list, list what content will be maintained in server-side storage. This should include any information that users of your app would expect to be maintained &#40;i.e., without connection to a server&#41; across multiple sessions of use.)
+The following information will be stored in persistent device storage so that it remains available across multiple sessions of the application. The app does not rely on a remote server for data persistence; instead, it uses local Android storage (Room database and DataStore preferences).
+
+- **Scan History**
+    - Images that the user has previously scanned.
+    - The predicted dog breeds and associated confidence scores for each scan.
+    - Timestamp of when each scan was performed.
+
+
+- **Saved Predictions**
+    - Breed predictions that the user chooses to save for later reference.
+    - Associated image reference and prediction results.
+
+
+- **Breed Information Cache**
+    - Basic information about dog breeds returned from the prediction system (such as breed name and description).
+    - Stored locally to reduce repeated processing and improve app responsiveness.
+
+
+- **User Preferences**
+    - App settings such as display preferences, onboarding completion, or other configuration options.
+    - Stored using Android DataStore so preferences persist between sessions.
+
+
+- **Model Metadata**
+    - Information about the TensorFlow Lite model version currently installed on the device.
+    - Allows the app to detect when the model needs to be updated.
 
 ## Device/external services
 
-### Device Services
-- Camera (photo capture)
+| Service / Source | Documentation | How the App Uses It | Can the App Function Without It?                                                                                                                        |
+|---|---|---|---------------------------------------------------------------------------------------------------------------------------------------------------------|
+| TheDogAPI (Breed Information API) | https://docs.thedogapi.com/ | Retrieves detailed information about dog breeds such as temperament, origin, breed group, and other descriptive attributes to display alongside prediction results. | Yes. If the API is unavailable, the app can still perform breed predictions using the local TensorFlow Lite model. Previously retrieved breed information cached in the local database will remain available offline. |
+| Dog CEO Dog API (Image / Breed List API) | https://dog.ceo/dog-api/documentation/ | Provides breed lists and dog images that can be used for browsing breeds or supplementing UI elements such as breed galleries. | Yes. The core functionality of the app (breed prediction) does not depend on this API, and cached or locally stored data can still be displayed offline. |
+| TensorFlow Lite (On-Device ML) | https://www.tensorflow.org/lite/android | Runs the dog breed classification model locally on the device. The app converts captured or uploaded images into a format suitable for the TensorFlow Lite model and receives predicted breed probabilities. | No. Without TensorFlow Lite the application cannot perform breed prediction.                                                                            |
+| Camera (CameraX) | https://developer.android.com/training/camerax | Used to capture photos of dogs directly inside the app so the image can be analyzed for breed prediction. | The app cannot capture new dog photos without camera access, but existing photos can still be analyzed, and previously saved scans can still be viewed. |
+| Media Gallery Access | https://developer.android.com/training/data-storage/shared/media | Allows users to select existing photos of dogs from their device gallery instead of taking a new picture. | The app can still function using the camera, but users will not be able to analyze existing photos.                                                     |
+| Local Database (SQLite / Room) | https://developer.android.com/training/data-storage/room | Stores scan history, saved predictions, and possibly cached breed information so users can review past scans. | The app could still perform breed predictions, but scan history and stored results would not persist between sessions.                                  |
+| Preferences Storage (DataStore) | https://developer.android.com/topic/libraries/architecture/datastore | Stores small configuration settings such as user preferences, onboarding flags, or display settings. | The app would still function but user settings would not persist between sessions.                                                                      |
 
-- Device gallery access (photo selection)
+### External API Usage Notes
 
-- Local storage for image references
+Both TheDogAPI and Dog CEO Dog API provide free access suitable for a student project within their rate limits. TheDogAPI requires an API key, while the Dog CEO API is openly accessible.
 
-- SQLite database for persistent data storage
+Breed information retrieved from these APIs will be cached locally in the application's Room/SQLite database. Caching reduces repeated network requests and allows previously viewed breed information to remain available when the device is offline.
 
-- SharedPreferences or DataStore for user settings
-
-### External Services
-- **TheDogAPI (primary source for breed facts)**: Used to retrieve dog breed details (e.g., temperament, origin, breed group, and other descriptive attributes). TheDogAPI describes itself as a free service; it requires an API key, and the free plan is rate-limited (e.g., 10 requests per minute).
-
-
-- **Dog CEO Dog API (optional / supplemental)**: Used for breed lists and/or breed images if needed for browsing or UI presentation. Dog CEO’s API is openly accessible and provides endpoints for random dog images and breed-based image retrieval.
-
-Both APIs provide free access appropriate for a student project within their rate limits. Retrieved breed information will be cached locally in the application’s SQLite database to minimize repeated network requests and ensure that previously viewed breed details remain available offline.
-
-The application will not require user accounts and will function offline for previously saved scans and cached breed data.
+The application does not require user accounts or authentication. Core functionality such as capturing images and performing breed prediction with the on-device TensorFlow Lite model will continue to function without an internet connection, though new breed information may not be retrieved until connectivity is restored.
 
 ## Stretch goals and possible enhancements 
 
-[//]: # (TODO If you can identify functional elements of the software that you think might not be achievable in the scope of the project, but which would nonetheless add significant value if you were able to include them, list them here. For now, we recommend listing them in order of complexity/amount of work, from the least to the most.)
+- Add a feature to create a cartoon style portrait of saved dog photos
