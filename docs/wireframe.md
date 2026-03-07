@@ -1,6 +1,6 @@
 ---
-title: Data Model
-description: "UML class diagram, entity-relationship diagram, and DDL."
+title: Wireframe
+description: "Wireframe diagram"
 order: 10
 ---
 
