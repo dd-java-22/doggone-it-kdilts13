@@ -15,3 +15,7 @@ order: 10
 ## UML class diagram
 
 [![UML class diagram](img/doggone-it-uml.svg)](pdf/doggone-it-uml.pdf)
+
+## Entity-relationship diagram
+
+[![Entity-relationship diagram](img/doggone-it-erd.svg)](pdf/doggone-it-erd.pdf)
