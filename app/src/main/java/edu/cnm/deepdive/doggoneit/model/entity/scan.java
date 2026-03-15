@@ -12,14 +12,14 @@ import java.time.Instant;
     tableName = "scan",
     foreignKeys = {
         @ForeignKey(
-            entity = User.class,
-            parentColumns = "user_id",
-            childColumns = "user_id",
+            entity = UserProfile.class,
+            parentColumns = "user_profile_id",
+            childColumns = "user_profile_id",
             onDelete = ForeignKey.CASCADE
         )
     },
     indices = {
-        @Index(value = "user_id")
+        @Index(value = "user_profile_id")
     }
 )
 public class Scan {
@@ -28,8 +28,8 @@ public class Scan {
   @ColumnInfo(name = "scan_id")
   private long id;
 
-  @ColumnInfo(name = "user_id")
-  private long userId;
+  @ColumnInfo(name = "user_profile_id")
+  private long userProfileId;
 
   @ColumnInfo(name = "image_path")
   @NonNull
@@ -54,12 +54,12 @@ public class Scan {
     this.id = id;
   }
 
-  public long getUserId() {
-    return userId;
+  public long getUserProfileId() {
+    return userProfileId;
   }
 
-  public void setUserId(long userId) {
-    this.userId = userId;
+  public void setUserProfileId(long userProfileId) {
+    this.userProfileId = userProfileId;
   }
 
   @NonNull

@@ -26,11 +26,11 @@ public interface ScanDao {
   @Query("SELECT * FROM scan WHERE scan_id = :scanId")
   Scan findById(long scanId);
 
-  @Query("SELECT * FROM scan WHERE user_id = :userId ORDER BY timestamp DESC")
-  List<Scan> findByUserId(long userId);
+  @Query("SELECT * FROM scan WHERE user_profile_id = :userProfileId ORDER BY timestamp DESC")
+  List<Scan> findByUserProfileId(long userProfileId);
 
-  @Query("SELECT * FROM scan WHERE user_id = :userId AND favorite = 1 ORDER BY timestamp DESC")
-  List<Scan> findFavoritesByUserId(long userId);
+  @Query("SELECT * FROM scan WHERE user_profile_id = :userProfileId AND favorite = 1 ORDER BY timestamp DESC")
+  List<Scan> findFavoritesByUserProfileId(long userProfileId);
 
   @Query("SELECT * FROM scan ORDER BY timestamp DESC")
   List<Scan> findAll();

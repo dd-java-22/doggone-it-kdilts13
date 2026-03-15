@@ -7,20 +7,20 @@ import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
 /**
- * Entity representing a user in the Doggone It application.
- * Note: "user" is a reserved SQL keyword in some databases, but the ERD specifies this name,
- * so we keep it. Room should handle escaping appropriately.
+ * Entity representing a user profile in the Doggone It application.
+ * Renamed from "User" to "UserProfile" to avoid conflicts with the reserved SQL keyword "user".
+ * The table name is "user_profile" for clarity and to prevent potential SQL issues.
  */
 @Entity(
-    tableName = "user",
+    tableName = "user_profile",
     indices = {
         @Index(value = "email", unique = true)
     }
 )
-public class User {
+public class UserProfile {
 
   @PrimaryKey(autoGenerate = true)
-  @ColumnInfo(name = "user_id")
+  @ColumnInfo(name = "user_profile_id")
   private long id;
 
   @ColumnInfo(name = "name")
