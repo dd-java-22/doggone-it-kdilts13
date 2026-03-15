@@ -18,7 +18,7 @@ public class BreedFact {
   private long id;
 
   @ColumnInfo(name = "dog_facts_api_id")
-  private Long dogFactsApiId;
+  private long dogFactsApiId;
 
   @ColumnInfo(name = "name")
   private String name;
@@ -67,11 +67,11 @@ public class BreedFact {
     this.id = id;
   }
 
-  public Long getDogFactsApiId() {
+  public long getDogFactsApiId() {
     return dogFactsApiId;
   }
 
-  public void setDogFactsApiId(Long dogFactsApiId) {
+  public void setDogFactsApiId(long dogFactsApiId) {
     this.dogFactsApiId = dogFactsApiId;
   }
 
