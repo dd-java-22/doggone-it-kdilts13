@@ -28,10 +28,8 @@ public class Scan {
   @ColumnInfo(name = "scan_id")
   private long id;
 
-  @ColumnInfo(name = "user_profile_id")
   private long userProfileId;
 
-  @ColumnInfo(name = "image_path")
   @NonNull
   private String imagePath;
 

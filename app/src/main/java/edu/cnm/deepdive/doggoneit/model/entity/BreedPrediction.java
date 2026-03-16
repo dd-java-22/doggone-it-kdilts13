@@ -34,10 +34,8 @@ public class BreedPrediction {
   @ColumnInfo(name = "breed_prediction_id")
   private long id;
 
-  @ColumnInfo(name = "scan_id")
   private long scanId;
 
-  @ColumnInfo(name = "breed_fact_id")
   private Long breedFactId;
 
   @NonNull
