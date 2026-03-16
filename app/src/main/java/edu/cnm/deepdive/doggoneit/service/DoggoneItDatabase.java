@@ -16,7 +16,7 @@ import java.time.Instant;
 
 @Database(
     entities = {UserProfile.class, Scan.class, BreedPrediction.class, BreedFact.class},
-    version = 1,
+    version = DoggoneItDatabase.VERSION,
     exportSchema = true
 )
 @TypeConverters(DoggoneItDatabase.Converters.class)

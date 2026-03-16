@@ -19,3 +19,7 @@ order: 10
 ## Entity-relationship diagram
 
 [![Entity-relationship diagram](img/doggone-it-erd.svg)](pdf/doggone-it-erd.pdf)
+
+## DDL
+
+{% include linked-file.md type="sqlite" file="./sql/ddl.sql" %}

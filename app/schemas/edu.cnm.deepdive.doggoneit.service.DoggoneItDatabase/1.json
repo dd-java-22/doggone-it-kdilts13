@@ -2,15 +2,15 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "0cca02d73c28debad5ed0dd41e0a1a0f",
+    "identityHash": "9ce8fb665191f83ac6e73e0f08d4efed",
     "entities": [
       {
-        "tableName": "user",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`user_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `email` TEXT NOT NULL)",
+        "tableName": "user_profile",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`user_profile_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `email` TEXT NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
-            "columnName": "user_id",
+            "columnName": "user_profile_id",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -30,24 +30,24 @@
         "primaryKey": {
           "autoGenerate": true,
           "columnNames": [
-            "user_id"
+            "user_profile_id"
           ]
         },
         "indices": [
           {
-            "name": "index_user_email",
+            "name": "index_user_profile_email",
             "unique": true,
             "columnNames": [
               "email"
             ],
             "orders": [],
-            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_user_email` ON `${TABLE_NAME}` (`email`)"
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_user_profile_email` ON `${TABLE_NAME}` (`email`)"
           }
         ]
       },
       {
         "tableName": "scan",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`scan_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `user_id` INTEGER NOT NULL, `image_path` TEXT NOT NULL, `timestamp` INTEGER NOT NULL, `note` TEXT NOT NULL, `favorite` INTEGER NOT NULL, FOREIGN KEY(`user_id`) REFERENCES `user`(`user_id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`scan_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `user_profile_id` INTEGER NOT NULL, `image_path` TEXT NOT NULL, `timestamp` INTEGER NOT NULL, `note` TEXT NOT NULL, `favorite` INTEGER NOT NULL, FOREIGN KEY(`user_profile_id`) REFERENCES `user_profile`(`user_profile_id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -56,8 +56,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "userId",
-            "columnName": "user_id",
+            "fieldPath": "userProfileId",
+            "columnName": "user_profile_id",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -94,25 +94,25 @@
         },
         "indices": [
           {
-            "name": "index_scan_user_id",
+            "name": "index_scan_user_profile_id",
             "unique": false,
             "columnNames": [
-              "user_id"
+              "user_profile_id"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_scan_user_id` ON `${TABLE_NAME}` (`user_id`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_scan_user_profile_id` ON `${TABLE_NAME}` (`user_profile_id`)"
           }
         ],
         "foreignKeys": [
           {
-            "table": "user",
+            "table": "user_profile",
             "onDelete": "CASCADE",
             "onUpdate": "NO ACTION",
             "columns": [
-              "user_id"
+              "user_profile_id"
             ],
             "referencedColumns": [
-              "user_id"
+              "user_profile_id"
             ]
           }
         ]
@@ -305,7 +305,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '0cca02d73c28debad5ed0dd41e0a1a0f')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9ce8fb665191f83ac6e73e0f08d4efed')"
     ]
   }
 }
