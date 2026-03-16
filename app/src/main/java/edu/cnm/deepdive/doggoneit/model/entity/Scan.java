@@ -31,13 +31,13 @@ public class Scan {
   private long userProfileId;
 
   @NonNull
-  private String imagePath;
+  private String imagePath = "";
 
   @NonNull
-  private Instant timestamp;
+  private Instant timestamp = Instant.EPOCH;
 
   @NonNull
-  private String note;
+  private String note = "";
 
   private boolean favorite;
 

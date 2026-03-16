@@ -39,7 +39,7 @@ public class BreedPrediction {
   private Long breedFactId;
 
   @NonNull
-  private String name;
+  private String name = "";
 
   private double probability;
 
