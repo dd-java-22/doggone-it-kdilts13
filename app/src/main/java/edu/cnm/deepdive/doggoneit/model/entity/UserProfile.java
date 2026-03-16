@@ -23,7 +23,6 @@ public class UserProfile {
   @ColumnInfo(name = "user_profile_id")
   private long id;
 
-  // TODO: 3/16/2026 check for missing indexes
   @ColumnInfo(collate = ColumnInfo.NOCASE)
   @NonNull
   private String name = "";

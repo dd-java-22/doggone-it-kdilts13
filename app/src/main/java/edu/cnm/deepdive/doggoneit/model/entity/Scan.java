@@ -19,7 +19,9 @@ import java.time.Instant;
         )
     },
     indices = {
-        @Index(value = "user_profile_id")
+        @Index(value = "user_profile_id"),
+        @Index(value = "timestamp"),
+        @Index(value = "favorite")
     }
 )
 public class Scan {
