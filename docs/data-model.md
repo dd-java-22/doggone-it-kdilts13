@@ -22,4 +22,4 @@ order: 10
 
 ## DDL
 
-{% include linked-file.md type="sqlite" file="./sql/ddl.sql" %}
+{% include linked-file.md type="sqlite" file="sql/ddl.sql" %}
