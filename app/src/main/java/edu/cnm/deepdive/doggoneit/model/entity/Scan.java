@@ -34,10 +34,9 @@ public class Scan {
   private String imagePath = "";
 
   @NonNull
-  private Instant timestamp = Instant.EPOCH;
+  private Instant timestamp = Instant.now();
 
-  @NonNull
-  private String note = "";
+  private String note;
 
   private boolean favorite;
 

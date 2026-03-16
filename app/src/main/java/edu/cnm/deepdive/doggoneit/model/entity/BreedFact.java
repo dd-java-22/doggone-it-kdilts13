@@ -19,6 +19,7 @@ public class BreedFact {
 
   private long dogFactsApiId;
 
+  @ColumnInfo(collate = ColumnInfo.NOCASE)
   private String name;
 
   private Double weightSi;

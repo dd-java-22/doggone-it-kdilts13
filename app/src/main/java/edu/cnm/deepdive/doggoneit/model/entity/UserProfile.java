@@ -23,13 +23,12 @@ public class UserProfile {
   @ColumnInfo(name = "user_profile_id")
   private long id;
 
-  // TODO: 3/16/2026 consider removing column info unless I need to set something other than a matching name
   // TODO: 3/16/2026 check for missing indexes
-  // TODO: 3/16/2026 set missing default values on nonnull fields
-  // TODO: 3/16/2026 collation nocase annotation - for case insensitive sort or filter
+  @ColumnInfo(collate = ColumnInfo.NOCASE)
   @NonNull
   private String name = "";
 
+  @ColumnInfo(collate = ColumnInfo.NOCASE)
   @NonNull
   private String email = "";
 

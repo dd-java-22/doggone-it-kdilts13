@@ -38,6 +38,7 @@ public class BreedPrediction {
 
   private Long breedFactId;
 
+  @ColumnInfo(collate = ColumnInfo.NOCASE)
   @NonNull
   private String name = "";
 
