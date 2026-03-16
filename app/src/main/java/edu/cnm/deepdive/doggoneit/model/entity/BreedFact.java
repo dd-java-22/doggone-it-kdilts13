@@ -20,7 +20,6 @@ public class BreedFact {
   @ColumnInfo(name = "dog_facts_api_id")
   private long dogFactsApiId;
 
-  @ColumnInfo(name = "name")
   private String name;
 
   @ColumnInfo(name = "weight_si")
@@ -38,10 +37,8 @@ public class BreedFact {
   @ColumnInfo(name = "life_span")
   private String lifeSpan;
 
-  @ColumnInfo(name = "temperament")
   private String temperament;
 
-  @ColumnInfo(name = "origin")
   private String origin;
 
   @ColumnInfo(name = "reference_image_id")

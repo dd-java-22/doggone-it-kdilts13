@@ -35,15 +35,12 @@ public class Scan {
   @NonNull
   private String imagePath;
 
-  @ColumnInfo(name = "timestamp")
   @NonNull
   private Instant timestamp;
 
-  @ColumnInfo(name = "note")
   @NonNull
   private String note;
 
-  @ColumnInfo(name = "favorite")
   private boolean favorite;
 
   public long getId() {

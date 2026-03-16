@@ -27,11 +27,9 @@ public class UserProfile {
   // TODO: 3/16/2026 check for missing indexes
   // TODO: 3/16/2026 set missing default values on nonnull fields
   // TODO: 3/16/2026 collation nocase annotation - for case insensitive sort or filter
-  @ColumnInfo(name = "name")
   @NonNull
   private String name = "";
 
-  @ColumnInfo(name = "email")
   @NonNull
   private String email = "";
 

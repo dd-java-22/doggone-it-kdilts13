@@ -40,11 +40,9 @@ public class BreedPrediction {
   @ColumnInfo(name = "breed_fact_id")
   private Long breedFactId;
 
-  @ColumnInfo(name = "name")
   @NonNull
   private String name;
 
-  @ColumnInfo(name = "probability")
   private double probability;
 
   public long getId() {
