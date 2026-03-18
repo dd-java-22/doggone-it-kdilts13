@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "9ce8fb665191f83ac6e73e0f08d4efed",
+    "identityHash": "26bf5055a0f3861f1baa355ac8825b4c",
     "entities": [
       {
         "tableName": "user_profile",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`user_profile_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL, `email` TEXT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`user_profile_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL COLLATE NOCASE, `email` TEXT NOT NULL COLLATE NOCASE)",
         "fields": [
           {
             "fieldPath": "id",
@@ -47,7 +47,7 @@
       },
       {
         "tableName": "scan",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`scan_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `user_profile_id` INTEGER NOT NULL, `image_path` TEXT NOT NULL, `timestamp` INTEGER NOT NULL, `note` TEXT NOT NULL, `favorite` INTEGER NOT NULL, FOREIGN KEY(`user_profile_id`) REFERENCES `user_profile`(`user_profile_id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`scan_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `user_profile_id` INTEGER NOT NULL, `image_path` TEXT NOT NULL, `timestamp` INTEGER NOT NULL, `note` TEXT, `favorite` INTEGER NOT NULL, FOREIGN KEY(`user_profile_id`) REFERENCES `user_profile`(`user_profile_id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -76,8 +76,7 @@
           {
             "fieldPath": "note",
             "columnName": "note",
-            "affinity": "TEXT",
-            "notNull": true
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "favorite",
@@ -101,6 +100,24 @@
             ],
             "orders": [],
             "createSql": "CREATE INDEX IF NOT EXISTS `index_scan_user_profile_id` ON `${TABLE_NAME}` (`user_profile_id`)"
+          },
+          {
+            "name": "index_scan_timestamp",
+            "unique": false,
+            "columnNames": [
+              "timestamp"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_scan_timestamp` ON `${TABLE_NAME}` (`timestamp`)"
+          },
+          {
+            "name": "index_scan_favorite",
+            "unique": false,
+            "columnNames": [
+              "favorite"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_scan_favorite` ON `${TABLE_NAME}` (`favorite`)"
           }
         ],
         "foreignKeys": [
@@ -119,7 +136,7 @@
       },
       {
         "tableName": "breed_prediction",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`breed_prediction_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `scan_id` INTEGER NOT NULL, `breed_fact_id` INTEGER, `name` TEXT NOT NULL, `probability` REAL NOT NULL, FOREIGN KEY(`scan_id`) REFERENCES `scan`(`scan_id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`breed_fact_id`) REFERENCES `breed_fact`(`breed_fact_id`) ON UPDATE NO ACTION ON DELETE SET NULL )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`breed_prediction_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `scan_id` INTEGER NOT NULL, `breed_fact_id` INTEGER, `name` TEXT NOT NULL COLLATE NOCASE, `probability` REAL NOT NULL, FOREIGN KEY(`scan_id`) REFERENCES `scan`(`scan_id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`breed_fact_id`) REFERENCES `breed_fact`(`breed_fact_id`) ON UPDATE NO ACTION ON DELETE SET NULL )",
         "fields": [
           {
             "fieldPath": "id",
@@ -204,7 +221,7 @@
       },
       {
         "tableName": "breed_fact",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`breed_fact_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `dog_facts_api_id` INTEGER NOT NULL, `name` TEXT, `weight_si` REAL, `height_si` REAL, `bred_for` TEXT, `breed_group` TEXT, `life_span` TEXT, `temperament` TEXT, `origin` TEXT, `reference_image_id` TEXT, `image_id` TEXT, `image_width` INTEGER, `image_height` INTEGER, `image_url` TEXT)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`breed_fact_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `dog_facts_api_id` INTEGER NOT NULL, `name` TEXT COLLATE NOCASE, `weight_si` REAL, `height_si` REAL, `bred_for` TEXT, `breed_group` TEXT, `life_span` TEXT, `temperament` TEXT, `origin` TEXT, `reference_image_id` TEXT, `image_id` TEXT, `image_width` INTEGER, `image_height` INTEGER, `image_url` TEXT)",
         "fields": [
           {
             "fieldPath": "id",
@@ -305,7 +322,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9ce8fb665191f83ac6e73e0f08d4efed')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '26bf5055a0f3861f1baa355ac8825b4c')"
     ]
   }
 }
