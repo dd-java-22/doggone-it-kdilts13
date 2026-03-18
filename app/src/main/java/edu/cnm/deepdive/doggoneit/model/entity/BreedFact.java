@@ -17,33 +17,44 @@ public class BreedFact {
   @ColumnInfo(name = "breed_fact_id")
   private long id;
 
+  @ColumnInfo(name = "dog_facts_api_id")
   private long dogFactsApiId;
 
   @ColumnInfo(collate = ColumnInfo.NOCASE)
   private String name;
 
+  @ColumnInfo(name = "weight_si")
   private Double weightSi;
 
+  @ColumnInfo(name = "height_si")
   private Double heightSi;
 
+  @ColumnInfo(name = "bred_for")
   private String bredFor;
 
+  @ColumnInfo(name = "breed_group")
   private String breedGroup;
 
+  @ColumnInfo(name = "life_span")
   private String lifeSpan;
 
   private String temperament;
 
   private String origin;
 
+  @ColumnInfo(name = "reference_image_id")
   private String referenceImageId;
 
+  @ColumnInfo(name = "image_id")
   private String imageId;
 
+  @ColumnInfo(name = "image_width")
   private Integer imageWidth;
 
+  @ColumnInfo(name = "image_height")
   private Integer imageHeight;
 
+  @ColumnInfo(name = "image_url")
   private String imageUrl;
 
   public long getId() {
