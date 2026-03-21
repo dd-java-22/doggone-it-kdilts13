@@ -41,6 +41,9 @@ public class MainActivity extends AppCompatActivity {
     }
     NavController navController = navHostFragment.getNavController();
     NavigationUI.setupWithNavController(binding.bottomNav, navController);
+    binding.bottomNav.setOnItemReselectedListener(item -> {
+      // No-op to avoid reselect actions creating duplicate destinations.
+    });
   }
 
 }
