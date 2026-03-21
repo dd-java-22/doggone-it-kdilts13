@@ -34,6 +34,6 @@
   <string name="view_details_action">View Details</string>
 
   <string name="nav_photo">Photo</string>
-  <string name="nav_gallery">Analyze</string>
-  <string name="nav_saved">Saved</string>
+  <string name="nav_gallery">Analyze from Gallery</string>
+  <string name="nav_saved">View Saved</string>
 </resources>
