@@ -18,8 +18,8 @@ package edu.cnm.deepdive.doggoneit;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
+import androidx.navigation.fragment.NavHostFragment;
 import dagger.hilt.android.AndroidEntryPoint;
 import edu.cnm.deepdive.doggoneit.databinding.ActivityMainBinding;
 
@@ -34,7 +34,12 @@ public class MainActivity extends AppCompatActivity {
     binding = ActivityMainBinding.inflate(getLayoutInflater());
     setContentView(binding.getRoot());
 
-    NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+    NavHostFragment navHostFragment =
+        (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
+    if (navHostFragment == null) {
+      throw new IllegalStateException("NavHostFragment not found");
+    }
+    NavController navController = navHostFragment.getNavController();
     NavigationUI.setupWithNavController(binding.bottomNav, navController);
   }
 
