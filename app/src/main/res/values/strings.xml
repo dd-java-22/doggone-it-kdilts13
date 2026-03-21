@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Copyright 2026 CNM Ingenuity, Inc.
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<resources>
+  <string name="login_title">Login</string>
+  <string name="login_action">Continue to Home</string>
+
+  <string name="home_title">Home</string>
+  <string name="take_photo_action">Take Photo</string>
+  <string name="analyze_gallery_action">Analyze from Gallery</string>
+  <string name="view_saved_action">View Saved</string>
+
+  <string name="photo_capture_title">Photo Capture</string>
+  <string name="scan_analysis_title">Scan Analysis</string>
+  <string name="scan_display_title">Scan Display</string>
+  <string name="camera_gallery_title">Camera Gallery</string>
+  <string name="scans_gallery_title">Scans Gallery</string>
+
+  <string name="analyze_action">Analyze</string>
+  <string name="view_results_action">View Results</string>
+  <string name="view_details_action">View Details</string>
+
+  <string name="nav_photo">Photo</string>
+  <string name="nav_gallery">Analyze</string>
+  <string name="nav_saved">Saved</string>
+</resources>
