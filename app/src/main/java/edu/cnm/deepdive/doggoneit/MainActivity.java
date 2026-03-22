@@ -22,7 +22,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.navigation.AppBarConfiguration;
+import androidx.navigation.Navigation;
+import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.NavController;
 import androidx.navigation.NavDestination;
 import androidx.navigation.ui.NavigationUI;
@@ -71,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
 
   @Override
   public boolean onSupportNavigateUp() {
-    NavController navController = NavigationUI.findNavController(this, R.id.nav_host_fragment);
+    NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
     return NavigationUI.navigateUp(navController, appBarConfiguration)
         || super.onSupportNavigateUp();
   }
