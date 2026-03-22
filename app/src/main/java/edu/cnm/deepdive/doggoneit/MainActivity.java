@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
 
   private ActivityMainBinding binding;
   private AppBarConfiguration appBarConfiguration;
+  private NavController navController;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
     if (navHostFragment == null) {
       throw new IllegalStateException("NavHostFragment not found");
     }
-    NavController navController = navHostFragment.getNavController();
+    navController = navHostFragment.getNavController();
     appBarConfiguration = new AppBarConfiguration.Builder(
         R.id.loginFragment,
         R.id.homeFragment,
@@ -63,16 +64,12 @@ public class MainActivity extends AppCompatActivity {
     ).build();
     NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
     NavigationUI.setupWithNavController(binding.bottomNav, navController);
-    binding.bottomNav.setOnItemReselectedListener(item -> {
-      // No-op to avoid reselect actions creating duplicate destinations.
-    });
     navController.addOnDestinationChangedListener(
         (controller, destination, arguments) -> toggleBottomNav(destination));
   }
 
   @Override
   public boolean onSupportNavigateUp() {
-    NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
     return NavigationUI.navigateUp(navController, appBarConfiguration)
         || super.onSupportNavigateUp();
   }
