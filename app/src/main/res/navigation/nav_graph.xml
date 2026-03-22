@@ -26,7 +26,9 @@
     android:label="@string/login_title">
     <action
       android:id="@+id/action_loginFragment_to_homeFragment"
-      app:destination="@id/homeFragment"/>
+      app:destination="@id/homeFragment"
+      app:popUpTo="@id/loginFragment"
+      app:popUpToInclusive="true"/>
   </fragment>
 
   <fragment
