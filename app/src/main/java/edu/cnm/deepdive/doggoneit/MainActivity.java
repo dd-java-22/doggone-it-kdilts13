@@ -16,8 +16,10 @@
 package edu.cnm.deepdive.doggoneit;
 
 import android.os.Bundle;
+import android.view.View;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
+import androidx.navigation.NavDestination;
 import androidx.navigation.ui.NavigationUI;
 import androidx.navigation.fragment.NavHostFragment;
 import dagger.hilt.android.AndroidEntryPoint;
@@ -44,6 +46,14 @@ public class MainActivity extends AppCompatActivity {
     binding.bottomNav.setOnItemReselectedListener(item -> {
       // No-op to avoid reselect actions creating duplicate destinations.
     });
+    navController.addOnDestinationChangedListener(
+        (controller, destination, arguments) -> toggleBottomNav(destination));
+  }
+
+  private void toggleBottomNav(NavDestination destination) {
+    int visibility =
+        (destination.getId() == R.id.loginFragment) ? View.GONE : View.VISIBLE;
+    binding.bottomNav.setVisibility(visibility);
   }
 
 }
