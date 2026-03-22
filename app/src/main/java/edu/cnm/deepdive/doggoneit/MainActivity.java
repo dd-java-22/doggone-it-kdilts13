@@ -22,6 +22,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.navigation.AppBarConfiguration;
 import androidx.navigation.NavController;
 import androidx.navigation.NavDestination;
 import androidx.navigation.ui.NavigationUI;
@@ -33,6 +34,7 @@ import edu.cnm.deepdive.doggoneit.databinding.ActivityMainBinding;
 public class MainActivity extends AppCompatActivity {
 
   private ActivityMainBinding binding;
+  private AppBarConfiguration appBarConfiguration;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
     setupUI();
 
     setContentView(binding.getRoot());
+    setSupportActionBar(binding.topAppBar);
 
     NavHostFragment navHostFragment =
         (NavHostFragment) getSupportFragmentManager().findFragmentById(R.id.nav_host_fragment);
@@ -50,12 +53,27 @@ public class MainActivity extends AppCompatActivity {
       throw new IllegalStateException("NavHostFragment not found");
     }
     NavController navController = navHostFragment.getNavController();
+    appBarConfiguration = new AppBarConfiguration.Builder(
+        R.id.loginFragment,
+        R.id.homeFragment,
+        R.id.photoCaptureFragment,
+        R.id.cameraGalleryFragment,
+        R.id.scansGalleryFragment
+    ).build();
+    NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
     NavigationUI.setupWithNavController(binding.bottomNav, navController);
     binding.bottomNav.setOnItemReselectedListener(item -> {
       // No-op to avoid reselect actions creating duplicate destinations.
     });
     navController.addOnDestinationChangedListener(
         (controller, destination, arguments) -> toggleBottomNav(destination));
+  }
+
+  @Override
+  public boolean onSupportNavigateUp() {
+    NavController navController = NavigationUI.findNavController(this, R.id.nav_host_fragment);
+    return NavigationUI.navigateUp(navController, appBarConfiguration)
+        || super.onSupportNavigateUp();
   }
 
   private void toggleBottomNav(NavDestination destination) {
