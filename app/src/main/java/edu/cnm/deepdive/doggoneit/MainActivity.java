@@ -17,7 +17,11 @@ package edu.cnm.deepdive.doggoneit;
 
 import android.os.Bundle;
 import android.view.View;
+import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.NavDestination;
 import androidx.navigation.ui.NavigationUI;
@@ -33,7 +37,11 @@ public class MainActivity extends AppCompatActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+
     binding = ActivityMainBinding.inflate(getLayoutInflater());
+
+    setupUI();
+
     setContentView(binding.getRoot());
 
     NavHostFragment navHostFragment =
@@ -54,6 +62,26 @@ public class MainActivity extends AppCompatActivity {
     int visibility =
         (destination.getId() == R.id.loginFragment) ? View.GONE : View.VISIBLE;
     binding.bottomNav.setVisibility(visibility);
+  }
+
+  private void setupUI() {
+    setContentView(binding.getRoot());
+    EdgeToEdge.enable(this);
+    View root = binding.getRoot();
+    int initialLeft = root.getPaddingLeft();
+    int initialTop = root.getPaddingTop();
+    int initialRight = root.getPaddingRight();
+    int initialBottom = root.getPaddingBottom();
+    ViewCompat.setOnApplyWindowInsetsListener(root, (view, insets) -> {
+      Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+      view.setPadding(
+        initialLeft + systemBars.left,
+        initialTop + systemBars.top,
+        initialRight + systemBars.right,
+        initialBottom + systemBars.bottom
+      );
+      return WindowInsetsCompat.CONSUMED;
+    });
   }
 
 }
