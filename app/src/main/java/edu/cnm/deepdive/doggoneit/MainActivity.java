@@ -65,7 +65,6 @@ public class MainActivity extends AppCompatActivity {
   }
 
   private void setupUI() {
-    setContentView(binding.getRoot());
     EdgeToEdge.enable(this);
     View root = binding.getRoot();
     int initialLeft = root.getPaddingLeft();
