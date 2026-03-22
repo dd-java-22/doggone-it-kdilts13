@@ -16,7 +16,7 @@
 -->
 <resources>
   <!-- Base application theme. -->
-  <style name="AppTheme" parent="Theme.Material3.DayNight">
+  <style name="AppTheme" parent="Theme.Material3.DayNight.NoActionBar">
     <!-- TODO Customize your theme here. -->
   </style>
 
