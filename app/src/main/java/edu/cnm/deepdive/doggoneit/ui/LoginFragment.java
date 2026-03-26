@@ -22,29 +22,54 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 import dagger.hilt.android.AndroidEntryPoint;
 import edu.cnm.deepdive.doggoneit.R;
 import edu.cnm.deepdive.doggoneit.databinding.FragmentLoginBinding;
+import edu.cnm.deepdive.doggoneit.viewmodel.LoginViewModel;
 
 @AndroidEntryPoint
 public class LoginFragment extends Fragment {
 
   private FragmentLoginBinding binding;
+  private LoginViewModel viewModel;
 
   @Override
   public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
     binding = FragmentLoginBinding.inflate(inflater, container, false);
+
+    binding.loginButton.setOnClickListener(v -> viewModel.signIn(requireActivity()));
+
     return binding.getRoot();
   }
 
   @Override
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
-    binding.loginButton.setOnClickListener(
-        v -> NavHostFragment.findNavController(this)
-            .navigate(R.id.action_loginFragment_to_homeFragment));
+
+    viewModel = new ViewModelProvider(requireActivity()).get(LoginViewModel.class);
+
+    viewModel.getCredential()
+      .observe(getViewLifecycleOwner(), credential -> {
+        if (credential != null) {
+          Navigation.findNavController(binding.getRoot())
+            .navigate(LoginFragmentDirections.actionLoginFragmentToHomeFragment());
+        }
+      });
+
+    viewModel.getThrowable()
+      .observe(getViewLifecycleOwner(), throwable -> {
+        if (throwable != null) {
+          binding.loginButton.setEnabled(true);
+          binding.loginButton.setVisibility(View.VISIBLE);
+          // TODO: 3/12/2026 show a snackbar
+        }
+      });
+
+    viewModel.signInQuickly(requireActivity());
   }
 
   @Override

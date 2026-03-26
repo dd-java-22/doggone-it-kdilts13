@@ -23,6 +23,7 @@ plugins {
     alias(libs.plugins.navigation.safeargs)
     alias(libs.plugins.schema.parser)
     alias(libs.plugins.junit)
+    alias(libs.plugins.kotlin.android)
 }
 
 android {
@@ -43,7 +44,7 @@ android {
             "de.mannodermaus.junit5.AndroidJUnit5Builder"
 
         resValue("string", "app_name", project.property("appName") as String)
-//        resValue("string", "client_id", getLocalProperty("clientId") as String)
+        resValue("string", "client_id", getLocalProperty("clientId") as String)
 
         javaCompileOptions {
             annotationProcessorOptions {
@@ -74,6 +75,10 @@ android {
         targetCompatibility = JavaVersion.valueOf("VERSION_${libs.versions.java.get()}")
     }
 
+    kotlin {
+        jvmToolchain(libs.versions.java.get().toInt())
+    }
+
     buildFeatures {
         viewBinding = true
         // Enable dataBinding if desired.
@@ -85,6 +90,12 @@ android {
 dependencies {
 
     // .jar-based libraries included in project
+
+    // kotlin standard library and coroutines
+    implementation(libs.kotlin)
+    implementation(libs.kotlin.coroutines.core)
+    implementation(libs.kotlin.coroutines.jdk8)
+    implementation(libs.kotlin.coroutines.android)
 
     // Desugaring for subset of JDK
     coreLibraryDesugaring(libs.desugar)
@@ -119,6 +130,11 @@ dependencies {
 
     // Google Sign-in library
     implementation(libs.play.auth)
+
+    // credential manager libraries
+    implementation(libs.credentials)
+    implementation(libs.credentials.play.services)
+    implementation(libs.googleid)
 
     // Retrofit (REST client) with Gson integration
     implementation(libs.retrofit.core)
