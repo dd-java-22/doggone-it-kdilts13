@@ -60,7 +60,8 @@ public class MainActivity extends AppCompatActivity {
         R.id.homeFragment,
         R.id.photoCaptureFragment,
         R.id.cameraGalleryFragment,
-        R.id.scansGalleryFragment
+        R.id.scansGalleryFragment,
+        R.id.settingsFragment
     ).build();
     NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
     NavigationUI.setupWithNavController(binding.bottomNav, navController);
