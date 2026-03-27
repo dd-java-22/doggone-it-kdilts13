@@ -14,4 +14,16 @@ public interface RepositoryModule {
   @Singleton
   GoogleAuthRepository bindGoogleAuthRepository(GoogleAuthRepositoryImpl implementation);
 
+  @Binds
+  @Singleton
+  UserProfileRepository bindUserProfileRepository(UserProfileRepositoryImpl implementation);
+
+  @Binds
+  @Singleton
+  ScanRepository bindScanRepository(ScanRepositoryImpl implementation);
+
+  @Binds
+  @Singleton
+  BreedFactRepository bindBreedFactRepository(BreedFactRepositoryImpl implementation);
+
 }
