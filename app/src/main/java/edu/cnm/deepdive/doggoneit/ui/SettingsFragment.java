@@ -54,7 +54,8 @@ public class SettingsFragment extends PreferenceFragmentCompat {
       .observe(getViewLifecycleOwner(), credential -> {
         if (credential == null) {
           NavOptions options = new NavOptions.Builder()
-              .setPopUpTo(R.id.nav_graph, true)
+              .setPopUpTo(R.id.loginFragment, true)
+              .setLaunchSingleTop(true)
               .build();
           navController.navigate(R.id.loginFragment, null, options);
         }
