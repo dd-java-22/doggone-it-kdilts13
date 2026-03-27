@@ -14,11 +14,17 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content"
+  android:padding="@dimen/activity_horizontal_margin">
 
-  <Preference
-    android:key="logout"
-    android:layout="@layout/preference_logout"
-    android:title="@string/logout_action"/>
+  <Button
+    android:id="@android:id/title"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_horizontal"
+    android:clickable="false"
+    android:focusable="false"/>
 
-</PreferenceScreen>
+</FrameLayout>
