@@ -16,17 +16,55 @@
 package edu.cnm.deepdive.doggoneit.ui;
 
 import android.os.Bundle;
+import android.view.View;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.NavOptions;
+import androidx.navigation.fragment.NavHostFragment;
+import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import dagger.hilt.android.AndroidEntryPoint;
 import edu.cnm.deepdive.doggoneit.R;
+import edu.cnm.deepdive.doggoneit.viewmodel.LoginViewModel;
 
 @AndroidEntryPoint
 public class SettingsFragment extends PreferenceFragmentCompat {
 
+  private LoginViewModel viewModel;
+
   @Override
   public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
     setPreferencesFromResource(R.xml.preferences, rootKey);
+    viewModel = new ViewModelProvider(requireActivity()).get(LoginViewModel.class);
+    Preference logoutPreference = findPreference("logout");
+    if (logoutPreference != null) {
+      logoutPreference.setOnPreferenceClickListener(preference -> {
+        viewModel.signOut();
+        return true;
+      });
+    }
+  }
+
+  @Override
+  public void onViewCreated(@Nullable View view, @Nullable Bundle savedInstanceState) {
+    super.onViewCreated(view, savedInstanceState);
+    NavController navController = NavHostFragment.findNavController(this);
+    viewModel.getCredential()
+      .observe(getViewLifecycleOwner(), credential -> {
+        if (credential == null) {
+          NavOptions options = new NavOptions.Builder()
+              .setPopUpTo(R.id.nav_graph, true)
+              .build();
+          navController.navigate(R.id.loginFragment, null, options);
+        }
+      });
+    viewModel.getThrowable()
+      .observe(getViewLifecycleOwner(), throwable -> {
+        if (throwable != null) {
+          // TODO: 3/26/2026 show a snackbar
+        }
+      });
   }
 
 }
