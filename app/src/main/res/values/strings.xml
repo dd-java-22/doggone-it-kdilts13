@@ -33,6 +33,9 @@
   <string name="view_results_action">View Results</string>
   <string name="view_details_action">View Details</string>
 
+  <string name="settings_title">Settings</string>
+  <string name="logout_action">Log out</string>
+
   <string name="nav_photo">Photo</string>
   <string name="nav_gallery">Analyze from Gallery</string>
   <string name="nav_saved">View Saved</string>

@@ -83,6 +83,11 @@
   </fragment>
 
   <fragment
+    android:id="@+id/settingsFragment"
+    android:name="edu.cnm.deepdive.doggoneit.ui.SettingsFragment"
+    android:label="@string/settings_title"/>
+
+  <fragment
     android:id="@+id/scanDisplayFragment"
     android:name="edu.cnm.deepdive.doggoneit.ui.ScanDisplayFragment"
     android:label="@string/scan_display_title"/>
