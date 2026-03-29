@@ -1,5 +1,6 @@
 package edu.cnm.deepdive.doggoneit.model.dao;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -24,11 +25,11 @@ public interface UserProfileDao {
   int delete(UserProfile... userProfiles);
 
   @Query("SELECT * FROM user_profile WHERE user_profile_id = :userProfileId")
-  UserProfile findById(long userProfileId);
+  LiveData<UserProfile> findById(long userProfileId);
 
   @Query("SELECT * FROM user_profile WHERE email = :email")
-  UserProfile findByEmail(String email);
+  LiveData<UserProfile> findByEmail(String email);
 
   @Query("SELECT * FROM user_profile ORDER BY name")
-  List<UserProfile> findAll();
+  LiveData<List<UserProfile>> findAll();
 }

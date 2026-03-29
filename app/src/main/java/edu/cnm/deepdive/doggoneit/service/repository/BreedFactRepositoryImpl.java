@@ -1,12 +1,10 @@
 package edu.cnm.deepdive.doggoneit.service.repository;
 
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 import edu.cnm.deepdive.doggoneit.model.dao.BreedFactDao;
 import edu.cnm.deepdive.doggoneit.model.entity.BreedFact;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Supplier;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
@@ -22,22 +20,22 @@ public class BreedFactRepositoryImpl implements BreedFactRepository {
 
   @Override
   public LiveData<BreedFact> getById(long breedFactId) {
-    return wrapLiveData(() -> breedFactDao.findById(breedFactId));
+    return breedFactDao.findById(breedFactId);
   }
 
   @Override
   public LiveData<BreedFact> getByDogFactsApiId(long dogFactsApiId) {
-    return wrapLiveData(() -> breedFactDao.findByDogFactsApiId(dogFactsApiId));
+    return breedFactDao.findByDogFactsApiId(dogFactsApiId);
   }
 
   @Override
   public LiveData<List<BreedFact>> getByNameFragment(String nameFragment) {
-    return wrapLiveData(() -> breedFactDao.findByNameFragment(nameFragment));
+    return breedFactDao.findByNameFragment(nameFragment);
   }
 
   @Override
   public LiveData<List<BreedFact>> getAll() {
-    return wrapLiveData(breedFactDao::findAll);
+    return breedFactDao.findAll();
   }
 
   @Override
@@ -53,11 +51,4 @@ public class BreedFactRepositoryImpl implements BreedFactRepository {
   public CompletableFuture<Integer> update(BreedFact breedFact) {
     return CompletableFuture.supplyAsync(() -> breedFactDao.update(breedFact));
   }
-
-  private <T> LiveData<T> wrapLiveData(Supplier<T> supplier) {
-    MutableLiveData<T> liveData = new MutableLiveData<>();
-    CompletableFuture.supplyAsync(supplier).thenAccept(liveData::postValue);
-    return liveData;
-  }
-
 }

@@ -1,5 +1,6 @@
 package edu.cnm.deepdive.doggoneit.model.dao;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -24,14 +25,14 @@ public interface ScanDao {
   int delete(Scan... scans);
 
   @Query("SELECT * FROM scan WHERE scan_id = :scanId")
-  Scan findById(long scanId);
+  LiveData<Scan> findById(long scanId);
 
   @Query("SELECT * FROM scan WHERE user_profile_id = :userProfileId ORDER BY timestamp DESC")
-  List<Scan> findByUserProfileId(long userProfileId);
+  LiveData<List<Scan>> findByUserProfileId(long userProfileId);
 
   @Query("SELECT * FROM scan WHERE user_profile_id = :userProfileId AND favorite = 1 ORDER BY timestamp DESC")
-  List<Scan> findFavoritesByUserProfileId(long userProfileId);
+  LiveData<List<Scan>> findFavoritesByUserProfileId(long userProfileId);
 
   @Query("SELECT * FROM scan ORDER BY timestamp DESC")
-  List<Scan> findAll();
+  LiveData<List<Scan>> findAll();
 }

@@ -1,5 +1,6 @@
 package edu.cnm.deepdive.doggoneit.model.dao;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -24,14 +25,14 @@ public interface BreedPredictionDao {
   int delete(BreedPrediction... breedPredictions);
 
   @Query("SELECT * FROM breed_prediction WHERE breed_prediction_id = :breedPredictionId")
-  BreedPrediction findById(long breedPredictionId);
+  LiveData<BreedPrediction> findById(long breedPredictionId);
 
   @Query("SELECT * FROM breed_prediction WHERE scan_id = :scanId ORDER BY probability DESC")
-  List<BreedPrediction> findByScanId(long scanId);
+  LiveData<List<BreedPrediction>> findByScanId(long scanId);
 
   @Query("SELECT * FROM breed_prediction WHERE breed_fact_id = :breedFactId ORDER BY probability DESC")
-  List<BreedPrediction> findByBreedFactId(long breedFactId);
+  LiveData<List<BreedPrediction>> findByBreedFactId(long breedFactId);
 
   @Query("SELECT * FROM breed_prediction ORDER BY probability DESC")
-  List<BreedPrediction> findAll();
+  LiveData<List<BreedPrediction>> findAll();
 }
