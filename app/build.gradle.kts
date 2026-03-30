@@ -95,7 +95,7 @@ dependencies {
 
     // dependencies for tensorflow for image recognition
     implementation("com.google.ai.edge.litert:litert:2.1.0")
-    implementation("com.google.ai.edge.litert:litert-support:1.4.0")
+    // NOTE: `litert-support` removed for now due to duplicate classes with `litert`.
 
     // kotlin standard library and coroutines
     implementation(libs.kotlin)

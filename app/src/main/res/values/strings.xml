@@ -32,6 +32,10 @@
   <string name="analyze_action">Analyze</string>
   <string name="view_results_action">View Results</string>
   <string name="view_details_action">View Details</string>
+  <string name="init_model_poc_action">Init Model POC</string>
+  <string name="init_model_poc_status_default">POC not run</string>
+  <string name="init_model_poc_status_running">Initializing model (check Logcat)...</string>
+  <string name="init_model_poc_status_done">POC init attempted (check Logcat)</string>
 
   <string name="settings_title">Settings</string>
   <string name="logout_action">Log out</string>

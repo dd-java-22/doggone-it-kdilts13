@@ -26,6 +26,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import dagger.hilt.android.AndroidEntryPoint;
 import edu.cnm.deepdive.doggoneit.R;
 import edu.cnm.deepdive.doggoneit.databinding.FragmentScanAnalysisBinding;
+import edu.cnm.deepdive.doggoneit.ml.DogBreedModelPoc;
 
 @AndroidEntryPoint
 public class ScanAnalysisFragment extends Fragment {
@@ -45,6 +46,11 @@ public class ScanAnalysisFragment extends Fragment {
     binding.viewResultsButton.setOnClickListener(
         v -> NavHostFragment.findNavController(this)
             .navigate(R.id.action_scanAnalysisFragment_to_scanDisplayFragment));
+    binding.initModelPocButton.setOnClickListener(v -> {
+      binding.pocStatusText.setText(R.string.init_model_poc_status_running);
+      DogBreedModelPoc.initAndLog(requireContext());
+      binding.pocStatusText.setText(R.string.init_model_poc_status_done);
+    });
   }
 
   @Override

@@ -34,4 +34,18 @@
     android:layout_marginTop="@dimen/activity_vertical_margin"
     android:text="@string/view_results_action"/>
 
+  <Button
+    android:id="@+id/init_model_poc_button"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/activity_vertical_margin"
+    android:text="@string/init_model_poc_action"/>
+
+  <TextView
+    android:id="@+id/poc_status_text"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/activity_vertical_margin"
+    android:text="@string/init_model_poc_status_default"/>
+
 </LinearLayout>
