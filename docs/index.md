@@ -29,7 +29,7 @@ The application combines device integration, on-device machine learning inferenc
   - As a dog park visitor, I want to save identified dogs with notes and timestamps so that I can remember which dogs I have met.
 
 **3. Prospective adopter:**
-  - As a prospective adopter, I want to view detailed breed information and mark favorite breeds so that I can compare options later.
+  - As a prospective adopter, I want to view detailed breed information and mark favorite scans so that I can compare options later.
 
 **4. Casual learner:**
   - As a casual learner, I want to browse and filter my scan history so that I can review previously identified breeds.
@@ -56,7 +56,7 @@ The application combines device integration, on-device machine learning inferenc
 
 - View scan history in a searchable and sortable list
 
-- Mark scans or breeds as favorites
+- Mark scans as favorites
 
 - Retrieve breed details from an external dog-breed API
 
@@ -79,19 +79,13 @@ The following information will be stored in persistent device storage so that it
     - The predicted dog breeds and associated confidence scores for each scan.
     - Timestamp of when each scan was performed.
 
-
-- **Saved Predictions**
-    - Breed predictions that the user chooses to save for later reference.
-    - Associated image reference and prediction results.
-
-
 - **Breed Information Cache**
     - Basic information about dog breeds returned from the prediction system (such as breed name and description).
     - Stored locally to reduce repeated processing and improve app responsiveness.
 
 
 - **User Preferences**
-    - App settings such as display preferences, onboarding completion, or other configuration options.
+    - App settings - display preferences, default sort, and number of columns to display in galleries options.
     - Stored using Android DataStore so preferences persist between sessions.
 
 
