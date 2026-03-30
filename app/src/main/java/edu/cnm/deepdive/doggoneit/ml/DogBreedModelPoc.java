@@ -177,9 +177,9 @@ public final class DogBreedModelPoc {
     for (int y = 0; y < INPUT_HEIGHT; y++) {
       for (int x = 0; x < INPUT_WIDTH; x++) {
         int color = pixels[pixelIndex++];
-        float r = Color.red(color) / 255f;
-        float g = Color.green(color) / 255f;
-        float b = Color.blue(color) / 255f;
+        float r = Color.red(color);
+        float g = Color.green(color);
+        float b = Color.blue(color);
         input.putFloat(r);
         input.putFloat(g);
         input.putFloat(b);
