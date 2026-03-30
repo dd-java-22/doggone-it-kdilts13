@@ -34,13 +34,13 @@ The application combines device integration, on-device machine learning inferenc
 **4. Casual learner:**
   - As a casual learner, I want to browse and filter my scan history so that I can review previously identified breeds.
 
-### Stretch Goal:
+### Stretch Goal
 **5. Dog lover:**
   - As a dog lover, I want to generate a stylized cartoon version of a saved photo so that I can create a fun keepsake image.
 
 ## Functionality
 
-### Core functionality includes:
+### Core functionality
 
 - Capture a photo using the device camera
 
@@ -64,7 +64,7 @@ The application combines device integration, on-device machine learning inferenc
 
 - Manage user preferences such as sorting behavior and display options
 
-### Stretch goals include:
+### Stretch goals
 
 - Generating a locally processed “cartoon-style” portrait when saving a scan
 
