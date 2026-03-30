@@ -1,0 +1,5 @@
+Change by Codex: Run one dog-breed inference and log top 5
+
+Extend the dog-breed model POC to decode the bundled dog drawable, resize to 260x260, preprocess to FLOAT32 RGB [0..1], run one interpreter inference, map scores to labels, and log the top 5 predictions.
+
+Prompt: Please extend the existing dog-breed model POC to run one real inference on the bundled test dog image and log the top predictions.

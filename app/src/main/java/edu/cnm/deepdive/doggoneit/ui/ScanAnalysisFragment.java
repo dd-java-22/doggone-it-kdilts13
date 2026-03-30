@@ -48,7 +48,7 @@ public class ScanAnalysisFragment extends Fragment {
             .navigate(R.id.action_scanAnalysisFragment_to_scanDisplayFragment));
     binding.initModelPocButton.setOnClickListener(v -> {
       binding.pocStatusText.setText(R.string.init_model_poc_status_running);
-      DogBreedModelPoc.initAndLog(requireContext());
+      DogBreedModelPoc.runOnceAndLog(requireContext(), R.drawable.dog);
       binding.pocStatusText.setText(R.string.init_model_poc_status_done);
     });
   }
