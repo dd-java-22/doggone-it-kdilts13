@@ -85,11 +85,17 @@ android {
         // dataBinding = true
     }
 
+    androidResources {
+        noCompress += "tflite"
+    }
+
 }
 
 dependencies {
 
-    // .jar-based libraries included in project
+    // dependencies for tensorflow for image recognition
+    implementation("com.google.ai.edge.litert:litert:2.1.0")
+    implementation("com.google.ai.edge.litert:litert-support:1.4.0")
 
     // kotlin standard library and coroutines
     implementation(libs.kotlin)
