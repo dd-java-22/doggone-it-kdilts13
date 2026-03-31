@@ -17,7 +17,7 @@ public class ScanRepositoryImpl implements ScanRepository {
   private final BreedPredictionDao breedPredictionDao;
 
   @Inject
-  public ScanRepositoryImpl(ScanDao scanDao, BreedPredictionDao breedPredictionDao) {
+  ScanRepositoryImpl(ScanDao scanDao, BreedPredictionDao breedPredictionDao) {
     this.scanDao = scanDao;
     this.breedPredictionDao = breedPredictionDao;
   }

@@ -14,7 +14,7 @@ public class UserProfileRepositoryImpl implements UserProfileRepository {
   private final UserProfileDao userProfileDao;
 
   @Inject
-  public UserProfileRepositoryImpl(UserProfileDao userProfileDao) {
+  UserProfileRepositoryImpl(UserProfileDao userProfileDao) {
     this.userProfileDao = userProfileDao;
   }
 

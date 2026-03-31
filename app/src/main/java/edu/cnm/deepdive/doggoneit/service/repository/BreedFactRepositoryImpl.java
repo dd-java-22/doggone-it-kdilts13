@@ -14,7 +14,7 @@ public class BreedFactRepositoryImpl implements BreedFactRepository {
   private final BreedFactDao breedFactDao;
 
   @Inject
-  public BreedFactRepositoryImpl(BreedFactDao breedFactDao) {
+  BreedFactRepositoryImpl(BreedFactDao breedFactDao) {
     this.breedFactDao = breedFactDao;
   }
 
