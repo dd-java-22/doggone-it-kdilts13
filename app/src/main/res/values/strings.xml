@@ -23,7 +23,6 @@
   <string name="analyze_gallery_action">Analyze from Gallery</string>
   <string name="view_saved_action">View Saved</string>
 
-  <string name="photo_capture_title">Photo Capture</string>
   <string name="scan_analysis_title">Scan Analysis</string>
   <string name="scan_display_title">Scan Display</string>
   <string name="camera_gallery_title">Camera Gallery</string>
@@ -40,7 +39,6 @@
   <string name="settings_title">Settings</string>
   <string name="logout_action">Log out</string>
 
-  <string name="nav_photo">Photo</string>
   <string name="nav_gallery">Analyze from Gallery</string>
   <string name="nav_saved">View Saved</string>
 </resources>

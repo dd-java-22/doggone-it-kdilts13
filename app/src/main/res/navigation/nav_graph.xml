@@ -47,15 +47,6 @@
   </fragment>
 
   <fragment
-    android:id="@+id/photoCaptureFragment"
-    android:name="edu.cnm.deepdive.doggoneit.ui.PhotoCaptureFragment"
-    android:label="@string/photo_capture_title">
-    <action
-      android:id="@+id/action_photoCaptureFragment_to_scanAnalysisFragment"
-      app:destination="@id/scanAnalysisFragment"/>
-  </fragment>
-
-  <fragment
     android:id="@+id/scanAnalysisFragment"
     android:name="edu.cnm.deepdive.doggoneit.ui.ScanAnalysisFragment"
     android:label="@string/scan_analysis_title">

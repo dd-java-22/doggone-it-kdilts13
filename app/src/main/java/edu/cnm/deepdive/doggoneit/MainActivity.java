@@ -58,7 +58,6 @@ public class MainActivity extends AppCompatActivity {
     appBarConfiguration = new AppBarConfiguration.Builder(
         R.id.loginFragment,
         R.id.homeFragment,
-        R.id.photoCaptureFragment,
         R.id.cameraGalleryFragment,
         R.id.scansGalleryFragment,
         R.id.settingsFragment
