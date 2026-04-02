@@ -20,7 +20,7 @@
     android:icon="@drawable/ic_menu_photo"
     android:title="@string/nav_camera"/>
   <item
-    android:id="@+id/cameraGalleryFragment"
+    android:id="@+id/galleryAction"
     android:icon="@drawable/ic_menu_gallery"
     android:title="@string/nav_gallery"/>
   <item

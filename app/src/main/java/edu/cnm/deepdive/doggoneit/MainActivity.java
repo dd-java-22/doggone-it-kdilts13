@@ -72,7 +72,6 @@ public class MainActivity extends AppCompatActivity {
     appBarConfiguration = new AppBarConfiguration.Builder(
         R.id.loginFragment,
         R.id.homeFragment,
-        R.id.cameraGalleryFragment,
         R.id.scansGalleryFragment,
         R.id.settingsFragment
     ).build();
@@ -91,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
         launchCamera();
         return false;
       }
-      if (item.getItemId() == R.id.cameraGalleryFragment) {
+      if (item.getItemId() == R.id.galleryAction) {
         restoreBottomNavSelection();
         launchGalleryPicker();
         return false;
@@ -106,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
       if (item.getItemId() == R.id.cameraAction) {
         restoreBottomNavSelection();
         launchCamera();
-      } else if (item.getItemId() == R.id.cameraGalleryFragment) {
+      } else if (item.getItemId() == R.id.galleryAction) {
         restoreBottomNavSelection();
         launchGalleryPicker();
       }

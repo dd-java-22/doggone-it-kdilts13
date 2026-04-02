@@ -25,7 +25,6 @@
 
   <string name="scan_analysis_title">Scan Analysis</string>
   <string name="scan_display_title">Scan Display</string>
-  <string name="camera_gallery_title">Camera Gallery</string>
   <string name="scans_gallery_title">Scans Gallery</string>
 
   <string name="analyze_action">Analyze</string>
