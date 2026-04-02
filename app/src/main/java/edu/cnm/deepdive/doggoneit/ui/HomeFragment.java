@@ -17,7 +17,6 @@ package edu.cnm.deepdive.doggoneit.ui;
 
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,12 +29,10 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 import dagger.hilt.android.AndroidEntryPoint;
 import edu.cnm.deepdive.doggoneit.R;
+import edu.cnm.deepdive.doggoneit.CameraCaptureHelper;
 import edu.cnm.deepdive.doggoneit.databinding.FragmentHomeBinding;
 import java.io.File;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 
 @AndroidEntryPoint
 public class HomeFragment extends Fragment {
@@ -79,7 +76,7 @@ public class HomeFragment extends Fragment {
 
   private void launchCamera() {
     try {
-      pendingPhotoFile = createTempImageFile();
+      pendingPhotoFile = CameraCaptureHelper.createTempImageFile(requireContext());
       pendingPhotoUri = FileProvider.getUriForFile(requireContext(),
           requireContext().getPackageName() + ".fileprovider", pendingPhotoFile);
       takePictureLauncher.launch(pendingPhotoUri);
@@ -101,12 +98,6 @@ public class HomeFragment extends Fragment {
     }
     pendingPhotoFile = null;
     pendingPhotoUri = null;
-  }
-
-  private File createTempImageFile() throws IOException {
-    String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(new Date());
-    File storageDir = requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-    return File.createTempFile("photo_" + timestamp + "_", ".jpg", storageDir);
   }
 
 }

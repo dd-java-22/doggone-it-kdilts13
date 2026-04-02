@@ -16,9 +16,13 @@
 package edu.cnm.deepdive.doggoneit;
 
 import android.os.Bundle;
+import android.net.Uri;
 import android.view.View;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.FileProvider;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -29,7 +33,10 @@ import androidx.navigation.NavDestination;
 import androidx.navigation.ui.NavigationUI;
 import androidx.navigation.fragment.NavHostFragment;
 import dagger.hilt.android.AndroidEntryPoint;
+import edu.cnm.deepdive.doggoneit.CameraCaptureHelper;
 import edu.cnm.deepdive.doggoneit.databinding.ActivityMainBinding;
+import java.io.File;
+import java.io.IOException;
 
 @AndroidEntryPoint
 public class MainActivity extends AppCompatActivity {
@@ -37,6 +44,11 @@ public class MainActivity extends AppCompatActivity {
   private ActivityMainBinding binding;
   private AppBarConfiguration appBarConfiguration;
   private NavController navController;
+  private ActivityResultLauncher<Uri> takePictureLauncher;
+  private Uri pendingPhotoUri;
+  private File pendingPhotoFile;
+  private int lastSelectedItemId;
+  private boolean restoringSelection;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +75,30 @@ public class MainActivity extends AppCompatActivity {
         R.id.settingsFragment
     ).build();
     NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
+    takePictureLauncher = registerForActivityResult(new ActivityResultContracts.TakePicture(),
+        this::handleTakePictureResult);
     NavigationUI.setupWithNavController(binding.bottomNav, navController);
+    binding.bottomNav.setOnItemSelectedListener(item -> {
+      if (restoringSelection) {
+        return true;
+      }
+      if (item.getItemId() == R.id.cameraAction) {
+        restoreBottomNavSelection();
+        launchCamera();
+        return false;
+      }
+      boolean handled = NavigationUI.onNavDestinationSelected(item, navController);
+      if (handled) {
+        lastSelectedItemId = item.getItemId();
+      }
+      return handled;
+    });
+    binding.bottomNav.setOnItemReselectedListener(item -> {
+      if (item.getItemId() == R.id.cameraAction) {
+        restoreBottomNavSelection();
+        launchCamera();
+      }
+    });
     navController.addOnDestinationChangedListener(
         (controller, destination, arguments) -> toggleBottomNav(destination));
   }
@@ -78,6 +113,9 @@ public class MainActivity extends AppCompatActivity {
     int visibility =
         (destination.getId() == R.id.loginFragment) ? View.GONE : View.VISIBLE;
     binding.bottomNav.setVisibility(visibility);
+    if (binding.bottomNav.getMenu().findItem(destination.getId()) != null) {
+      lastSelectedItemId = destination.getId();
+    }
   }
 
   private void setupUI() {
@@ -97,6 +135,40 @@ public class MainActivity extends AppCompatActivity {
       );
       return WindowInsetsCompat.CONSUMED;
     });
+  }
+
+  private void restoreBottomNavSelection() {
+    if (lastSelectedItemId != 0 && lastSelectedItemId != R.id.cameraAction) {
+      restoringSelection = true;
+      binding.bottomNav.setSelectedItemId(lastSelectedItemId);
+      restoringSelection = false;
+    }
+  }
+
+  private void launchCamera() {
+    try {
+      pendingPhotoFile = CameraCaptureHelper.createTempImageFile(this);
+      pendingPhotoUri = FileProvider.getUriForFile(this,
+          getPackageName() + ".fileprovider", pendingPhotoFile);
+      takePictureLauncher.launch(pendingPhotoUri);
+    } catch (IOException e) {
+      pendingPhotoFile = null;
+      pendingPhotoUri = null;
+    }
+  }
+
+  private void handleTakePictureResult(boolean success) {
+    if (success && pendingPhotoUri != null) {
+      Bundle args = new Bundle();
+      args.putString("imageUri", pendingPhotoUri.toString());
+      navController.navigate(R.id.scanAnalysisFragment, args);
+    } else {
+      if (pendingPhotoFile != null && pendingPhotoFile.exists()) {
+        pendingPhotoFile.delete();
+      }
+    }
+    pendingPhotoFile = null;
+    pendingPhotoUri = null;
   }
 
 }
