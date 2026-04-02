@@ -21,6 +21,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -39,6 +40,7 @@ public class HomeFragment extends Fragment {
 
   private FragmentHomeBinding binding;
   private ActivityResultLauncher<Uri> takePictureLauncher;
+  private ActivityResultLauncher<PickVisualMediaRequest> pickMediaLauncher;
   private Uri pendingPhotoUri;
   private File pendingPhotoFile;
 
@@ -54,6 +56,8 @@ public class HomeFragment extends Fragment {
     super.onCreate(savedInstanceState);
     takePictureLauncher = registerForActivityResult(new ActivityResultContracts.TakePicture(),
         this::handleTakePictureResult);
+    pickMediaLauncher = registerForActivityResult(new ActivityResultContracts.PickVisualMedia(),
+        this::handlePickMediaResult);
   }
 
   @Override
@@ -61,8 +65,9 @@ public class HomeFragment extends Fragment {
     super.onViewCreated(view, savedInstanceState);
     binding.takePhotoButton.setOnClickListener(v -> launchCamera());
     binding.analyzeFromGalleryButton.setOnClickListener(
-        v -> NavHostFragment.findNavController(this)
-            .navigate(R.id.action_homeFragment_to_cameraGalleryFragment));
+        v -> pickMediaLauncher.launch(new PickVisualMediaRequest.Builder()
+            .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
+            .build()));
     binding.viewSavedButton.setOnClickListener(
         v -> NavHostFragment.findNavController(this)
             .navigate(R.id.action_homeFragment_to_scansGalleryFragment));
@@ -98,6 +103,14 @@ public class HomeFragment extends Fragment {
     }
     pendingPhotoFile = null;
     pendingPhotoUri = null;
+  }
+
+  private void handlePickMediaResult(@Nullable Uri selectedUri) {
+    if (selectedUri != null) {
+      NavHostFragment.findNavController(this)
+          .navigate(HomeFragmentDirections.actionHomeFragmentToScanAnalysisFragment(
+              selectedUri.toString()));
+    }
   }
 
 }
