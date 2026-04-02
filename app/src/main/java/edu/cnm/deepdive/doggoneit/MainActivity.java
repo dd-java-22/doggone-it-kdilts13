@@ -19,6 +19,7 @@ import android.os.Bundle;
 import android.net.Uri;
 import android.view.View;
 import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -45,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
   private AppBarConfiguration appBarConfiguration;
   private NavController navController;
   private ActivityResultLauncher<Uri> takePictureLauncher;
+  private ActivityResultLauncher<PickVisualMediaRequest> pickMediaLauncher;
   private Uri pendingPhotoUri;
   private File pendingPhotoFile;
   private int lastSelectedItemId;
@@ -77,6 +79,8 @@ public class MainActivity extends AppCompatActivity {
     NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
     takePictureLauncher = registerForActivityResult(new ActivityResultContracts.TakePicture(),
         this::handleTakePictureResult);
+    pickMediaLauncher = registerForActivityResult(new ActivityResultContracts.PickVisualMedia(),
+        this::handlePickMediaResult);
     NavigationUI.setupWithNavController(binding.bottomNav, navController);
     binding.bottomNav.setOnItemSelectedListener(item -> {
       if (restoringSelection) {
@@ -85,6 +89,11 @@ public class MainActivity extends AppCompatActivity {
       if (item.getItemId() == R.id.cameraAction) {
         restoreBottomNavSelection();
         launchCamera();
+        return false;
+      }
+      if (item.getItemId() == R.id.cameraGalleryFragment) {
+        restoreBottomNavSelection();
+        launchGalleryPicker();
         return false;
       }
       boolean handled = NavigationUI.onNavDestinationSelected(item, navController);
@@ -97,6 +106,9 @@ public class MainActivity extends AppCompatActivity {
       if (item.getItemId() == R.id.cameraAction) {
         restoreBottomNavSelection();
         launchCamera();
+      } else if (item.getItemId() == R.id.cameraGalleryFragment) {
+        restoreBottomNavSelection();
+        launchGalleryPicker();
       }
     });
     navController.addOnDestinationChangedListener(
@@ -169,6 +181,20 @@ public class MainActivity extends AppCompatActivity {
     }
     pendingPhotoFile = null;
     pendingPhotoUri = null;
+  }
+
+  private void launchGalleryPicker() {
+    pickMediaLauncher.launch(new PickVisualMediaRequest.Builder()
+        .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
+        .build());
+  }
+
+  private void handlePickMediaResult(Uri selectedUri) {
+    if (selectedUri != null) {
+      Bundle args = new Bundle();
+      args.putString("imageUri", selectedUri.toString());
+      navController.navigate(R.id.scanAnalysisFragment, args);
+    }
   }
 
 }
