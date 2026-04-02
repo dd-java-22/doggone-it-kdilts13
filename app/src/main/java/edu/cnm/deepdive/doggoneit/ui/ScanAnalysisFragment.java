@@ -15,6 +15,7 @@
  */
 package edu.cnm.deepdive.doggoneit.ui;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,6 +44,13 @@ public class ScanAnalysisFragment extends Fragment {
   @Override
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
+    String imageUri = ScanAnalysisFragmentArgs.fromBundle(getArguments()).getImageUri();
+    if (imageUri != null) {
+      binding.capturedImage.setImageURI(Uri.parse(imageUri));
+      binding.capturedImage.setVisibility(View.VISIBLE);
+    } else {
+      binding.capturedImage.setVisibility(View.GONE);
+    }
     binding.viewResultsButton.setOnClickListener(
         v -> NavHostFragment.findNavController(this)
             .navigate(R.id.action_scanAnalysisFragment_to_scanDisplayFragment));

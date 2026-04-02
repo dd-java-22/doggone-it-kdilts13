@@ -36,8 +36,8 @@
     android:name="edu.cnm.deepdive.doggoneit.ui.HomeFragment"
     android:label="@string/home_title">
     <action
-      android:id="@+id/action_homeFragment_to_photoCaptureFragment"
-      app:destination="@id/photoCaptureFragment"/>
+      android:id="@+id/action_homeFragment_to_scanAnalysisFragment"
+      app:destination="@id/scanAnalysisFragment"/>
     <action
       android:id="@+id/action_homeFragment_to_cameraGalleryFragment"
       app:destination="@id/cameraGalleryFragment"/>
@@ -59,6 +59,10 @@
     android:id="@+id/scanAnalysisFragment"
     android:name="edu.cnm.deepdive.doggoneit.ui.ScanAnalysisFragment"
     android:label="@string/scan_analysis_title">
+    <argument
+      android:name="imageUri"
+      app:argType="string"
+      app:nullable="true"/>
     <action
       android:id="@+id/action_scanAnalysisFragment_to_scanDisplayFragment"
       app:destination="@id/scanDisplayFragment"/>
