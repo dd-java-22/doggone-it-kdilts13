@@ -15,6 +15,7 @@
  */
 package edu.cnm.deepdive.doggoneit.ui;
 
+import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -22,17 +23,19 @@ import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import android.content.Context;
-import dagger.hilt.android.AndroidEntryPoint;
-import edu.cnm.deepdive.doggoneit.ml.DogBreedInference;
-import edu.cnm.deepdive.doggoneit.ml.DogBreedInferenceResult;
-import edu.cnm.deepdive.doggoneit.R;
-import edu.cnm.deepdive.doggoneit.databinding.FragmentScanAnalysisBinding;
+import androidx.navigation.fragment.NavHostFragment;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import dagger.hilt.android.AndroidEntryPoint;
+import edu.cnm.deepdive.doggoneit.R;
+import edu.cnm.deepdive.doggoneit.databinding.FragmentScanAnalysisBinding;
+import edu.cnm.deepdive.doggoneit.ml.DogBreedInference;
+import edu.cnm.deepdive.doggoneit.ml.DogBreedInferenceResult;
+import edu.cnm.deepdive.doggoneit.storage.ImageStorage;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -41,8 +44,11 @@ public class ScanAnalysisFragment extends Fragment {
 
   private FragmentScanAnalysisBinding binding;
   private final ExecutorService inferenceExecutor = Executors.newSingleThreadExecutor();
+  private final ExecutorService saveExecutor = Executors.newSingleThreadExecutor();
   private final Handler mainHandler = new Handler(Looper.getMainLooper());
   private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+  private Context appContext;
+  private Uri currentImageUri;
 
   @Override
   public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -54,10 +60,12 @@ public class ScanAnalysisFragment extends Fragment {
   @Override
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
+    binding.saveImageButton.setOnClickListener(v -> onSaveClicked());
     Bundle args = getArguments();
     if (args == null) {
       binding.capturedImage.setVisibility(View.GONE);
       binding.analysisOutputText.setText(R.string.scan_analysis_missing_image);
+      binding.saveImageButton.setEnabled(false);
       return;
     }
 
@@ -65,13 +73,16 @@ public class ScanAnalysisFragment extends Fragment {
     if (imageUri == null || imageUri.isBlank()) {
       binding.capturedImage.setVisibility(View.GONE);
       binding.analysisOutputText.setText(R.string.scan_analysis_missing_image);
+      binding.saveImageButton.setEnabled(false);
       return;
     }
 
     Uri parsedUri = Uri.parse(imageUri);
-    Context appContext = requireContext().getApplicationContext();
+    appContext = requireContext().getApplicationContext();
+    currentImageUri = parsedUri;
     binding.capturedImage.setImageURI(parsedUri);
     binding.capturedImage.setVisibility(View.VISIBLE);
+    binding.saveImageButton.setEnabled(true);
     runInference(appContext, parsedUri);
   }
 
@@ -84,6 +95,7 @@ public class ScanAnalysisFragment extends Fragment {
   @Override
   public void onDestroy() {
     inferenceExecutor.shutdownNow();
+    saveExecutor.shutdownNow();
     super.onDestroy();
   }
 
@@ -111,6 +123,43 @@ public class ScanAnalysisFragment extends Fragment {
         });
       }
     });
+  }
+
+  private void onSaveClicked() {
+    if (appContext == null || currentImageUri == null) {
+      showSaveMissing();
+      return;
+    }
+    Toast.makeText(requireContext(), R.string.save_image_saving, Toast.LENGTH_SHORT).show();
+    saveExecutor.execute(() -> {
+      try {
+        Uri savedUri = ImageStorage.saveImage(appContext, currentImageUri);
+        mainHandler.post(() -> {
+          if (!isAdded()) {
+            return;
+          }
+          ScanAnalysisFragmentDirections.ActionScanAnalysisFragmentToScanDisplayFragment action =
+              ScanAnalysisFragmentDirections.actionScanAnalysisFragmentToScanDisplayFragment(
+                  savedUri.toString());
+          NavHostFragment.findNavController(this).navigate(action);
+        });
+      } catch (Exception e) {
+        String message = e.getMessage();
+        if (message == null || message.isBlank()) {
+          message = e.getClass().getSimpleName();
+        }
+        String errorText = getString(R.string.save_image_failed, message);
+        mainHandler.post(() -> {
+          if (binding != null) {
+            Toast.makeText(requireContext(), errorText, Toast.LENGTH_LONG).show();
+          }
+        });
+      }
+    });
+  }
+
+  private void showSaveMissing() {
+    Toast.makeText(requireContext(), R.string.save_image_missing, Toast.LENGTH_SHORT).show();
   }
 
 }
