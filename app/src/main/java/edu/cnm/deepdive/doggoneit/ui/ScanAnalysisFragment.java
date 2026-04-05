@@ -42,6 +42,13 @@ import java.util.concurrent.Executors;
 @AndroidEntryPoint
 public class ScanAnalysisFragment extends Fragment {
 
+  private enum AnalysisState {
+    IDLE,
+    ANALYZING,
+    ANALYSIS_READY,
+    ANALYSIS_FAILED
+  }
+
   private FragmentScanAnalysisBinding binding;
   private final ExecutorService inferenceExecutor = Executors.newSingleThreadExecutor();
   private final ExecutorService saveExecutor = Executors.newSingleThreadExecutor();
@@ -49,6 +56,8 @@ public class ScanAnalysisFragment extends Fragment {
   private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
   private Context appContext;
   private Uri currentImageUri;
+  private DogBreedInferenceResult currentResult;
+  private AnalysisState analysisState = AnalysisState.IDLE;
 
   @Override
   public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -66,6 +75,7 @@ public class ScanAnalysisFragment extends Fragment {
       binding.capturedImage.setVisibility(View.GONE);
       binding.analysisOutputText.setText(R.string.scan_analysis_missing_image);
       binding.saveImageButton.setEnabled(false);
+      clearAnalysisState();
       return;
     }
 
@@ -74,12 +84,15 @@ public class ScanAnalysisFragment extends Fragment {
       binding.capturedImage.setVisibility(View.GONE);
       binding.analysisOutputText.setText(R.string.scan_analysis_missing_image);
       binding.saveImageButton.setEnabled(false);
+      clearAnalysisState();
       return;
     }
 
     Uri parsedUri = Uri.parse(imageUri);
     appContext = requireContext().getApplicationContext();
     currentImageUri = parsedUri;
+    currentResult = null;
+    analysisState = AnalysisState.IDLE;
     binding.capturedImage.setImageURI(parsedUri);
     binding.capturedImage.setVisibility(View.VISIBLE);
     binding.saveImageButton.setEnabled(true);
@@ -101,12 +114,16 @@ public class ScanAnalysisFragment extends Fragment {
 
   private void runInference(Context appContext, Uri imageUri) {
     binding.analysisOutputText.setText(R.string.scan_analysis_loading);
+    analysisState = AnalysisState.ANALYZING;
+    currentResult = null;
     inferenceExecutor.execute(() -> {
       try {
         DogBreedInferenceResult result = DogBreedInference.run(appContext, imageUri);
         String json = gson.toJson(result);
         mainHandler.post(() -> {
           if (binding != null) {
+            currentResult = result;
+            analysisState = AnalysisState.ANALYSIS_READY;
             binding.analysisOutputText.setText(json);
           }
         });
@@ -118,6 +135,8 @@ public class ScanAnalysisFragment extends Fragment {
         String errorText = getString(R.string.scan_analysis_error, message);
         mainHandler.post(() -> {
           if (binding != null) {
+            currentResult = null;
+            analysisState = AnalysisState.ANALYSIS_FAILED;
             binding.analysisOutputText.setText(errorText);
           }
         });
@@ -160,6 +179,12 @@ public class ScanAnalysisFragment extends Fragment {
 
   private void showSaveMissing() {
     Toast.makeText(requireContext(), R.string.save_image_missing, Toast.LENGTH_SHORT).show();
+  }
+
+  private void clearAnalysisState() {
+    currentImageUri = null;
+    currentResult = null;
+    analysisState = AnalysisState.IDLE;
   }
 
 }
