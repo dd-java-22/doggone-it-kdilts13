@@ -27,4 +27,19 @@
     android:layout_height="wrap_content"
     android:text="@string/scan_display_title"/>
 
+  <ImageView
+    android:id="@+id/saved_image"
+    android:layout_width="200dp"
+    android:layout_height="200dp"
+    android:layout_marginTop="@dimen/activity_vertical_margin"
+    android:contentDescription="@string/scan_display_title"
+    android:scaleType="centerCrop"/>
+
+  <TextView
+    android:id="@+id/scan_display_status"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/activity_vertical_margin"
+    android:text="@string/scan_display_missing_image"/>
+
 </LinearLayout>

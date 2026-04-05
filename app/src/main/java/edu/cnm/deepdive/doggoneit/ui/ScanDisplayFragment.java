@@ -15,6 +15,7 @@
  */
 package edu.cnm.deepdive.doggoneit.ui;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +24,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import dagger.hilt.android.AndroidEntryPoint;
+import edu.cnm.deepdive.doggoneit.R;
 import edu.cnm.deepdive.doggoneit.databinding.FragmentScanDisplayBinding;
 
 @AndroidEntryPoint
@@ -38,9 +40,34 @@ public class ScanDisplayFragment extends Fragment {
   }
 
   @Override
+  public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    super.onViewCreated(view, savedInstanceState);
+    Bundle args = getArguments();
+    if (args == null) {
+      showMissingImage();
+      return;
+    }
+    String savedImageUri = ScanDisplayFragmentArgs.fromBundle(args).getSavedImageUri();
+    if (savedImageUri == null || savedImageUri.isBlank()) {
+      showMissingImage();
+      return;
+    }
+    Uri parsedUri = Uri.parse(savedImageUri);
+    binding.savedImage.setImageURI(parsedUri);
+    binding.savedImage.setVisibility(View.VISIBLE);
+    binding.scanDisplayStatus.setVisibility(View.GONE);
+  }
+
+  @Override
   public void onDestroyView() {
     binding = null;
     super.onDestroyView();
+  }
+
+  private void showMissingImage() {
+    binding.savedImage.setVisibility(View.GONE);
+    binding.scanDisplayStatus.setVisibility(View.VISIBLE);
+    binding.scanDisplayStatus.setText(R.string.scan_display_missing_image);
   }
 
 }

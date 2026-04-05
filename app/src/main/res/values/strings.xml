@@ -32,6 +32,7 @@
   <string name="scan_analysis_loading">Analyzing image...</string>
   <string name="scan_analysis_missing_image">No image available for analysis.</string>
   <string name="scan_analysis_error">Analysis failed: %1$s</string>
+  <string name="scan_display_missing_image">No saved image provided.</string>
 
   <string name="settings_title">Settings</string>
   <string name="logout_action">Log out</string>

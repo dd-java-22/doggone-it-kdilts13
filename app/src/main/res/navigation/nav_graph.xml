@@ -73,6 +73,11 @@
   <fragment
     android:id="@+id/scanDisplayFragment"
     android:name="edu.cnm.deepdive.doggoneit.ui.ScanDisplayFragment"
-    android:label="@string/scan_display_title"/>
+    android:label="@string/scan_display_title">
+    <argument
+      android:name="savedImageUri"
+      app:argType="string"
+      app:nullable="true"/>
+  </fragment>
 
 </navigation>
