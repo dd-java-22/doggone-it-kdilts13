@@ -25,6 +25,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import android.content.Context;
 import dagger.hilt.android.AndroidEntryPoint;
 import edu.cnm.deepdive.doggoneit.ml.DogBreedInference;
 import edu.cnm.deepdive.doggoneit.ml.DogBreedInferenceResult;
@@ -53,16 +54,25 @@ public class ScanAnalysisFragment extends Fragment {
   @Override
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
-    String imageUri = ScanAnalysisFragmentArgs.fromBundle(getArguments()).getImageUri();
-    if (imageUri != null) {
-      Uri parsedUri = Uri.parse(imageUri);
-      binding.capturedImage.setImageURI(parsedUri);
-      binding.capturedImage.setVisibility(View.VISIBLE);
-      runInference(parsedUri);
-    } else {
+    Bundle args = getArguments();
+    if (args == null) {
       binding.capturedImage.setVisibility(View.GONE);
       binding.analysisOutputText.setText(R.string.scan_analysis_missing_image);
+      return;
     }
+
+    String imageUri = ScanAnalysisFragmentArgs.fromBundle(args).getImageUri();
+    if (imageUri == null || imageUri.isBlank()) {
+      binding.capturedImage.setVisibility(View.GONE);
+      binding.analysisOutputText.setText(R.string.scan_analysis_missing_image);
+      return;
+    }
+
+    Uri parsedUri = Uri.parse(imageUri);
+    Context appContext = requireContext().getApplicationContext();
+    binding.capturedImage.setImageURI(parsedUri);
+    binding.capturedImage.setVisibility(View.VISIBLE);
+    runInference(appContext, parsedUri);
   }
 
   @Override
@@ -77,11 +87,11 @@ public class ScanAnalysisFragment extends Fragment {
     super.onDestroy();
   }
 
-  private void runInference(Uri imageUri) {
+  private void runInference(Context appContext, Uri imageUri) {
     binding.analysisOutputText.setText(R.string.scan_analysis_loading);
     inferenceExecutor.execute(() -> {
       try {
-        DogBreedInferenceResult result = DogBreedInference.run(requireContext(), imageUri);
+        DogBreedInferenceResult result = DogBreedInference.run(appContext, imageUri);
         String json = gson.toJson(result);
         mainHandler.post(() -> {
           if (binding != null) {
