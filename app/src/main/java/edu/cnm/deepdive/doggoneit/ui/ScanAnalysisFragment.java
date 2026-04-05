@@ -74,8 +74,8 @@ public class ScanAnalysisFragment extends Fragment {
     if (args == null) {
       binding.capturedImage.setVisibility(View.GONE);
       binding.analysisOutputText.setText(R.string.scan_analysis_missing_image);
-      binding.saveImageButton.setEnabled(false);
       clearAnalysisState();
+      updateSaveButtonState();
       return;
     }
 
@@ -83,8 +83,8 @@ public class ScanAnalysisFragment extends Fragment {
     if (imageUri == null || imageUri.isBlank()) {
       binding.capturedImage.setVisibility(View.GONE);
       binding.analysisOutputText.setText(R.string.scan_analysis_missing_image);
-      binding.saveImageButton.setEnabled(false);
       clearAnalysisState();
+      updateSaveButtonState();
       return;
     }
 
@@ -95,7 +95,7 @@ public class ScanAnalysisFragment extends Fragment {
     analysisState = AnalysisState.IDLE;
     binding.capturedImage.setImageURI(parsedUri);
     binding.capturedImage.setVisibility(View.VISIBLE);
-    binding.saveImageButton.setEnabled(true);
+    updateSaveButtonState();
     runInference(appContext, parsedUri);
   }
 
@@ -116,6 +116,7 @@ public class ScanAnalysisFragment extends Fragment {
     binding.analysisOutputText.setText(R.string.scan_analysis_loading);
     analysisState = AnalysisState.ANALYZING;
     currentResult = null;
+    updateSaveButtonState();
     inferenceExecutor.execute(() -> {
       try {
         DogBreedInferenceResult result = DogBreedInference.run(appContext, imageUri);
@@ -125,6 +126,7 @@ public class ScanAnalysisFragment extends Fragment {
             currentResult = result;
             analysisState = AnalysisState.ANALYSIS_READY;
             binding.analysisOutputText.setText(json);
+            updateSaveButtonState();
           }
         });
       } catch (Exception e) {
@@ -138,6 +140,7 @@ public class ScanAnalysisFragment extends Fragment {
             currentResult = null;
             analysisState = AnalysisState.ANALYSIS_FAILED;
             binding.analysisOutputText.setText(errorText);
+            updateSaveButtonState();
           }
         });
       }
@@ -145,7 +148,7 @@ public class ScanAnalysisFragment extends Fragment {
   }
 
   private void onSaveClicked() {
-    if (appContext == null || currentImageUri == null) {
+    if (!canSave()) {
       showSaveMissing();
       return;
     }
@@ -185,6 +188,19 @@ public class ScanAnalysisFragment extends Fragment {
     currentImageUri = null;
     currentResult = null;
     analysisState = AnalysisState.IDLE;
+  }
+
+  private void updateSaveButtonState() {
+    if (binding != null) {
+      binding.saveImageButton.setEnabled(canSave());
+    }
+  }
+
+  private boolean canSave() {
+    return analysisState == AnalysisState.ANALYSIS_READY
+        && currentResult != null
+        && currentImageUri != null
+        && appContext != null;
   }
 
 }
