@@ -185,8 +185,8 @@ public class ScanAnalysisFragment extends Fragment {
             return;
           }
           ScanAnalysisFragmentDirections.ActionScanAnalysisFragmentToScanDisplayFragment action =
-              ScanAnalysisFragmentDirections.actionScanAnalysisFragmentToScanDisplayFragment(
-                  scanId);
+              ScanAnalysisFragmentDirections.actionScanAnalysisFragmentToScanDisplayFragment();
+          action.setScanId(scanId);
           NavHostFragment.findNavController(this).navigate(action);
         });
       } catch (Exception e) {
