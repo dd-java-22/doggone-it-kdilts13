@@ -118,7 +118,11 @@ public class UserSessionRepositoryImpl implements UserSessionRepository {
       throw new IllegalStateException("Signed-in user token is invalid.");
     }
     String payload = new String(Base64.decode(parts[1], Base64.URL_SAFE | Base64.NO_WRAP));
-    return new JSONObject(payload);
+    try {
+      return new JSONObject(payload);
+    } catch (Exception e) {
+      throw new IllegalStateException("Signed-in user token is invalid.", e);
+    }
   }
 
   private String getClaimString(JSONObject claims, String claim) {
