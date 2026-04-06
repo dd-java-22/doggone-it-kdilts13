@@ -26,11 +26,17 @@ import androidx.fragment.app.Fragment;
 import dagger.hilt.android.AndroidEntryPoint;
 import edu.cnm.deepdive.doggoneit.R;
 import edu.cnm.deepdive.doggoneit.databinding.FragmentScanDisplayBinding;
+import edu.cnm.deepdive.doggoneit.model.entity.Scan;
+import edu.cnm.deepdive.doggoneit.model.entity.ScanWithPredictions;
+import edu.cnm.deepdive.doggoneit.service.repository.ScanRepository;
+import javax.inject.Inject;
 
 @AndroidEntryPoint
 public class ScanDisplayFragment extends Fragment {
 
   private FragmentScanDisplayBinding binding;
+  @Inject
+  ScanRepository scanRepository;
 
   @Override
   public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -47,15 +53,13 @@ public class ScanDisplayFragment extends Fragment {
       showMissingImage();
       return;
     }
-    String savedImageUri = ScanDisplayFragmentArgs.fromBundle(args).getSavedImageUri();
-    if (savedImageUri == null || savedImageUri.isBlank()) {
+    long scanId = ScanDisplayFragmentArgs.fromBundle(args).getScanId();
+    if (scanId <= 0) {
       showMissingImage();
       return;
     }
-    Uri parsedUri = Uri.parse(savedImageUri);
-    binding.savedImage.setImageURI(parsedUri);
-    binding.savedImage.setVisibility(View.VISIBLE);
-    binding.scanDisplayStatus.setVisibility(View.GONE);
+    scanRepository.getWithPredictionsById(scanId).observe(getViewLifecycleOwner(),
+        this::renderScan);
   }
 
   @Override
@@ -68,6 +72,22 @@ public class ScanDisplayFragment extends Fragment {
     binding.savedImage.setVisibility(View.GONE);
     binding.scanDisplayStatus.setVisibility(View.VISIBLE);
     binding.scanDisplayStatus.setText(R.string.scan_display_missing_image);
+  }
+
+  private void renderScan(ScanWithPredictions scanWithPredictions) {
+    if (binding == null) {
+      return;
+    }
+    Scan scan = (scanWithPredictions != null) ? scanWithPredictions.getScan() : null;
+    String imagePath = (scan != null) ? scan.getImagePath() : null;
+    if (imagePath == null || imagePath.isBlank()) {
+      showMissingImage();
+      return;
+    }
+    Uri parsedUri = Uri.parse(imagePath);
+    binding.savedImage.setImageURI(parsedUri);
+    binding.savedImage.setVisibility(View.VISIBLE);
+    binding.scanDisplayStatus.setVisibility(View.GONE);
   }
 
 }

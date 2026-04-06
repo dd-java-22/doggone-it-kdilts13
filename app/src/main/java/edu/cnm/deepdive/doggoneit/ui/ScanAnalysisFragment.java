@@ -35,9 +35,19 @@ import edu.cnm.deepdive.doggoneit.R;
 import edu.cnm.deepdive.doggoneit.databinding.FragmentScanAnalysisBinding;
 import edu.cnm.deepdive.doggoneit.ml.DogBreedInference;
 import edu.cnm.deepdive.doggoneit.ml.DogBreedInferenceResult;
+import edu.cnm.deepdive.doggoneit.ml.DogBreedPrediction;
+import edu.cnm.deepdive.doggoneit.model.entity.BreedPrediction;
+import edu.cnm.deepdive.doggoneit.model.entity.Scan;
+import edu.cnm.deepdive.doggoneit.model.entity.ScanWithPredictions;
+import edu.cnm.deepdive.doggoneit.service.repository.ScanRepository;
 import edu.cnm.deepdive.doggoneit.storage.ImageStorage;
+import java.io.File;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import javax.inject.Inject;
 
 @AndroidEntryPoint
 public class ScanAnalysisFragment extends Fragment {
@@ -58,6 +68,8 @@ public class ScanAnalysisFragment extends Fragment {
   private Uri currentImageUri;
   private DogBreedInferenceResult currentResult;
   private AnalysisState analysisState = AnalysisState.IDLE;
+  @Inject
+  ScanRepository scanRepository;
 
   @Override
   public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -154,18 +166,31 @@ public class ScanAnalysisFragment extends Fragment {
     }
     Toast.makeText(requireContext(), R.string.save_image_saving, Toast.LENGTH_SHORT).show();
     saveExecutor.execute(() -> {
+      Uri savedUri = null;
       try {
-        Uri savedUri = ImageStorage.saveImage(appContext, currentImageUri);
+        savedUri = ImageStorage.saveImage(appContext, currentImageUri);
+        Scan scan = new Scan();
+        scan.setImagePath(savedUri.toString());
+        scan.setTimestamp(Instant.now());
+        List<BreedPrediction> predictions = toBreedPredictions(currentResult);
+        ScanWithPredictions saved = scanRepository.saveWithPredictions(scan, predictions).join();
         mainHandler.post(() -> {
           if (!isAdded()) {
             return;
           }
+          long scanId = (saved != null && saved.getScan() != null) ? saved.getScan().getId() : 0;
+          if (scanId <= 0) {
+            String errorText = getString(R.string.save_image_failed, "Missing scan ID");
+            Toast.makeText(requireContext(), errorText, Toast.LENGTH_LONG).show();
+            return;
+          }
           ScanAnalysisFragmentDirections.ActionScanAnalysisFragmentToScanDisplayFragment action =
               ScanAnalysisFragmentDirections.actionScanAnalysisFragmentToScanDisplayFragment(
-                  savedUri.toString());
+                  scanId);
           NavHostFragment.findNavController(this).navigate(action);
         });
       } catch (Exception e) {
+        bestEffortDelete(savedUri);
         String message = e.getMessage();
         if (message == null || message.isBlank()) {
           message = e.getClass().getSimpleName();
@@ -201,6 +226,34 @@ public class ScanAnalysisFragment extends Fragment {
         && currentResult != null
         && currentImageUri != null
         && appContext != null;
+  }
+
+  private List<BreedPrediction> toBreedPredictions(DogBreedInferenceResult result) {
+    List<BreedPrediction> predictions = new ArrayList<>();
+    if (result == null || result.topPredictions() == null) {
+      return predictions;
+    }
+    for (DogBreedPrediction prediction : result.topPredictions()) {
+      BreedPrediction entity = new BreedPrediction();
+      entity.setName(prediction.label());
+      entity.setProbability(prediction.score());
+      predictions.add(entity);
+    }
+    return predictions;
+  }
+
+  private void bestEffortDelete(Uri savedUri) {
+    if (savedUri == null) {
+      return;
+    }
+    String path = savedUri.getPath();
+    if (path == null || path.isBlank()) {
+      return;
+    }
+    File file = new File(path);
+    if (file.exists() && !file.delete()) {
+      // Best-effort cleanup; ignore failure.
+    }
   }
 
 }

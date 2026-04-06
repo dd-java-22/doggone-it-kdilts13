@@ -75,9 +75,9 @@
     android:name="edu.cnm.deepdive.doggoneit.ui.ScanDisplayFragment"
     android:label="@string/scan_display_title">
     <argument
-      android:name="savedImageUri"
-      app:argType="string"
-      app:nullable="true"/>
+      android:name="scanId"
+      app:argType="long"
+      android:defaultValue="0"/>
   </fragment>
 
 </navigation>
