@@ -1,5 +1,6 @@
 package edu.cnm.deepdive.doggoneit.service.repository;
 
+import android.util.Base64;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential;
@@ -9,6 +10,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import org.json.JSONObject;
 
 @Singleton
 public class UserSessionRepositoryImpl implements UserSessionRepository {
@@ -30,7 +32,12 @@ public class UserSessionRepositoryImpl implements UserSessionRepository {
       if (credential == null) {
         throw new IllegalStateException("Missing Google credential.");
       }
-      String email = credential.getEmail();
+      String idToken = credential.getIdToken();
+      if (idToken == null || idToken.isBlank()) {
+        throw new IllegalStateException("Signed-in user token is unavailable.");
+      }
+      JSONObject claims = parseClaims(idToken);
+      String email = getClaimString(claims, "email");
       if (email == null || email.isBlank()) {
         throw new IllegalStateException("Signed-in user email is unavailable.");
       }
@@ -38,7 +45,15 @@ public class UserSessionRepositoryImpl implements UserSessionRepository {
       if (displayName == null || displayName.isBlank()) {
         String givenName = credential.getGivenName();
         String familyName = credential.getFamilyName();
+        if ((givenName == null || givenName.isBlank())
+            && (familyName == null || familyName.isBlank())) {
+          givenName = getClaimString(claims, "given_name");
+          familyName = getClaimString(claims, "family_name");
+        }
         displayName = buildDisplayName(givenName, familyName);
+      }
+      if (displayName == null || displayName.isBlank()) {
+        displayName = getClaimString(claims, "name");
       }
       if (displayName == null || displayName.isBlank()) {
         throw new IllegalStateException("Signed-in user name is unavailable.");
@@ -93,6 +108,23 @@ public class UserSessionRepositoryImpl implements UserSessionRepository {
     }
     if (!family.isBlank()) {
       return family;
+    }
+    return null;
+  }
+
+  private JSONObject parseClaims(String idToken) {
+    String[] parts = idToken.split("\\.");
+    if (parts.length < 2) {
+      throw new IllegalStateException("Signed-in user token is invalid.");
+    }
+    String payload = new String(Base64.decode(parts[1], Base64.URL_SAFE | Base64.NO_WRAP));
+    return new JSONObject(payload);
+  }
+
+  private String getClaimString(JSONObject claims, String claim) {
+    if (claims.has(claim)) {
+      String value = claims.optString(claim, null);
+      return (value == null || value.isBlank()) ? null : value;
     }
     return null;
   }
