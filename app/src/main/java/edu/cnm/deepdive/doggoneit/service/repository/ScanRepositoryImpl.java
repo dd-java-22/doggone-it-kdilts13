@@ -4,11 +4,9 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Transformations;
 import edu.cnm.deepdive.doggoneit.model.dao.BreedPredictionDao;
 import edu.cnm.deepdive.doggoneit.model.dao.ScanDao;
-import edu.cnm.deepdive.doggoneit.model.dao.UserProfileDao;
 import edu.cnm.deepdive.doggoneit.model.entity.BreedPrediction;
 import edu.cnm.deepdive.doggoneit.model.entity.Scan;
 import edu.cnm.deepdive.doggoneit.model.entity.ScanWithPredictions;
-import edu.cnm.deepdive.doggoneit.model.entity.UserProfile;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -19,19 +17,13 @@ import javax.inject.Singleton;
 @Singleton
 public class ScanRepositoryImpl implements ScanRepository {
 
-  private static final String DEFAULT_USER_EMAIL = "local@doggone.it";
-  private static final String DEFAULT_USER_NAME = "Local User";
-
   private final ScanDao scanDao;
   private final BreedPredictionDao breedPredictionDao;
-  private final UserProfileDao userProfileDao;
 
   @Inject
-  ScanRepositoryImpl(ScanDao scanDao, BreedPredictionDao breedPredictionDao,
-      UserProfileDao userProfileDao) {
+  ScanRepositoryImpl(ScanDao scanDao, BreedPredictionDao breedPredictionDao) {
     this.scanDao = scanDao;
     this.breedPredictionDao = breedPredictionDao;
-    this.userProfileDao = userProfileDao;
   }
 
   @Override
@@ -75,7 +67,7 @@ public class ScanRepositoryImpl implements ScanRepository {
   public CompletableFuture<ScanWithPredictions> saveWithPredictions(Scan scan,
       List<BreedPrediction> predictions) {
     return CompletableFuture.supplyAsync(() -> {
-      ensureUserProfile(scan);
+      requireUserProfile(scan);
       List<BreedPrediction> prepared = prepareTopPredictions(predictions);
       long id = scanDao.insertWithPredictions(scan, prepared);
       scan.setId(id);
@@ -123,22 +115,9 @@ public class ScanRepositoryImpl implements ScanRepository {
     return prepared;
   }
 
-  private void ensureUserProfile(Scan scan) {
-    if (scan == null || scan.getUserProfileId() > 0) {
-      return;
-    }
-    UserProfile profile = new UserProfile();
-    profile.setName(DEFAULT_USER_NAME);
-    profile.setEmail(DEFAULT_USER_EMAIL);
-    long id = userProfileDao.insertOrIgnore(profile);
-    if (id <= 0) {
-      UserProfile existing = userProfileDao.findByEmailSync(DEFAULT_USER_EMAIL);
-      if (existing != null) {
-        id = existing.getId();
-      }
-    }
-    if (id > 0) {
-      scan.setUserProfileId(id);
+  private void requireUserProfile(Scan scan) {
+    if (scan == null || scan.getUserProfileId() <= 0) {
+      throw new IllegalStateException("Scan save requires a valid user profile id.");
     }
   }
 }

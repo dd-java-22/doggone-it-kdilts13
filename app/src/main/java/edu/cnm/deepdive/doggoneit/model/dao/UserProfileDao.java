@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
-import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
 import edu.cnm.deepdive.doggoneit.model.entity.UserProfile;
@@ -15,9 +14,6 @@ public interface UserProfileDao {
 
   @Insert
   long insert(UserProfile userProfile);
-
-  @Insert(onConflict = OnConflictStrategy.IGNORE)
-  long insertOrIgnore(UserProfile userProfile);
 
   @Insert
   List<Long> insert(UserProfile... userProfiles);
@@ -33,9 +29,6 @@ public interface UserProfileDao {
 
   @Query("SELECT * FROM user_profile WHERE email = :email")
   LiveData<UserProfile> findByEmail(String email);
-
-  @Query("SELECT * FROM user_profile WHERE email = :email")
-  UserProfile findByEmailSync(String email);
 
   @Query("SELECT * FROM user_profile ORDER BY name")
   LiveData<List<UserProfile>> findAll();
