@@ -1,0 +1,344 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 2,
+    "identityHash": "41f367e2ddbf08e61eb03d1e6323d0ec",
+    "entities": [
+      {
+        "tableName": "user_profile",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`user_profile_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `name` TEXT NOT NULL COLLATE NOCASE, `email` TEXT NOT NULL COLLATE NOCASE)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "user_profile_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "email",
+            "columnName": "email",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "user_profile_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_user_profile_email",
+            "unique": true,
+            "columnNames": [
+              "email"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_user_profile_email` ON `${TABLE_NAME}` (`email`)"
+          }
+        ]
+      },
+      {
+        "tableName": "scan",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`scan_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `user_profile_id` INTEGER NOT NULL, `image_path` TEXT NOT NULL, `timestamp` INTEGER NOT NULL, `note` TEXT, `favorite` INTEGER NOT NULL, FOREIGN KEY(`user_profile_id`) REFERENCES `user_profile`(`user_profile_id`) ON UPDATE NO ACTION ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "scan_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "userProfileId",
+            "columnName": "user_profile_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "imagePath",
+            "columnName": "image_path",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "timestamp",
+            "columnName": "timestamp",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "note",
+            "columnName": "note",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "favorite",
+            "columnName": "favorite",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "scan_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_scan_user_profile_id",
+            "unique": false,
+            "columnNames": [
+              "user_profile_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_scan_user_profile_id` ON `${TABLE_NAME}` (`user_profile_id`)"
+          },
+          {
+            "name": "index_scan_timestamp",
+            "unique": false,
+            "columnNames": [
+              "timestamp"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_scan_timestamp` ON `${TABLE_NAME}` (`timestamp`)"
+          },
+          {
+            "name": "index_scan_favorite",
+            "unique": false,
+            "columnNames": [
+              "favorite"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_scan_favorite` ON `${TABLE_NAME}` (`favorite`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "user_profile",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "user_profile_id"
+            ],
+            "referencedColumns": [
+              "user_profile_id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "breed_prediction",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`breed_prediction_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `scan_id` INTEGER NOT NULL, `breed_fact_id` INTEGER, `name` TEXT NOT NULL COLLATE NOCASE, `probability` REAL NOT NULL, `rank` INTEGER NOT NULL, FOREIGN KEY(`scan_id`) REFERENCES `scan`(`scan_id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`breed_fact_id`) REFERENCES `breed_fact`(`breed_fact_id`) ON UPDATE NO ACTION ON DELETE SET NULL )",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "breed_prediction_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "scanId",
+            "columnName": "scan_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "breedFactId",
+            "columnName": "breed_fact_id",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "probability",
+            "columnName": "probability",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "rank",
+            "columnName": "rank",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "breed_prediction_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_breed_prediction_scan_id",
+            "unique": false,
+            "columnNames": [
+              "scan_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_breed_prediction_scan_id` ON `${TABLE_NAME}` (`scan_id`)"
+          },
+          {
+            "name": "index_breed_prediction_breed_fact_id",
+            "unique": false,
+            "columnNames": [
+              "breed_fact_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_breed_prediction_breed_fact_id` ON `${TABLE_NAME}` (`breed_fact_id`)"
+          },
+          {
+            "name": "index_breed_prediction_scan_id_rank",
+            "unique": false,
+            "columnNames": [
+              "scan_id",
+              "rank"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_breed_prediction_scan_id_rank` ON `${TABLE_NAME}` (`scan_id`, `rank`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "scan",
+            "onDelete": "CASCADE",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "scan_id"
+            ],
+            "referencedColumns": [
+              "scan_id"
+            ]
+          },
+          {
+            "table": "breed_fact",
+            "onDelete": "SET NULL",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "breed_fact_id"
+            ],
+            "referencedColumns": [
+              "breed_fact_id"
+            ]
+          }
+        ]
+      },
+      {
+        "tableName": "breed_fact",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`breed_fact_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `dog_facts_api_id` INTEGER NOT NULL, `name` TEXT COLLATE NOCASE, `weight_si` REAL, `height_si` REAL, `bred_for` TEXT, `breed_group` TEXT, `life_span` TEXT, `temperament` TEXT, `origin` TEXT, `reference_image_id` TEXT, `image_id` TEXT, `image_width` INTEGER, `image_height` INTEGER, `image_url` TEXT)",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "breed_fact_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dogFactsApiId",
+            "columnName": "dog_facts_api_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "weightSi",
+            "columnName": "weight_si",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "heightSi",
+            "columnName": "height_si",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "bredFor",
+            "columnName": "bred_for",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "breedGroup",
+            "columnName": "breed_group",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "lifeSpan",
+            "columnName": "life_span",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "temperament",
+            "columnName": "temperament",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "origin",
+            "columnName": "origin",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "referenceImageId",
+            "columnName": "reference_image_id",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "imageId",
+            "columnName": "image_id",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "imageWidth",
+            "columnName": "image_width",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "imageHeight",
+            "columnName": "image_height",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "imageUrl",
+            "columnName": "image_url",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": true,
+          "columnNames": [
+            "breed_fact_id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_breed_fact_dog_facts_api_id",
+            "unique": true,
+            "columnNames": [
+              "dog_facts_api_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_breed_fact_dog_facts_api_id` ON `${TABLE_NAME}` (`dog_facts_api_id`)"
+          }
+        ]
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '41f367e2ddbf08e61eb03d1e6323d0ec')"
+    ]
+  }
+}

@@ -20,6 +20,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -198,6 +199,7 @@ public class ScanAnalysisFragment extends Fragment {
         String errorText = getString(R.string.save_image_failed, message);
         mainHandler.post(() -> {
           if (binding != null) {
+            Log.e(">>>", errorText);
             Toast.makeText(requireContext(), errorText, Toast.LENGTH_LONG).show();
           }
         });
