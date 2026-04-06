@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel;
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential;
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import edu.cnm.deepdive.doggoneit.service.repository.GoogleAuthRepository;
+import edu.cnm.deepdive.doggoneit.service.repository.UserSessionRepository;
 import java.util.function.BiConsumer;
 import javax.inject.Inject;
 
@@ -17,13 +18,15 @@ public class LoginViewModel extends ViewModel {
   private static final String TAG = "LoginViewModel";
 
   private final GoogleAuthRepository repository;
+  private final UserSessionRepository sessionRepository;
   private final MutableLiveData<GoogleIdTokenCredential> credential;
   private final MutableLiveData<Throwable> throwable;
   private final BiConsumer<GoogleIdTokenCredential, Throwable> signInConsumer;
 
   @Inject
-  public LoginViewModel(GoogleAuthRepository repository) {
+  public LoginViewModel(GoogleAuthRepository repository, UserSessionRepository sessionRepository) {
     this.repository = repository;
+    this.sessionRepository = sessionRepository;
     this.credential = new MutableLiveData<>();
     this.throwable = new MutableLiveData<>();
     this.signInConsumer = (result, ex) -> {
@@ -31,7 +34,15 @@ public class LoginViewModel extends ViewModel {
         Log.e(TAG, "Sign in failure", ex);
         throwable.postValue(ex);
       } else {
-        credential.postValue(result);
+        sessionRepository.ensureSignedIn(result)
+            .whenComplete((profile, profileEx) -> {
+              if (profileEx != null) {
+                Log.e(TAG, "Local profile creation failure", profileEx);
+                throwable.postValue(profileEx);
+              } else {
+                credential.postValue(result);
+              }
+            });
       }
     };
   }
@@ -70,6 +81,7 @@ public class LoginViewModel extends ViewModel {
           Log.e(TAG, "signOut failed", ex);
           throwable.postValue(ex);
         } else {
+          sessionRepository.clearCurrentUser();
           credential.postValue(null);
         }
       });

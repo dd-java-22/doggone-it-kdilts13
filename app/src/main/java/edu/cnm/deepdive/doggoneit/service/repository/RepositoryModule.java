@@ -20,6 +20,10 @@ public interface RepositoryModule {
 
   @Binds
   @Singleton
+  UserSessionRepository bindUserSessionRepository(UserSessionRepositoryImpl implementation);
+
+  @Binds
+  @Singleton
   ScanRepository bindScanRepository(ScanRepositoryImpl implementation);
 
   @Binds
