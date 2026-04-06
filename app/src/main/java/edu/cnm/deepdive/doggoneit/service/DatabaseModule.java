@@ -24,7 +24,8 @@ public class DatabaseModule {
       context,
       DoggoneItDatabase.class,
       DoggoneItDatabase.DATABASE_NAME
-    ).build();
+    ).addMigrations(DoggoneItDatabase.MIGRATION_1_2)
+        .build();
   }
 
   @Provides

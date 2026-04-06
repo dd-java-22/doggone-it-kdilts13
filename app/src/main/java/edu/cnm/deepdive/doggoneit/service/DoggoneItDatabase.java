@@ -4,6 +4,8 @@ import androidx.room.Database;
 import androidx.room.RoomDatabase;
 import androidx.room.TypeConverter;
 import androidx.room.TypeConverters;
+import androidx.room.migration.Migration;
+import androidx.sqlite.db.SupportSQLiteDatabase;
 import edu.cnm.deepdive.doggoneit.model.dao.BreedFactDao;
 import edu.cnm.deepdive.doggoneit.model.dao.BreedPredictionDao;
 import edu.cnm.deepdive.doggoneit.model.dao.ScanDao;
@@ -23,7 +25,16 @@ import java.time.Instant;
 public abstract class DoggoneItDatabase extends RoomDatabase {
 
   static final String DATABASE_NAME = "doggone_it";
-  static final int VERSION = 1;
+  static final int VERSION = 2;
+
+  public static final Migration MIGRATION_1_2 = new Migration(1, 2) {
+    @Override
+    public void migrate(SupportSQLiteDatabase database) {
+      database.execSQL(
+          "ALTER TABLE breed_prediction ADD COLUMN rank INTEGER NOT NULL DEFAULT 0"
+      );
+    }
+  };
 
   public abstract UserProfileDao getUserProfileDao();
 

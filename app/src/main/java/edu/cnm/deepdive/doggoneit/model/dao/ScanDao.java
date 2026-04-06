@@ -5,8 +5,11 @@ import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
+import androidx.room.Transaction;
 import androidx.room.Update;
+import edu.cnm.deepdive.doggoneit.model.entity.BreedPrediction;
 import edu.cnm.deepdive.doggoneit.model.entity.Scan;
+import edu.cnm.deepdive.doggoneit.model.entity.ScanWithPredictions;
 import java.util.List;
 
 @Dao
@@ -18,6 +21,9 @@ public interface ScanDao {
   @Insert
   List<Long> insert(Scan... scans);
 
+  @Insert
+  List<Long> insert(BreedPrediction... breedPredictions);
+
   @Update
   int update(Scan... scans);
 
@@ -27,6 +33,10 @@ public interface ScanDao {
   @Query("SELECT * FROM scan WHERE scan_id = :scanId")
   LiveData<Scan> findById(long scanId);
 
+  @Transaction
+  @Query("SELECT * FROM scan WHERE scan_id = :scanId")
+  LiveData<ScanWithPredictions> findWithPredictionsById(long scanId);
+
   @Query("SELECT * FROM scan WHERE user_profile_id = :userProfileId ORDER BY timestamp DESC")
   LiveData<List<Scan>> findByUserProfileId(long userProfileId);
 
@@ -35,4 +45,17 @@ public interface ScanDao {
 
   @Query("SELECT * FROM scan ORDER BY timestamp DESC")
   LiveData<List<Scan>> findAll();
+
+  @Transaction
+  default long insertWithPredictions(Scan scan, List<BreedPrediction> predictions) {
+    long scanId = insert(scan);
+    if (predictions != null && !predictions.isEmpty()) {
+      BreedPrediction[] predictionArray = predictions.toArray(new BreedPrediction[0]);
+      for (BreedPrediction prediction : predictionArray) {
+        prediction.setScanId(scanId);
+      }
+      insert(predictionArray);
+    }
+    return scanId;
+  }
 }

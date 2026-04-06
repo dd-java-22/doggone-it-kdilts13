@@ -25,7 +25,8 @@ import androidx.room.PrimaryKey;
     },
     indices = {
         @Index(value = "scan_id"),
-        @Index(value = "breed_fact_id")
+        @Index(value = "breed_fact_id"),
+        @Index(value = {"scan_id", "rank"})
     }
 )
 public class BreedPrediction {
@@ -45,6 +46,8 @@ public class BreedPrediction {
   private String name = "";
 
   private double probability;
+
+  private int rank;
 
   public long getId() {
     return id;
@@ -85,5 +88,13 @@ public class BreedPrediction {
 
   public void setProbability(double probability) {
     this.probability = probability;
+  }
+
+  public int getRank() {
+    return rank;
+  }
+
+  public void setRank(int rank) {
+    this.rank = rank;
   }
 }

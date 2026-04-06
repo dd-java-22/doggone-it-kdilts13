@@ -27,7 +27,7 @@ public interface BreedPredictionDao {
   @Query("SELECT * FROM breed_prediction WHERE breed_prediction_id = :breedPredictionId")
   LiveData<BreedPrediction> findById(long breedPredictionId);
 
-  @Query("SELECT * FROM breed_prediction WHERE scan_id = :scanId ORDER BY probability DESC")
+  @Query("SELECT * FROM breed_prediction WHERE scan_id = :scanId ORDER BY rank ASC, probability DESC")
   LiveData<List<BreedPrediction>> findByScanId(long scanId);
 
   @Query("SELECT * FROM breed_prediction WHERE breed_fact_id = :breedFactId ORDER BY probability DESC")
