@@ -37,6 +37,8 @@
   <string name="save_image_failed">Save failed: %1$s</string>
   <string name="save_image_missing">No image provided.</string>
   <string name="scan_display_missing_image">No saved image provided.</string>
+  <string name="scan_display_missing_scan">Saved scan not found.</string>
+  <string name="scan_display_missing_predictions">No saved predictions available.</string>
 
   <string name="settings_title">Settings</string>
   <string name="logout_action">Log out</string>

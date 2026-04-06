@@ -42,4 +42,11 @@
     android:layout_marginTop="@dimen/activity_vertical_margin"
     android:text="@string/scan_display_missing_image"/>
 
+  <TextView
+    android:id="@+id/scan_predictions"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="@dimen/activity_vertical_margin"
+    android:text="@string/scan_display_missing_predictions"/>
+
 </LinearLayout>

@@ -26,9 +26,11 @@ import androidx.fragment.app.Fragment;
 import dagger.hilt.android.AndroidEntryPoint;
 import edu.cnm.deepdive.doggoneit.R;
 import edu.cnm.deepdive.doggoneit.databinding.FragmentScanDisplayBinding;
+import edu.cnm.deepdive.doggoneit.model.entity.BreedPrediction;
 import edu.cnm.deepdive.doggoneit.model.entity.Scan;
 import edu.cnm.deepdive.doggoneit.model.entity.ScanWithPredictions;
 import edu.cnm.deepdive.doggoneit.service.repository.ScanRepository;
+import java.util.List;
 import javax.inject.Inject;
 
 @AndroidEntryPoint
@@ -55,7 +57,7 @@ public class ScanDisplayFragment extends Fragment {
     }
     long scanId = ScanDisplayFragmentArgs.fromBundle(args).getScanId();
     if (scanId <= 0) {
-      showMissingImage();
+      showMissingScan();
       return;
     }
     scanRepository.getWithPredictionsById(scanId).observe(getViewLifecycleOwner(),
@@ -72,13 +74,25 @@ public class ScanDisplayFragment extends Fragment {
     binding.savedImage.setVisibility(View.GONE);
     binding.scanDisplayStatus.setVisibility(View.VISIBLE);
     binding.scanDisplayStatus.setText(R.string.scan_display_missing_image);
+    binding.scanPredictions.setVisibility(View.GONE);
+  }
+
+  private void showMissingScan() {
+    binding.savedImage.setVisibility(View.GONE);
+    binding.scanDisplayStatus.setVisibility(View.VISIBLE);
+    binding.scanDisplayStatus.setText(R.string.scan_display_missing_scan);
+    binding.scanPredictions.setVisibility(View.GONE);
   }
 
   private void renderScan(ScanWithPredictions scanWithPredictions) {
     if (binding == null) {
       return;
     }
-    Scan scan = (scanWithPredictions != null) ? scanWithPredictions.getScan() : null;
+    if (scanWithPredictions == null || scanWithPredictions.getScan() == null) {
+      showMissingScan();
+      return;
+    }
+    Scan scan = scanWithPredictions.getScan();
     String imagePath = (scan != null) ? scan.getImagePath() : null;
     if (imagePath == null || imagePath.isBlank()) {
       showMissingImage();
@@ -88,6 +102,36 @@ public class ScanDisplayFragment extends Fragment {
     binding.savedImage.setImageURI(parsedUri);
     binding.savedImage.setVisibility(View.VISIBLE);
     binding.scanDisplayStatus.setVisibility(View.GONE);
+    renderPredictions(scanWithPredictions.getPredictions());
+  }
+
+  private void renderPredictions(List<BreedPrediction> predictions) {
+    if (predictions == null || predictions.isEmpty()) {
+      binding.scanPredictions.setText(R.string.scan_display_missing_predictions);
+      binding.scanPredictions.setVisibility(View.VISIBLE);
+      return;
+    }
+    StringBuilder builder = new StringBuilder();
+    for (int i = 0; i < predictions.size(); i++) {
+      BreedPrediction prediction = predictions.get(i);
+      if (prediction == null) {
+        continue;
+      }
+      builder.append(i + 1)
+          .append(". ")
+          .append(prediction.getName())
+          .append(" - ")
+          .append(prediction.getProbability());
+      if (i < predictions.size() - 1) {
+        builder.append('\n');
+      }
+    }
+    if (builder.length() == 0) {
+      binding.scanPredictions.setText(R.string.scan_display_missing_predictions);
+    } else {
+      binding.scanPredictions.setText(builder.toString());
+    }
+    binding.scanPredictions.setVisibility(View.VISIBLE);
   }
 
 }
