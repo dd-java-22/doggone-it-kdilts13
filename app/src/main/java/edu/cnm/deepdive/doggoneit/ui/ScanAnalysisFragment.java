@@ -41,6 +41,7 @@ import edu.cnm.deepdive.doggoneit.model.entity.BreedPrediction;
 import edu.cnm.deepdive.doggoneit.model.entity.Scan;
 import edu.cnm.deepdive.doggoneit.model.entity.ScanWithPredictions;
 import edu.cnm.deepdive.doggoneit.service.repository.ScanRepository;
+import edu.cnm.deepdive.doggoneit.service.repository.UserSessionRepository;
 import edu.cnm.deepdive.doggoneit.storage.ImageStorage;
 import java.io.File;
 import java.time.Instant;
@@ -71,6 +72,8 @@ public class ScanAnalysisFragment extends Fragment {
   private AnalysisState analysisState = AnalysisState.IDLE;
   @Inject
   ScanRepository scanRepository;
+  @Inject
+  UserSessionRepository userSessionRepository;
 
   @Override
   public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -171,6 +174,11 @@ public class ScanAnalysisFragment extends Fragment {
       try {
         savedUri = ImageStorage.saveImage(appContext, currentImageUri);
         Scan scan = new Scan();
+        long userProfileId = userSessionRepository.getCurrentUserId();
+        if (userProfileId <= 0) {
+          throw new IllegalStateException("No signed-in user profile.");
+        }
+        scan.setUserProfileId(userProfileId);
         scan.setImagePath(savedUri.toString());
         scan.setTimestamp(Instant.now());
         List<BreedPrediction> predictions = toBreedPredictions(currentResult);
