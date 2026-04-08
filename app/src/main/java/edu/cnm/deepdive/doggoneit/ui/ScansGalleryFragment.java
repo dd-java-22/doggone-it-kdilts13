@@ -16,9 +16,12 @@
 package edu.cnm.deepdive.doggoneit.ui;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -38,6 +41,7 @@ public class ScansGalleryFragment extends Fragment {
   private FragmentScansGalleryBinding binding;
   private SavedScanGridAdapter adapter;
   private ScansGalleryViewModel viewModel;
+  private TextWatcher filterWatcher;
 
   @Override
   public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -51,6 +55,7 @@ public class ScansGalleryFragment extends Fragment {
     super.onViewCreated(view, savedInstanceState);
     viewModel = new ViewModelProvider(this).get(ScansGalleryViewModel.class);
     adapter = new SavedScanGridAdapter(this::openScan);
+    setupControls();
     binding.savedScansGrid.setLayoutManager(new GridLayoutManager(requireContext(),
         getGridColumnCount()));
     binding.savedScansGrid.setAdapter(adapter);
@@ -58,14 +63,43 @@ public class ScansGalleryFragment extends Fragment {
       adapter.submitList(items);
       boolean isEmpty = items == null || items.isEmpty();
       binding.savedScansGrid.setVisibility(isEmpty ? View.GONE : View.VISIBLE);
-      binding.emptyGalleryMessage.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
+      Integer emptyMessage = viewModel.getEmptyMessageResId().getValue();
+      boolean showEmptyMessage = isEmpty && emptyMessage != null && emptyMessage != 0;
+      binding.emptyGalleryMessage.setVisibility(showEmptyMessage ? View.VISIBLE : View.GONE);
+    });
+    viewModel.getEmptyMessageResId().observe(getViewLifecycleOwner(), messageResId -> {
+      if (messageResId != null && messageResId != 0) {
+        binding.emptyGalleryMessage.setText(messageResId);
+      }
+    });
+    viewModel.getSortField().observe(getViewLifecycleOwner(), sortField -> {
+      int position = (sortField == ScansGalleryViewModel.SortField.BREED) ? 1 : 0;
+      if (binding.sortFieldSpinner.getSelectedItemPosition() != position) {
+        binding.sortFieldSpinner.setSelection(position);
+      }
+    });
+    viewModel.getSortDirection().observe(getViewLifecycleOwner(), direction -> {
+      int position = (direction == ScansGalleryViewModel.SortDirection.ASCENDING) ? 0 : 1;
+      if (binding.sortDirectionSpinner.getSelectedItemPosition() != position) {
+        binding.sortDirectionSpinner.setSelection(position);
+      }
+    });
+    viewModel.getFilterText().observe(getViewLifecycleOwner(), text -> {
+      String current = binding.filterInput.getText().toString();
+      String target = (text != null) ? text : "";
+      if (!current.equals(target)) {
+        binding.filterInput.setText(target);
+        binding.filterInput.setSelection(target.length());
+      }
     });
   }
 
   @Override
   public void onDestroyView() {
+    binding.filterInput.removeTextChangedListener(filterWatcher);
     binding.savedScansGrid.setAdapter(null);
     adapter = null;
+    filterWatcher = null;
     binding = null;
     super.onDestroyView();
   }
@@ -82,6 +116,54 @@ public class ScansGalleryFragment extends Fragment {
         ScansGalleryFragmentDirections.actionScansGalleryFragmentToScanDisplayFragment();
     action.setScanId(scanId);
     NavHostFragment.findNavController(this).navigate(action);
+  }
+
+  private void setupControls() {
+    ArrayAdapter<CharSequence> sortFieldAdapter = ArrayAdapter.createFromResource(
+        requireContext(),
+        R.array.scans_gallery_sort_fields,
+        android.R.layout.simple_spinner_item
+    );
+    sortFieldAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+    binding.sortFieldSpinner.setAdapter(sortFieldAdapter);
+    binding.sortFieldSpinner.setOnItemSelectedListener(new SimpleItemSelectedListener(position -> {
+      viewModel.setSortField(
+          (position == 1) ? ScansGalleryViewModel.SortField.BREED
+              : ScansGalleryViewModel.SortField.DATE
+      );
+    }));
+
+    ArrayAdapter<CharSequence> sortDirectionAdapter = ArrayAdapter.createFromResource(
+        requireContext(),
+        R.array.scans_gallery_sort_directions,
+        android.R.layout.simple_spinner_item
+    );
+    sortDirectionAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+    binding.sortDirectionSpinner.setAdapter(sortDirectionAdapter);
+    binding.sortDirectionSpinner.setOnItemSelectedListener(
+        new SimpleItemSelectedListener(position -> {
+          viewModel.setSortDirection(
+              (position == 0) ? ScansGalleryViewModel.SortDirection.ASCENDING
+                  : ScansGalleryViewModel.SortDirection.DESCENDING
+          );
+        })
+    );
+
+    filterWatcher = new TextWatcher() {
+      @Override
+      public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+      }
+
+      @Override
+      public void onTextChanged(CharSequence s, int start, int before, int count) {
+      }
+
+      @Override
+      public void afterTextChanged(Editable s) {
+        viewModel.setFilterText((s != null) ? s.toString() : "");
+      }
+    };
+    binding.filterInput.addTextChangedListener(filterWatcher);
   }
 
 }

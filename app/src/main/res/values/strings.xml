@@ -40,7 +40,20 @@
   <string name="scan_display_missing_scan">Saved scan not found.</string>
   <string name="scan_display_missing_predictions">No saved predictions available.</string>
   <string name="scans_gallery_empty">No saved scans yet.</string>
+  <string name="scans_gallery_no_filter_matches">No scans match this filter.</string>
+  <string name="scans_gallery_sort_by">Sort by</string>
+  <string name="scans_gallery_filter_hint">Filter by breed</string>
   <string name="saved_scan_image_content_description">Saved scan image</string>
+
+  <string-array name="scans_gallery_sort_fields">
+    <item>Date</item>
+    <item>Breed</item>
+  </string-array>
+
+  <string-array name="scans_gallery_sort_directions">
+    <item>Ascending</item>
+    <item>Descending</item>
+  </string-array>
 
   <string name="settings_title">Settings</string>
   <string name="logout_action">Log out</string>
