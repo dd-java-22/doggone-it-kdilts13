@@ -78,6 +78,10 @@
       android:name="scanId"
       app:argType="long"
       android:defaultValue="0L"/>
+    <argument
+      android:name="tabContext"
+      app:argType="string"
+      android:defaultValue="home"/>
   </fragment>
 
 </navigation>

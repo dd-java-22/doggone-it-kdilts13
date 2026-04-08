@@ -42,6 +42,10 @@ import java.io.IOException;
 @AndroidEntryPoint
 public class MainActivity extends AppCompatActivity {
 
+  private static final String TAB_CONTEXT_ARG = "tabContext";
+  private static final String TAB_CONTEXT_HOME = "home";
+  private static final String TAB_CONTEXT_SAVED = "saved";
+
   private ActivityMainBinding binding;
   private AppBarConfiguration appBarConfiguration;
   private NavController navController;
@@ -70,7 +74,6 @@ public class MainActivity extends AppCompatActivity {
     }
     navController = navHostFragment.getNavController();
     appBarConfiguration = new AppBarConfiguration.Builder(
-        R.id.loginFragment,
         R.id.homeFragment,
         R.id.scansGalleryFragment,
         R.id.settingsFragment
@@ -80,7 +83,6 @@ public class MainActivity extends AppCompatActivity {
         this::handleTakePictureResult);
     pickMediaLauncher = registerForActivityResult(new ActivityResultContracts.PickVisualMedia(),
         this::handlePickMediaResult);
-    NavigationUI.setupWithNavController(binding.bottomNav, navController);
     binding.bottomNav.setOnItemSelectedListener(item -> {
       if (restoringSelection) {
         return true;
@@ -95,10 +97,12 @@ public class MainActivity extends AppCompatActivity {
         launchGalleryPicker();
         return false;
       }
-      boolean handled = NavigationUI.onNavDestinationSelected(item, navController);
-      if (handled) {
-        lastSelectedItemId = item.getItemId();
+      if (item.getItemId() == R.id.homeFragment
+          || item.getItemId() == R.id.scansGalleryFragment
+          || item.getItemId() == R.id.settingsFragment) {
+        return NavigationUI.onNavDestinationSelected(item, navController);
       }
+      boolean handled = NavigationUI.onNavDestinationSelected(item, navController);
       return handled;
     });
     binding.bottomNav.setOnItemReselectedListener(item -> {
@@ -111,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
       }
     });
     navController.addOnDestinationChangedListener(
-        (controller, destination, arguments) -> toggleBottomNav(destination));
+        (controller, destination, arguments) -> toggleBottomNav(destination, arguments));
   }
 
   @Override
@@ -120,13 +124,11 @@ public class MainActivity extends AppCompatActivity {
         || super.onSupportNavigateUp();
   }
 
-  private void toggleBottomNav(NavDestination destination) {
+  private void toggleBottomNav(NavDestination destination, Bundle arguments) {
     int visibility =
         (destination.getId() == R.id.loginFragment) ? View.GONE : View.VISIBLE;
     binding.bottomNav.setVisibility(visibility);
-    if (binding.bottomNav.getMenu().findItem(destination.getId()) != null) {
-      lastSelectedItemId = destination.getId();
-    }
+    updateSelectedBottomNavItem(destination, arguments);
   }
 
   private void setupUI() {
@@ -149,11 +151,43 @@ public class MainActivity extends AppCompatActivity {
   }
 
   private void restoreBottomNavSelection() {
-    if (lastSelectedItemId != 0 && lastSelectedItemId != R.id.cameraAction) {
+    if (lastSelectedItemId != 0
+        && lastSelectedItemId != R.id.cameraAction
+        && lastSelectedItemId != R.id.galleryAction) {
       restoringSelection = true;
       binding.bottomNav.setSelectedItemId(lastSelectedItemId);
       restoringSelection = false;
     }
+  }
+
+  private void updateSelectedBottomNavItem(NavDestination destination, Bundle arguments) {
+    int selectedItemId = resolveSelectedItemId(destination, arguments);
+    if (selectedItemId == 0) {
+      return;
+    }
+    lastSelectedItemId = selectedItemId;
+    if (binding.bottomNav.getSelectedItemId() != selectedItemId) {
+      restoringSelection = true;
+      binding.bottomNav.setSelectedItemId(selectedItemId);
+      restoringSelection = false;
+    }
+  }
+
+  private int resolveSelectedItemId(NavDestination destination, Bundle arguments) {
+    int destinationId = destination.getId();
+    if (destinationId == R.id.homeFragment
+        || destinationId == R.id.scansGalleryFragment
+        || destinationId == R.id.settingsFragment) {
+      return destinationId;
+    }
+    if (destinationId == R.id.scanDisplayFragment) {
+      String tabContext = (arguments != null) ? arguments.getString(TAB_CONTEXT_ARG) : null;
+      if (TAB_CONTEXT_SAVED.equals(tabContext)) {
+        return R.id.scansGalleryFragment;
+      }
+      return R.id.homeFragment;
+    }
+    return lastSelectedItemId;
   }
 
   private void launchCamera() {

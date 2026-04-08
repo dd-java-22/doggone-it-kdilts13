@@ -115,6 +115,7 @@ public class ScansGalleryFragment extends Fragment {
     ScansGalleryFragmentDirections.ActionScansGalleryFragmentToScanDisplayFragment action =
         ScansGalleryFragmentDirections.actionScansGalleryFragmentToScanDisplayFragment();
     action.setScanId(scanId);
+    action.setTabContext("saved");
     NavHostFragment.findNavController(this).navigate(action);
   }
 

@@ -196,6 +196,7 @@ public class ScanAnalysisFragment extends Fragment {
           ScanAnalysisFragmentDirections.ActionScanAnalysisFragmentToScanDisplayFragment action =
               ScanAnalysisFragmentDirections.actionScanAnalysisFragmentToScanDisplayFragment();
           action.setScanId(scanId);
+          action.setTabContext("home");
           NavHostFragment.findNavController(this).navigate(action);
         });
       } catch (Exception e) {
