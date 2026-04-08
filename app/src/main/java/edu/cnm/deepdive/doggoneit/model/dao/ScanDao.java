@@ -10,6 +10,7 @@ import androidx.room.Update;
 import edu.cnm.deepdive.doggoneit.model.entity.BreedPrediction;
 import edu.cnm.deepdive.doggoneit.model.entity.Scan;
 import edu.cnm.deepdive.doggoneit.model.entity.ScanWithPredictions;
+import edu.cnm.deepdive.doggoneit.viewmodel.ScanGalleryItem;
 import java.util.List;
 
 @Dao
@@ -39,6 +40,21 @@ public interface ScanDao {
 
   @Query("SELECT * FROM scan WHERE user_profile_id = :userProfileId ORDER BY timestamp DESC")
   LiveData<List<Scan>> findByUserProfileId(long userProfileId);
+
+  @Query(
+      "SELECT "
+          + "scan.scan_id AS scanId, "
+          + "scan.image_path AS imagePath, "
+          + "scan.timestamp AS timestamp, "
+          + "COALESCE(top_prediction.name, '') AS topBreedLabel "
+          + "FROM scan "
+          + "LEFT JOIN breed_prediction AS top_prediction "
+          + "ON top_prediction.scan_id = scan.scan_id "
+          + "AND top_prediction.rank = 0 "
+          + "WHERE scan.user_profile_id = :userProfileId "
+          + "ORDER BY scan.timestamp DESC"
+  )
+  LiveData<List<ScanGalleryItem>> findGalleryItemsByUserProfileId(long userProfileId);
 
   @Query("SELECT * FROM scan WHERE user_profile_id = :userProfileId AND favorite = 1 ORDER BY timestamp DESC")
   LiveData<List<Scan>> findFavoritesByUserProfileId(long userProfileId);

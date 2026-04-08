@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData;
 import edu.cnm.deepdive.doggoneit.model.entity.BreedPrediction;
 import edu.cnm.deepdive.doggoneit.model.entity.Scan;
 import edu.cnm.deepdive.doggoneit.model.entity.ScanWithPredictions;
+import edu.cnm.deepdive.doggoneit.viewmodel.ScanGalleryItem;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -14,6 +15,8 @@ public interface ScanRepository {
   LiveData<ScanWithPredictions> getWithPredictionsById(long scanId);
 
   LiveData<List<Scan>> getByUserProfileId(long userProfileId);
+
+  LiveData<List<ScanGalleryItem>> getGalleryItemsByUserProfileId(long userProfileId);
 
   LiveData<List<Scan>> getFavoritesByUserProfileId(long userProfileId);
 

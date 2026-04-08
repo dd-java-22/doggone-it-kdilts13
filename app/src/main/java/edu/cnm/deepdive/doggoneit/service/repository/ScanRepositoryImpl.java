@@ -7,6 +7,7 @@ import edu.cnm.deepdive.doggoneit.model.dao.ScanDao;
 import edu.cnm.deepdive.doggoneit.model.entity.BreedPrediction;
 import edu.cnm.deepdive.doggoneit.model.entity.Scan;
 import edu.cnm.deepdive.doggoneit.model.entity.ScanWithPredictions;
+import edu.cnm.deepdive.doggoneit.viewmodel.ScanGalleryItem;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -42,6 +43,11 @@ public class ScanRepositoryImpl implements ScanRepository {
   @Override
   public LiveData<List<Scan>> getByUserProfileId(long userProfileId) {
     return scanDao.findByUserProfileId(userProfileId);
+  }
+
+  @Override
+  public LiveData<List<ScanGalleryItem>> getGalleryItemsByUserProfileId(long userProfileId) {
+    return scanDao.findGalleryItemsByUserProfileId(userProfileId);
   }
 
   @Override
