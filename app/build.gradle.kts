@@ -134,6 +134,9 @@ dependencies {
     // Gson (Google JSON parser) library
     implementation(libs.gson)
 
+    // Glide for efficient local gallery thumbnail loading.
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+
     // Google Sign-in library
     implementation(libs.play.auth)
 

@@ -1,12 +1,14 @@
 package edu.cnm.deepdive.doggoneit.ui;
 
 import android.net.Uri;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
+import com.bumptech.glide.Glide;
 import edu.cnm.deepdive.doggoneit.R;
 import edu.cnm.deepdive.doggoneit.databinding.ItemSavedScanBinding;
 import edu.cnm.deepdive.doggoneit.viewmodel.ScanGalleryItem;
@@ -14,6 +16,10 @@ import java.util.Objects;
 
 public class SavedScanGridAdapter
     extends ListAdapter<ScanGalleryItem, SavedScanGridAdapter.ViewHolder> {
+
+  private static final int GRID_COLUMN_COUNT = 3;
+  private static final int GRID_SIDE_PADDING_DP = 32;
+  private static final int TILE_MARGIN_DP = 12;
 
   private final ScanClickListener scanClickListener;
 
@@ -54,24 +60,38 @@ public class SavedScanGridAdapter
     void bind(ScanGalleryItem item) {
       long scanId = (item != null) ? item.getScanId() : 0;
       binding.getRoot().setOnClickListener(v -> scanClickListener.onScanClick(scanId));
-      binding.savedScanImage.setImageDrawable(null);
+      Glide.with(binding.savedScanImage).clear(binding.savedScanImage);
       if (item == null || item.getImagePath().isBlank()) {
         showPlaceholder();
         return;
       }
-      try {
-        binding.savedScanImage.setImageURI(Uri.parse(item.getImagePath()));
-      } catch (RuntimeException e) {
-        showPlaceholder();
-        return;
-      }
-      if (binding.savedScanImage.getDrawable() == null) {
-        showPlaceholder();
-      }
+      Glide.with(binding.savedScanImage)
+          .load(Uri.parse(item.getImagePath()))
+          .placeholder(R.drawable.dog)
+          .error(R.drawable.dog)
+          .centerCrop()
+          .override(getThumbnailSizePx(), getThumbnailSizePx())
+          .thumbnail(0.25f)
+          .into(binding.savedScanImage);
     }
 
     private void showPlaceholder() {
       binding.savedScanImage.setImageResource(R.drawable.dog);
+    }
+
+    private int getThumbnailSizePx() {
+      float density = binding.savedScanImage.getResources().getDisplayMetrics().density;
+      int screenWidthPx = binding.savedScanImage.getResources().getDisplayMetrics().widthPixels;
+      int horizontalSpacingPx = Math.round(
+          (GRID_SIDE_PADDING_DP + (GRID_COLUMN_COUNT * TILE_MARGIN_DP)) * density
+      );
+      int availableWidthPx = Math.max(screenWidthPx - horizontalSpacingPx, 0);
+      return Math.max(availableWidthPx / GRID_COLUMN_COUNT,
+          Math.round(TypedValue.applyDimension(
+              TypedValue.COMPLEX_UNIT_DIP,
+              120,
+              binding.savedScanImage.getResources().getDisplayMetrics()
+          )));
     }
   }
 
