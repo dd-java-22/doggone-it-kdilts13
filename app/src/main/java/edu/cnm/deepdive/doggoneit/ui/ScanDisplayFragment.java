@@ -20,10 +20,14 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
 import dagger.hilt.android.AndroidEntryPoint;
+import edu.cnm.deepdive.doggoneit.MainActivity;
 import edu.cnm.deepdive.doggoneit.R;
 import edu.cnm.deepdive.doggoneit.databinding.FragmentScanDisplayBinding;
 import edu.cnm.deepdive.doggoneit.model.entity.BreedPrediction;
@@ -37,6 +41,7 @@ import javax.inject.Inject;
 public class ScanDisplayFragment extends Fragment {
 
   private FragmentScanDisplayBinding binding;
+  private ScanDisplayFragmentArgs navArgs;
   @Inject
   ScanRepository scanRepository;
 
@@ -55,7 +60,17 @@ public class ScanDisplayFragment extends Fragment {
       showMissingImage();
       return;
     }
-    long scanId = ScanDisplayFragmentArgs.fromBundle(args).getScanId();
+    navArgs = ScanDisplayFragmentArgs.fromBundle(args);
+    requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(),
+        new OnBackPressedCallback(true) {
+          @Override
+          public void handleOnBackPressed() {
+            if (!handleReturnToParentContext()) {
+              NavHostFragment.findNavController(ScanDisplayFragment.this).navigateUp();
+            }
+          }
+        });
+    long scanId = navArgs.getScanId();
     if (scanId <= 0) {
       showMissingScan();
       return;
@@ -66,8 +81,24 @@ public class ScanDisplayFragment extends Fragment {
 
   @Override
   public void onDestroyView() {
+    navArgs = null;
     binding = null;
     super.onDestroyView();
+  }
+
+  private boolean handleReturnToParentContext() {
+    if (requireActivity() instanceof MainActivity mainActivity) {
+      return mainActivity.handleScanDisplayReturn(getSourceArguments());
+    }
+    NavController navController = NavHostFragment.findNavController(this);
+    return navController.navigateUp();
+  }
+
+  private Bundle getSourceArguments() {
+    Bundle arguments = new Bundle();
+    String source = (navArgs != null) ? navArgs.getSource() : MainActivity.SCAN_DISPLAY_SOURCE_ANALYSIS;
+    arguments.putString(MainActivity.SCAN_DISPLAY_SOURCE_ARG, source);
+    return arguments;
   }
 
   private void showMissingImage() {

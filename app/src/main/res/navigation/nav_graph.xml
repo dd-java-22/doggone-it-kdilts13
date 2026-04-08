@@ -79,9 +79,9 @@
       app:argType="long"
       android:defaultValue="0L"/>
     <argument
-      android:name="tabContext"
+      android:name="source"
       app:argType="string"
-      android:defaultValue="home"/>
+      android:defaultValue="ANALYSIS"/>
   </fragment>
 
 </navigation>

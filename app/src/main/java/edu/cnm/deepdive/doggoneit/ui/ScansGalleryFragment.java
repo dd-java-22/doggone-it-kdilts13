@@ -22,13 +22,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import dagger.hilt.android.AndroidEntryPoint;
+import edu.cnm.deepdive.doggoneit.MainActivity;
 import edu.cnm.deepdive.doggoneit.R;
 import edu.cnm.deepdive.doggoneit.databinding.FragmentScansGalleryBinding;
 import edu.cnm.deepdive.doggoneit.viewmodel.ScansGalleryViewModel;
@@ -115,7 +116,7 @@ public class ScansGalleryFragment extends Fragment {
     ScansGalleryFragmentDirections.ActionScansGalleryFragmentToScanDisplayFragment action =
         ScansGalleryFragmentDirections.actionScansGalleryFragmentToScanDisplayFragment();
     action.setScanId(scanId);
-    action.setTabContext("saved");
+    action.setSource(MainActivity.SCAN_DISPLAY_SOURCE_SAVED_GALLERY);
     NavHostFragment.findNavController(this).navigate(action);
   }
 

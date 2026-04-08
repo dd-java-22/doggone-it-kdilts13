@@ -43,9 +43,9 @@ import java.io.IOException;
 @AndroidEntryPoint
 public class MainActivity extends AppCompatActivity {
 
-  private static final String TAB_CONTEXT_ARG = "tabContext";
-  private static final String TAB_CONTEXT_HOME = "home";
-  private static final String TAB_CONTEXT_SAVED = "saved";
+  public static final String SCAN_DISPLAY_SOURCE_ARG = "source";
+  public static final String SCAN_DISPLAY_SOURCE_ANALYSIS = "ANALYSIS";
+  public static final String SCAN_DISPLAY_SOURCE_SAVED_GALLERY = "SAVED_GALLERY";
   private static final int TOP_LEVEL_ROOT_ID = R.id.homeFragment;
 
   private ActivityMainBinding binding;
@@ -124,6 +124,14 @@ public class MainActivity extends AppCompatActivity {
 
   @Override
   public boolean onSupportNavigateUp() {
+    NavDestination currentDestination = navController.getCurrentDestination();
+    if (currentDestination != null && currentDestination.getId() == R.id.scanDisplayFragment) {
+      Bundle arguments = navController.getCurrentBackStackEntry() != null
+          ? navController.getCurrentBackStackEntry().getArguments() : null;
+      if (handleScanDisplayReturn(arguments)) {
+        return true;
+      }
+    }
     return NavigationUI.navigateUp(navController, appBarConfiguration)
         || super.onSupportNavigateUp();
   }
@@ -201,8 +209,8 @@ public class MainActivity extends AppCompatActivity {
       return destinationId;
     }
     if (destinationId == R.id.scanDisplayFragment) {
-      String tabContext = (arguments != null) ? arguments.getString(TAB_CONTEXT_ARG) : null;
-      if (TAB_CONTEXT_SAVED.equals(tabContext)) {
+      String source = (arguments != null) ? arguments.getString(SCAN_DISPLAY_SOURCE_ARG) : null;
+      if (SCAN_DISPLAY_SOURCE_SAVED_GALLERY.equals(source)) {
         return R.id.scansGalleryFragment;
       }
       return R.id.homeFragment;
@@ -248,6 +256,14 @@ public class MainActivity extends AppCompatActivity {
       args.putString("imageUri", selectedUri.toString());
       navController.navigate(R.id.scanAnalysisFragment, args);
     }
+  }
+
+  public boolean handleScanDisplayReturn(Bundle arguments) {
+    String source = (arguments != null) ? arguments.getString(SCAN_DISPLAY_SOURCE_ARG) : null;
+    int destinationId = SCAN_DISPLAY_SOURCE_SAVED_GALLERY.equals(source)
+        ? R.id.scansGalleryFragment
+        : R.id.homeFragment;
+    return navigateToTopLevelDestination(destinationId);
   }
 
 }

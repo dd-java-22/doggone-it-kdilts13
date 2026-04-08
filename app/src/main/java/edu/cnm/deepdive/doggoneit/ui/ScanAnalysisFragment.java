@@ -32,6 +32,7 @@ import androidx.navigation.fragment.NavHostFragment;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import dagger.hilt.android.AndroidEntryPoint;
+import edu.cnm.deepdive.doggoneit.MainActivity;
 import edu.cnm.deepdive.doggoneit.R;
 import edu.cnm.deepdive.doggoneit.databinding.FragmentScanAnalysisBinding;
 import edu.cnm.deepdive.doggoneit.ml.DogBreedInference;
@@ -196,7 +197,7 @@ public class ScanAnalysisFragment extends Fragment {
           ScanAnalysisFragmentDirections.ActionScanAnalysisFragmentToScanDisplayFragment action =
               ScanAnalysisFragmentDirections.actionScanAnalysisFragmentToScanDisplayFragment();
           action.setScanId(scanId);
-          action.setTabContext("home");
+          action.setSource(MainActivity.SCAN_DISPLAY_SOURCE_ANALYSIS);
           NavHostFragment.findNavController(this).navigate(action);
         });
       } catch (Exception e) {
