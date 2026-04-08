@@ -22,15 +22,22 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.fragment.NavHostFragment;
+import androidx.recyclerview.widget.GridLayoutManager;
 import dagger.hilt.android.AndroidEntryPoint;
 import edu.cnm.deepdive.doggoneit.R;
 import edu.cnm.deepdive.doggoneit.databinding.FragmentScansGalleryBinding;
+import edu.cnm.deepdive.doggoneit.viewmodel.ScansGalleryViewModel;
 
 @AndroidEntryPoint
 public class ScansGalleryFragment extends Fragment {
 
+  private static final int GRID_COLUMN_COUNT = 3;
+
   private FragmentScansGalleryBinding binding;
+  private SavedScanGridAdapter adapter;
+  private ScansGalleryViewModel viewModel;
 
   @Override
   public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -42,15 +49,39 @@ public class ScansGalleryFragment extends Fragment {
   @Override
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
-    binding.viewDetailsButton.setOnClickListener(
-        v -> NavHostFragment.findNavController(this)
-            .navigate(R.id.action_scansGalleryFragment_to_scanDisplayFragment));
+    viewModel = new ViewModelProvider(this).get(ScansGalleryViewModel.class);
+    adapter = new SavedScanGridAdapter(this::openScan);
+    binding.savedScansGrid.setLayoutManager(new GridLayoutManager(requireContext(),
+        getGridColumnCount()));
+    binding.savedScansGrid.setAdapter(adapter);
+    viewModel.getGalleryItems().observe(getViewLifecycleOwner(), items -> {
+      adapter.submitList(items);
+      boolean isEmpty = items == null || items.isEmpty();
+      binding.savedScansGrid.setVisibility(isEmpty ? View.GONE : View.VISIBLE);
+      binding.emptyGalleryMessage.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
+    });
   }
 
   @Override
   public void onDestroyView() {
+    binding.savedScansGrid.setAdapter(null);
+    adapter = null;
     binding = null;
     super.onDestroyView();
+  }
+
+  private int getGridColumnCount() {
+    return GRID_COLUMN_COUNT;
+  }
+
+  private void openScan(long scanId) {
+    if (scanId <= 0) {
+      return;
+    }
+    ScansGalleryFragmentDirections.ActionScansGalleryFragmentToScanDisplayFragment action =
+        ScansGalleryFragmentDirections.actionScansGalleryFragmentToScanDisplayFragment();
+    action.setScanId(scanId);
+    NavHostFragment.findNavController(this).navigate(action);
   }
 
 }

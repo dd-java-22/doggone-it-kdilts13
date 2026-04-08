@@ -39,6 +39,8 @@
   <string name="scan_display_missing_image">No saved image provided.</string>
   <string name="scan_display_missing_scan">Saved scan not found.</string>
   <string name="scan_display_missing_predictions">No saved predictions available.</string>
+  <string name="scans_gallery_empty">No saved scans yet.</string>
+  <string name="saved_scan_image_content_description">Saved scan image</string>
 
   <string name="settings_title">Settings</string>
   <string name="logout_action">Log out</string>
