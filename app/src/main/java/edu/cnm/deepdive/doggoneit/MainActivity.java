@@ -31,6 +31,7 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.NavController;
 import androidx.navigation.NavDestination;
+import androidx.navigation.NavOptions;
 import androidx.navigation.ui.NavigationUI;
 import androidx.navigation.fragment.NavHostFragment;
 import dagger.hilt.android.AndroidEntryPoint;
@@ -45,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
   private static final String TAB_CONTEXT_ARG = "tabContext";
   private static final String TAB_CONTEXT_HOME = "home";
   private static final String TAB_CONTEXT_SAVED = "saved";
+  private static final int TOP_LEVEL_ROOT_ID = R.id.homeFragment;
 
   private ActivityMainBinding binding;
   private AppBarConfiguration appBarConfiguration;
@@ -100,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
       if (item.getItemId() == R.id.homeFragment
           || item.getItemId() == R.id.scansGalleryFragment
           || item.getItemId() == R.id.settingsFragment) {
-        return NavigationUI.onNavDestinationSelected(item, navController);
+        return navigateToTopLevelDestination(item.getItemId());
       }
       boolean handled = NavigationUI.onNavDestinationSelected(item, navController);
       return handled;
@@ -112,6 +114,8 @@ public class MainActivity extends AppCompatActivity {
       } else if (item.getItemId() == R.id.galleryAction) {
         restoreBottomNavSelection();
         launchGalleryPicker();
+      } else if (isTopLevelDestination(item.getItemId())) {
+        navigateToTopLevelDestination(item.getItemId());
       }
     });
     navController.addOnDestinationChangedListener(
@@ -173,11 +177,27 @@ public class MainActivity extends AppCompatActivity {
     }
   }
 
+  private boolean navigateToTopLevelDestination(int destinationId) {
+    if (!isTopLevelDestination(destinationId)) {
+      return false;
+    }
+    NavOptions options = new NavOptions.Builder()
+        .setLaunchSingleTop(true)
+        .setPopUpTo(TOP_LEVEL_ROOT_ID, false)
+        .build();
+    navController.navigate(destinationId, null, options);
+    return true;
+  }
+
+  private boolean isTopLevelDestination(int destinationId) {
+    return destinationId == R.id.homeFragment
+        || destinationId == R.id.scansGalleryFragment
+        || destinationId == R.id.settingsFragment;
+  }
+
   private int resolveSelectedItemId(NavDestination destination, Bundle arguments) {
     int destinationId = destination.getId();
-    if (destinationId == R.id.homeFragment
-        || destinationId == R.id.scansGalleryFragment
-        || destinationId == R.id.settingsFragment) {
+    if (isTopLevelDestination(destinationId)) {
       return destinationId;
     }
     if (destinationId == R.id.scanDisplayFragment) {
