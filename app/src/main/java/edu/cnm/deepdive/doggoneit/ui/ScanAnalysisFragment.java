@@ -41,6 +41,9 @@ import edu.cnm.deepdive.doggoneit.ml.DogBreedPrediction;
 import edu.cnm.deepdive.doggoneit.model.entity.BreedPrediction;
 import edu.cnm.deepdive.doggoneit.model.entity.Scan;
 import edu.cnm.deepdive.doggoneit.model.entity.ScanWithPredictions;
+import edu.cnm.deepdive.doggoneit.service.dogapi.DogApiService;
+import edu.cnm.deepdive.doggoneit.service.dogapi.dto.BreedFactDto;
+import edu.cnm.deepdive.doggoneit.service.dogapi.dto.BreedSearchResultDto;
 import edu.cnm.deepdive.doggoneit.service.repository.ScanRepository;
 import edu.cnm.deepdive.doggoneit.service.repository.UserSessionRepository;
 import edu.cnm.deepdive.doggoneit.storage.ImageStorage;
@@ -51,9 +54,13 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javax.inject.Inject;
+import retrofit2.Response;
 
 @AndroidEntryPoint
 public class ScanAnalysisFragment extends Fragment {
+
+  private static final String TAG = ScanAnalysisFragment.class.getSimpleName();
+  private static final String TEST_BREED_QUERY = "beagle";
 
   private enum AnalysisState {
     IDLE,
@@ -64,6 +71,7 @@ public class ScanAnalysisFragment extends Fragment {
 
   private FragmentScanAnalysisBinding binding;
   private final ExecutorService inferenceExecutor = Executors.newSingleThreadExecutor();
+  private final ExecutorService dogApiExecutor = Executors.newSingleThreadExecutor();
   private final ExecutorService saveExecutor = Executors.newSingleThreadExecutor();
   private final Handler mainHandler = new Handler(Looper.getMainLooper());
   private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
@@ -75,6 +83,8 @@ public class ScanAnalysisFragment extends Fragment {
   ScanRepository scanRepository;
   @Inject
   UserSessionRepository userSessionRepository;
+  @Inject
+  DogApiService dogApiService;
 
   @Override
   public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -87,6 +97,7 @@ public class ScanAnalysisFragment extends Fragment {
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
     binding.saveImageButton.setOnClickListener(v -> onSaveClicked());
+    binding.testDogApiButton.setOnClickListener(v -> onTestDogApiClicked());
     Bundle args = getArguments();
     if (args == null) {
       binding.capturedImage.setVisibility(View.GONE);
@@ -125,8 +136,59 @@ public class ScanAnalysisFragment extends Fragment {
   @Override
   public void onDestroy() {
     inferenceExecutor.shutdownNow();
+    dogApiExecutor.shutdownNow();
     saveExecutor.shutdownNow();
     super.onDestroy();
+  }
+
+  private void onTestDogApiClicked() {
+    Log.d(TAG, "Starting temporary Dog API test for query: " + TEST_BREED_QUERY);
+    binding.analysisOutputText.setText(R.string.test_dog_api_loading);
+    dogApiExecutor.execute(() -> {
+      try {
+        Response<List<BreedSearchResultDto>> searchResponse =
+            dogApiService.searchBreeds(TEST_BREED_QUERY).execute();
+        if (!searchResponse.isSuccessful()) {
+          throw new IllegalStateException(
+              "Breed search failed with code " + searchResponse.code());
+        }
+        List<BreedSearchResultDto> breeds = searchResponse.body();
+        if (breeds == null || breeds.isEmpty()) {
+          postAnalysisOutput(getString(R.string.test_dog_api_no_breed_found, TEST_BREED_QUERY));
+          Log.d(TAG, "No breed found for query: " + TEST_BREED_QUERY);
+          return;
+        }
+
+        BreedSearchResultDto breed = breeds.get(0);
+        String breedName = breed.getName();
+        Log.d(TAG, "Dog API breed search returned id=" + breed.getId() + ", name=" + breedName);
+
+        Response<List<BreedFactDto>> factResponse = dogApiService.getBreedFacts(breed.getId(), 1)
+            .execute();
+        if (!factResponse.isSuccessful()) {
+          throw new IllegalStateException(
+              "Breed facts failed with code " + factResponse.code());
+        }
+        List<BreedFactDto> facts = factResponse.body();
+        if (facts == null || facts.isEmpty() || facts.get(0).getFact() == null
+            || facts.get(0).getFact().isBlank()) {
+          postAnalysisOutput(getString(R.string.test_dog_api_no_facts_returned, breedName));
+          Log.d(TAG, "No facts returned for breed: " + breedName);
+          return;
+        }
+
+        String fact = facts.get(0).getFact();
+        Log.d(TAG, "Dog API fact received for breed: " + breedName);
+        postAnalysisOutput(getString(R.string.test_dog_api_result, breedName, fact));
+      } catch (Exception e) {
+        Log.e(TAG, "Dog API test request failed", e);
+        String message = e.getMessage();
+        if (message == null || message.isBlank()) {
+          message = e.getClass().getSimpleName();
+        }
+        postAnalysisOutput(getString(R.string.test_dog_api_error, message));
+      }
+    });
   }
 
   private void runInference(Context appContext, Uri imageUri) {
@@ -219,6 +281,14 @@ public class ScanAnalysisFragment extends Fragment {
 
   private void showSaveMissing() {
     Toast.makeText(requireContext(), R.string.save_image_missing, Toast.LENGTH_SHORT).show();
+  }
+
+  private void postAnalysisOutput(String text) {
+    mainHandler.post(() -> {
+      if (binding != null) {
+        binding.analysisOutputText.setText(text);
+      }
+    });
   }
 
   private void clearAnalysisState() {

@@ -32,6 +32,12 @@
   <string name="scan_analysis_loading">Analyzing image...</string>
   <string name="scan_analysis_missing_image">No image available for analysis.</string>
   <string name="scan_analysis_error">Analysis failed: %1$s</string>
+  <string name="test_dog_api_action">Test Dog API</string>
+  <string name="test_dog_api_loading">Testing Dog API...</string>
+  <string name="test_dog_api_result">Breed: %1$s\nFact: %2$s</string>
+  <string name="test_dog_api_no_breed_found">No breed found for query: %1$s</string>
+  <string name="test_dog_api_no_facts_returned">No facts returned for breed: %1$s</string>
+  <string name="test_dog_api_error">Dog API test failed: %1$s</string>
   <string name="save_image_action">Save image</string>
   <string name="save_image_saving">Saving image...</string>
   <string name="save_image_failed">Save failed: %1$s</string>
