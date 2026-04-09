@@ -13,7 +13,8 @@ public interface DogApiService {
   @GET("v1/breeds/search")
   Call<List<BreedSearchResultDto>> searchBreeds(@Query("q") String query);
 
-  @GET("v1/breeds/{breedId}/facts")
+  // TODO: 4/8/2026 switch to v1/breeds/{BREED_ID} 
+  @GET("v1/facts/breed/{breedId}")
   Call<List<BreedFactDto>> getBreedFacts(@Path("breedId") long breedId, @Query("limit") int limit);
 
 }
