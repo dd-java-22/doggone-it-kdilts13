@@ -42,7 +42,7 @@ import edu.cnm.deepdive.doggoneit.model.entity.BreedPrediction;
 import edu.cnm.deepdive.doggoneit.model.entity.Scan;
 import edu.cnm.deepdive.doggoneit.model.entity.ScanWithPredictions;
 import edu.cnm.deepdive.doggoneit.service.dogapi.DogApiService;
-import edu.cnm.deepdive.doggoneit.service.dogapi.dto.BreedFactDto;
+import edu.cnm.deepdive.doggoneit.service.dogapi.dto.BreedDetailsDto;
 import edu.cnm.deepdive.doggoneit.service.dogapi.dto.BreedSearchResultDto;
 import edu.cnm.deepdive.doggoneit.service.repository.ScanRepository;
 import edu.cnm.deepdive.doggoneit.service.repository.UserSessionRepository;
@@ -163,23 +163,21 @@ public class ScanAnalysisFragment extends Fragment {
         String breedName = breed.getName();
         Log.d(TAG, "Dog API breed search returned id=" + breed.getId() + ", name=" + breedName);
 
-        Response<List<BreedFactDto>> factResponse = dogApiService.getBreedFacts(breed.getId(), 1)
+        Response<BreedDetailsDto> detailsResponse = dogApiService.getBreedDetails(breed.getId())
             .execute();
-        if (!factResponse.isSuccessful()) {
+        if (!detailsResponse.isSuccessful()) {
           throw new IllegalStateException(
-              "Breed facts failed with code " + factResponse.code());
+              "Breed details failed with code " + detailsResponse.code());
         }
-        List<BreedFactDto> facts = factResponse.body();
-        if (facts == null || facts.isEmpty() || facts.get(0).getFact() == null
-            || facts.get(0).getFact().isBlank()) {
-          postAnalysisOutput(getString(R.string.test_dog_api_no_facts_returned, breedName));
-          Log.d(TAG, "No facts returned for breed: " + breedName);
+        BreedDetailsDto details = detailsResponse.body();
+        if (details == null) {
+          postAnalysisOutput("Breed details response was empty for: " + breedName);
+          Log.d(TAG, "Breed details response body was null for breed: " + breedName);
           return;
         }
 
-        String fact = facts.get(0).getFact();
-        Log.d(TAG, "Dog API fact received for breed: " + breedName);
-        postAnalysisOutput(getString(R.string.test_dog_api_result, breedName, fact));
+        Log.d(TAG, "Dog API details received for breed: " + breedName);
+        postAnalysisOutput(formatBreedDetails(details, breedName));
       } catch (Exception e) {
         Log.e(TAG, "Dog API test request failed", e);
         String message = e.getMessage();
@@ -336,6 +334,40 @@ public class ScanAnalysisFragment extends Fragment {
     if (file.exists() && !file.delete()) {
       // Best-effort cleanup; ignore failure.
     }
+  }
+
+  private String formatBreedDetails(BreedDetailsDto details, String fallbackName) {
+    StringBuilder builder = new StringBuilder();
+    appendLine(builder, "Breed", firstNonBlank(details.getName(), fallbackName, "Unknown"));
+    appendLine(builder, "Group", valueOrUnknown(details.getBreedGroup()));
+    appendLine(builder, "Life span", valueOrUnknown(details.getLifeSpan()));
+    appendLine(builder, "Temperament", valueOrUnknown(details.getTemperament()));
+    appendLine(builder, "Bred for", valueOrUnknown(details.getBredFor()));
+    appendLine(builder, "Origin", valueOrUnknown(details.getOrigin()));
+    return builder.toString();
+  }
+
+  private static void appendLine(StringBuilder builder, String label, String value) {
+    if (value == null || value.isBlank()) {
+      return;
+    }
+    if (builder.length() > 0) {
+      builder.append('\n');
+    }
+    builder.append(label).append(": ").append(value);
+  }
+
+  private static String valueOrUnknown(String value) {
+    return (value == null || value.isBlank()) ? "Unknown" : value;
+  }
+
+  private static String firstNonBlank(String... values) {
+    for (String value : values) {
+      if (value != null && !value.isBlank()) {
+        return value;
+      }
+    }
+    return null;
   }
 
 }
