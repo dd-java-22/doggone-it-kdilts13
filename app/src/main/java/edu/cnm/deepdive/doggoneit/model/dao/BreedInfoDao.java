@@ -30,6 +30,9 @@ public interface BreedInfoDao {
   @Query("SELECT * FROM breed_info WHERE dog_api_breed_id = :dogApiBreedId")
   LiveData<BreedInfo> findByDogApiBreedId(long dogApiBreedId);
 
+  @Query("SELECT * FROM breed_info WHERE dog_api_breed_id = :dogApiBreedId")
+  BreedInfo findByDogApiBreedIdNow(long dogApiBreedId);
+
   @Query("SELECT * FROM breed_info WHERE name LIKE '%' || :nameFragment || '%' ORDER BY name")
   LiveData<List<BreedInfo>> findByNameFragment(String nameFragment);
 

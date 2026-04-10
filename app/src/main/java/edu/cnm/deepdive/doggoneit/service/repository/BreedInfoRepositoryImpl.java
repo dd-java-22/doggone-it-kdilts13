@@ -51,4 +51,19 @@ public class BreedInfoRepositoryImpl implements BreedInfoRepository {
   public CompletableFuture<Integer> update(BreedInfo breedInfo) {
     return CompletableFuture.supplyAsync(() -> breedInfoDao.update(breedInfo));
   }
+
+  @Override
+  public CompletableFuture<BreedInfo> saveOrUpdate(BreedInfo breedInfo) {
+    return CompletableFuture.supplyAsync(() -> {
+      BreedInfo existing = breedInfoDao.findByDogApiBreedIdNow(breedInfo.getDogApiBreedId());
+      if (existing == null) {
+        long id = breedInfoDao.insert(breedInfo);
+        breedInfo.setId(id);
+        return breedInfo;
+      }
+      breedInfo.setId(existing.getId());
+      breedInfoDao.update(breedInfo);
+      return breedInfo;
+    });
+  }
 }

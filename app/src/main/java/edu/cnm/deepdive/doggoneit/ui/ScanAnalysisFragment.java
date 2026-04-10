@@ -38,12 +38,15 @@ import edu.cnm.deepdive.doggoneit.databinding.FragmentScanAnalysisBinding;
 import edu.cnm.deepdive.doggoneit.ml.DogBreedInference;
 import edu.cnm.deepdive.doggoneit.ml.DogBreedInferenceResult;
 import edu.cnm.deepdive.doggoneit.ml.DogBreedPrediction;
+import edu.cnm.deepdive.doggoneit.model.entity.BreedInfo;
 import edu.cnm.deepdive.doggoneit.model.entity.BreedPrediction;
 import edu.cnm.deepdive.doggoneit.model.entity.Scan;
 import edu.cnm.deepdive.doggoneit.model.entity.ScanWithPredictions;
+import edu.cnm.deepdive.doggoneit.service.dogapi.BreedDetailsMapper;
 import edu.cnm.deepdive.doggoneit.service.dogapi.DogApiService;
 import edu.cnm.deepdive.doggoneit.service.dogapi.dto.BreedDetailsDto;
 import edu.cnm.deepdive.doggoneit.service.dogapi.dto.BreedSearchResultDto;
+import edu.cnm.deepdive.doggoneit.service.repository.BreedInfoRepository;
 import edu.cnm.deepdive.doggoneit.service.repository.ScanRepository;
 import edu.cnm.deepdive.doggoneit.service.repository.UserSessionRepository;
 import edu.cnm.deepdive.doggoneit.storage.ImageStorage;
@@ -81,6 +84,8 @@ public class ScanAnalysisFragment extends Fragment {
   private AnalysisState analysisState = AnalysisState.IDLE;
   @Inject
   ScanRepository scanRepository;
+  @Inject
+  BreedInfoRepository breedInfoRepository;
   @Inject
   UserSessionRepository userSessionRepository;
   @Inject
@@ -177,6 +182,7 @@ public class ScanAnalysisFragment extends Fragment {
         }
 
         Log.d(TAG, "Dog API details received for breed: " + breedName);
+        cacheBreedInfo(details);
         postAnalysisOutput(formatBreedDetails(details, breedName));
       } catch (Exception e) {
         Log.e(TAG, "Dog API test request failed", e);
@@ -187,6 +193,14 @@ public class ScanAnalysisFragment extends Fragment {
         postAnalysisOutput(getString(R.string.test_dog_api_error, message));
       }
     });
+  }
+
+  private void cacheBreedInfo(BreedDetailsDto details) {
+    BreedInfo breedInfo = BreedDetailsMapper.toBreedInfo(details);
+    if (breedInfo == null) {
+      return;
+    }
+    breedInfoRepository.saveOrUpdate(breedInfo).join();
   }
 
   private void runInference(Context appContext, Uri imageUri) {
@@ -340,6 +354,14 @@ public class ScanAnalysisFragment extends Fragment {
     StringBuilder builder = new StringBuilder();
     appendLine(builder, "Breed", firstNonBlank(details.getName(), fallbackName, "Unknown"));
     appendLine(builder, "Group", valueOrUnknown(details.getBreedGroup()));
+    appendLine(builder, "Weight (metric)", valueOrUnknown(
+        details.getWeight() != null ? details.getWeight().getMetric() : null));
+    appendLine(builder, "Weight (imperial)", valueOrUnknown(
+        details.getWeight() != null ? details.getWeight().getImperial() : null));
+    appendLine(builder, "Height (metric)", valueOrUnknown(
+        details.getHeight() != null ? details.getHeight().getMetric() : null));
+    appendLine(builder, "Height (imperial)", valueOrUnknown(
+        details.getHeight() != null ? details.getHeight().getImperial() : null));
     appendLine(builder, "Life span", valueOrUnknown(details.getLifeSpan()));
     appendLine(builder, "Temperament", valueOrUnknown(details.getTemperament()));
     appendLine(builder, "Bred for", valueOrUnknown(details.getBredFor()));

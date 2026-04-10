@@ -19,4 +19,6 @@ public interface BreedInfoRepository {
 
   CompletableFuture<Integer> update(BreedInfo breedInfo);
 
+  CompletableFuture<BreedInfo> saveOrUpdate(BreedInfo breedInfo);
+
 }
