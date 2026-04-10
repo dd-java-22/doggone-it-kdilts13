@@ -17,7 +17,7 @@ import androidx.room.PrimaryKey;
             onDelete = ForeignKey.CASCADE
         ),
         @ForeignKey(
-            entity = BreedFact.class,
+            entity = BreedInfo.class,
             parentColumns = "breed_fact_id",
             childColumns = "breed_fact_id",
             onDelete = ForeignKey.SET_NULL

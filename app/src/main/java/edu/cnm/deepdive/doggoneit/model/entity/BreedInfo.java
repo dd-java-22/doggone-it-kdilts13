@@ -6,28 +6,34 @@ import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
 @Entity(
-    tableName = "breed_fact",
+    tableName = "breed_info",
     indices = {
-        @Index(value = "dog_facts_api_id", unique = true)
+        @Index(value = "dog_api_breed_id", unique = true)
     }
 )
-public class BreedFact {
+public class BreedInfo {
 
   @PrimaryKey(autoGenerate = true)
   @ColumnInfo(name = "breed_fact_id")
   private long id;
 
-  @ColumnInfo(name = "dog_facts_api_id")
-  private long dogFactsApiId;
+  @ColumnInfo(name = "dog_api_breed_id")
+  private long dogApiBreedId;
 
   @ColumnInfo(collate = ColumnInfo.NOCASE)
   private String name;
 
-  @ColumnInfo(name = "weight_si")
-  private Double weightSi;
+  @ColumnInfo(name = "weight_metric")
+  private String weightMetric;
 
-  @ColumnInfo(name = "height_si")
-  private Double heightSi;
+  @ColumnInfo(name = "weight_imperial")
+  private String weightImperial;
+
+  @ColumnInfo(name = "height_metric")
+  private String heightMetric;
+
+  @ColumnInfo(name = "height_imperial")
+  private String heightImperial;
 
   @ColumnInfo(name = "bred_for")
   private String bredFor;
@@ -65,12 +71,12 @@ public class BreedFact {
     this.id = id;
   }
 
-  public long getDogFactsApiId() {
-    return dogFactsApiId;
+  public long getDogApiBreedId() {
+    return dogApiBreedId;
   }
 
-  public void setDogFactsApiId(long dogFactsApiId) {
-    this.dogFactsApiId = dogFactsApiId;
+  public void setDogApiBreedId(long dogApiBreedId) {
+    this.dogApiBreedId = dogApiBreedId;
   }
 
   public String getName() {
@@ -81,20 +87,36 @@ public class BreedFact {
     this.name = name;
   }
 
-  public Double getWeightSi() {
-    return weightSi;
+  public String getWeightMetric() {
+    return weightMetric;
   }
 
-  public void setWeightSi(Double weightSi) {
-    this.weightSi = weightSi;
+  public void setWeightMetric(String weightMetric) {
+    this.weightMetric = weightMetric;
   }
 
-  public Double getHeightSi() {
-    return heightSi;
+  public String getWeightImperial() {
+    return weightImperial;
   }
 
-  public void setHeightSi(Double heightSi) {
-    this.heightSi = heightSi;
+  public void setWeightImperial(String weightImperial) {
+    this.weightImperial = weightImperial;
+  }
+
+  public String getHeightMetric() {
+    return heightMetric;
+  }
+
+  public void setHeightMetric(String heightMetric) {
+    this.heightMetric = heightMetric;
+  }
+
+  public String getHeightImperial() {
+    return heightImperial;
+  }
+
+  public void setHeightImperial(String heightImperial) {
+    this.heightImperial = heightImperial;
   }
 
   public String getBredFor() {

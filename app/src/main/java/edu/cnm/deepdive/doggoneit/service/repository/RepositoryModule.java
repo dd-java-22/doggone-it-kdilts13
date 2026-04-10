@@ -28,6 +28,6 @@ public interface RepositoryModule {
 
   @Binds
   @Singleton
-  BreedFactRepository bindBreedFactRepository(BreedFactRepositoryImpl implementation);
+  BreedInfoRepository bindBreedInfoRepository(BreedInfoRepositoryImpl implementation);
 
 }
