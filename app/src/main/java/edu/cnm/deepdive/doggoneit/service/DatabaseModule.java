@@ -8,6 +8,7 @@ import dagger.hilt.InstallIn;
 import dagger.hilt.android.qualifiers.ApplicationContext;
 import dagger.hilt.components.SingletonComponent;
 import edu.cnm.deepdive.doggoneit.model.dao.BreedInfoDao;
+import edu.cnm.deepdive.doggoneit.model.dao.BreedMappingDao;
 import edu.cnm.deepdive.doggoneit.model.dao.BreedPredictionDao;
 import edu.cnm.deepdive.doggoneit.model.dao.ScanDao;
 import edu.cnm.deepdive.doggoneit.model.dao.UserProfileDao;
@@ -24,7 +25,11 @@ public class DatabaseModule {
       context,
       DoggoneItDatabase.class,
       DoggoneItDatabase.DATABASE_NAME
-    ).addMigrations(DoggoneItDatabase.MIGRATION_1_2, DoggoneItDatabase.MIGRATION_2_3)
+    ).addMigrations(
+        DoggoneItDatabase.MIGRATION_1_2,
+        DoggoneItDatabase.MIGRATION_2_3,
+        DoggoneItDatabase.MIGRATION_3_4
+    )
         .build();
   }
 
@@ -50,6 +55,12 @@ public class DatabaseModule {
   @Singleton
   BreedInfoDao provideBreedInfo(DoggoneItDatabase database) {
     return database.getBreedInfoDao();
+  }
+
+  @Provides
+  @Singleton
+  BreedMappingDao provideBreedMapping(DoggoneItDatabase database) {
+    return database.getBreedMappingDao();
   }
 
 }

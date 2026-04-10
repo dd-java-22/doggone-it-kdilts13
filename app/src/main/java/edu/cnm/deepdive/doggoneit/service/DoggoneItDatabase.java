@@ -7,17 +7,20 @@ import androidx.room.TypeConverters;
 import androidx.room.migration.Migration;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 import edu.cnm.deepdive.doggoneit.model.dao.BreedInfoDao;
+import edu.cnm.deepdive.doggoneit.model.dao.BreedMappingDao;
 import edu.cnm.deepdive.doggoneit.model.dao.BreedPredictionDao;
 import edu.cnm.deepdive.doggoneit.model.dao.ScanDao;
 import edu.cnm.deepdive.doggoneit.model.dao.UserProfileDao;
 import edu.cnm.deepdive.doggoneit.model.entity.BreedInfo;
+import edu.cnm.deepdive.doggoneit.model.entity.BreedMapping;
 import edu.cnm.deepdive.doggoneit.model.entity.BreedPrediction;
 import edu.cnm.deepdive.doggoneit.model.entity.Scan;
 import edu.cnm.deepdive.doggoneit.model.entity.UserProfile;
 import java.time.Instant;
 
 @Database(
-    entities = {UserProfile.class, Scan.class, BreedPrediction.class, BreedInfo.class},
+    entities = {UserProfile.class, Scan.class, BreedPrediction.class, BreedInfo.class,
+        BreedMapping.class},
     version = DoggoneItDatabase.VERSION,
     exportSchema = true
 )
@@ -25,7 +28,7 @@ import java.time.Instant;
 public abstract class DoggoneItDatabase extends RoomDatabase {
 
   static final String DATABASE_NAME = "doggone_it";
-  static final int VERSION = 3;
+  static final int VERSION = 4;
 
   public static final Migration MIGRATION_1_2 = new Migration(1, 2) {
     @Override
@@ -114,6 +117,18 @@ public abstract class DoggoneItDatabase extends RoomDatabase {
     }
   };
 
+  public static final Migration MIGRATION_3_4 = new Migration(3, 4) {
+    @Override
+    public void migrate(SupportSQLiteDatabase database) {
+      database.execSQL(
+          "CREATE TABLE IF NOT EXISTS `breed_mapping` ("
+              + "`model_label` TEXT COLLATE NOCASE NOT NULL, "
+              + "`dog_api_breed_id` INTEGER NOT NULL, "
+              + "PRIMARY KEY(`model_label`))"
+      );
+    }
+  };
+
   public abstract UserProfileDao getUserProfileDao();
 
   public abstract ScanDao getScanDao();
@@ -121,6 +136,8 @@ public abstract class DoggoneItDatabase extends RoomDatabase {
   public abstract BreedPredictionDao getBreedPredictionDao();
 
   public abstract BreedInfoDao getBreedInfoDao();
+
+  public abstract BreedMappingDao getBreedMappingDao();
 
   public static class Converters {
 
