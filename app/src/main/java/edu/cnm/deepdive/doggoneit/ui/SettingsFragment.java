@@ -31,6 +31,7 @@ import androidx.preference.PreferenceManager;
 import com.google.android.material.button.MaterialButtonToggleGroup;
 import dagger.hilt.android.AndroidEntryPoint;
 import edu.cnm.deepdive.doggoneit.R;
+import edu.cnm.deepdive.doggoneit.databinding.FragmentSettingsBinding;
 import edu.cnm.deepdive.doggoneit.viewmodel.LoginViewModel;
 
 @AndroidEntryPoint
@@ -50,13 +51,15 @@ public class SettingsFragment extends Fragment {
   public static final String DEFAULT_SORT_DIRECTION = SORT_DIRECTION_DESCENDING;
   public static final String DEFAULT_GALLERY_COLUMNS = GALLERY_COLUMNS_3;
 
+  private FragmentSettingsBinding binding;
   private LoginViewModel viewModel;
   private SharedPreferences preferences;
 
   @Override
   public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
-    return inflater.inflate(R.layout.fragment_settings, container, false);
+    binding = FragmentSettingsBinding.inflate(inflater, container, false);
+    return binding.getRoot();
   }
 
   @Override
@@ -65,11 +68,11 @@ public class SettingsFragment extends Fragment {
     viewModel = new ViewModelProvider(requireActivity()).get(LoginViewModel.class);
     preferences = PreferenceManager.getDefaultSharedPreferences(requireContext());
 
-    view.findViewById(R.id.logout_button).setOnClickListener(v -> viewModel.signOut());
+    binding.logoutButton.setOnClickListener(v -> viewModel.signOut());
 
-    MaterialButtonToggleGroup sortByGroup = view.findViewById(R.id.sort_by_group);
-    MaterialButtonToggleGroup sortDirectionGroup = view.findViewById(R.id.sort_direction_group);
-    MaterialButtonToggleGroup galleryColumnsGroup = view.findViewById(R.id.gallery_columns_group);
+    MaterialButtonToggleGroup sortByGroup = binding.sortByGroup;
+    MaterialButtonToggleGroup sortDirectionGroup = binding.sortDirectionGroup;
+    MaterialButtonToggleGroup galleryColumnsGroup = binding.galleryColumnsGroup;
 
     configureSortByGroup(sortByGroup);
     configureSortDirectionGroup(sortDirectionGroup);
@@ -93,6 +96,12 @@ public class SettingsFragment extends Fragment {
           // TODO: 3/26/2026 show a snackbar
         }
       });
+  }
+
+  @Override
+  public void onDestroyView() {
+    binding = null;
+    super.onDestroyView();
   }
 
   private void configureSortByGroup(MaterialButtonToggleGroup group) {
