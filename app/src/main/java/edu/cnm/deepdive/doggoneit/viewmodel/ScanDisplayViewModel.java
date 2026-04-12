@@ -54,11 +54,18 @@ public class ScanDisplayViewModel extends ViewModel {
   private final MediatorLiveData<UiState> uiState;
   private final MutableLiveData<ContentTab> selectedTab;
   private final MutableLiveData<FactsState> factsState;
+  private final MutableLiveData<String> savedNote;
+  private final MutableLiveData<String> noteDraft;
+  private final MutableLiveData<Boolean> noteSaving;
   private final MutableLiveData<NotesMode> notesMode;
+  private final MutableLiveData<UiMessage> messageEvent;
   private LiveData<ScanWithPredictions> scanSource;
   private long scanId;
   private String factsSelectedBreedLabel;
   private int factsRequestCounter;
+  private int favoriteRequestCounter;
+  private int noteSaveRequestCounter;
+  private long messageCounter;
 
   @Inject
   public ScanDisplayViewModel(ScanRepository scanRepository,
@@ -72,15 +79,26 @@ public class ScanDisplayViewModel extends ViewModel {
     uiState = new MediatorLiveData<>();
     selectedTab = new MutableLiveData<>(ContentTab.FACTS);
     factsState = new MutableLiveData<>(new FactsState(FactsStatus.IDLE, null, null));
+    savedNote = new MutableLiveData<>("");
+    noteDraft = new MutableLiveData<>("");
+    noteSaving = new MutableLiveData<>(false);
     notesMode = new MutableLiveData<>(NotesMode.VIEW);
+    messageEvent = new MutableLiveData<>();
     uiState.addSource(selectedTab, value -> emitUiState());
     uiState.addSource(factsState, value -> emitUiState());
+    uiState.addSource(savedNote, value -> emitUiState());
+    uiState.addSource(noteDraft, value -> emitUiState());
+    uiState.addSource(noteSaving, value -> emitUiState());
     uiState.addSource(notesMode, value -> emitUiState());
     emitUiState();
   }
 
   public LiveData<UiState> getUiState() {
     return uiState;
+  }
+
+  public LiveData<UiMessage> getMessageEvent() {
+    return messageEvent;
   }
 
   public void loadScan(long scanId) {
@@ -94,6 +112,10 @@ public class ScanDisplayViewModel extends ViewModel {
         factsSelectedBreedLabel = null;
         factsRequestCounter++;
         factsState.setValue(new FactsState(FactsStatus.IDLE, null, null));
+        savedNote.setValue("");
+        noteDraft.setValue("");
+        noteSaving.setValue(false);
+        notesMode.setValue(NotesMode.VIEW);
         emitUiState();
       }
       return;
@@ -120,12 +142,92 @@ public class ScanDisplayViewModel extends ViewModel {
       return;
     }
     Scan scan = currentState.scan;
-    if (scan.isFavorite() == favorite) {
+    boolean previousFavorite = scan.isFavorite();
+    if (previousFavorite == favorite) {
       return;
     }
+    final int requestId = ++favoriteRequestCounter;
     scan.setFavorite(favorite);
     emitUiState();
-    scanRepository.update(scan);
+    scanRepository.update(scan)
+        .thenAccept(rowsUpdated -> {
+          if (requestId != favoriteRequestCounter) {
+            return;
+          }
+          if (rowsUpdated == null || rowsUpdated <= 0) {
+            scan.setFavorite(previousFavorite);
+            emitUiState();
+            postMessage("Unable to update favorite right now.");
+          }
+        })
+        .exceptionally(throwable -> {
+          if (requestId == favoriteRequestCounter) {
+            scan.setFavorite(previousFavorite);
+            emitUiState();
+            postMessage("Unable to update favorite right now.");
+          }
+          return null;
+        });
+  }
+
+  public void beginEditNote() {
+    noteDraft.setValue((savedNote.getValue() != null) ? savedNote.getValue() : "");
+    notesMode.setValue(NotesMode.EDIT);
+  }
+
+  public void updateNoteDraft(String value) {
+    noteDraft.setValue((value != null) ? value : "");
+  }
+
+  public void cancelEditNote() {
+    noteDraft.setValue((savedNote.getValue() != null) ? savedNote.getValue() : "");
+    notesMode.setValue(NotesMode.VIEW);
+    noteSaving.setValue(false);
+  }
+
+  public void saveNote() {
+    UiState currentState = uiState.getValue();
+    if (currentState == null || currentState.scan == null) {
+      return;
+    }
+    if (Boolean.TRUE.equals(noteSaving.getValue())) {
+      return;
+    }
+    Scan scan = currentState.scan;
+    String previous = (savedNote.getValue() != null) ? savedNote.getValue() : "";
+    String target = normalizeNote(noteDraft.getValue());
+    if (previous.equals(target)) {
+      notesMode.setValue(NotesMode.VIEW);
+      return;
+    }
+    final int requestId = ++noteSaveRequestCounter;
+    noteSaving.setValue(true);
+    scan.setNote(target);
+    scanRepository.update(scan)
+        .thenAccept(rowsUpdated -> {
+          if (requestId != noteSaveRequestCounter) {
+            return;
+          }
+          noteSaving.postValue(false);
+          if (rowsUpdated == null || rowsUpdated <= 0) {
+            scan.setNote(previous);
+            noteDraft.postValue(previous);
+            postMessage("Unable to save note right now.");
+            return;
+          }
+          savedNote.postValue(target);
+          noteDraft.postValue(target);
+          notesMode.postValue(NotesMode.VIEW);
+        })
+        .exceptionally(throwable -> {
+          if (requestId == noteSaveRequestCounter) {
+            scan.setNote(previous);
+            noteSaving.postValue(false);
+            noteDraft.postValue(previous);
+            postMessage("Unable to save note right now.");
+          }
+          return null;
+        });
   }
 
   private void emitUiState() {
@@ -139,12 +241,18 @@ public class ScanDisplayViewModel extends ViewModel {
         : new FactsState(FactsStatus.IDLE, null, null);
     NotesMode currentNotesMode =
         (notesMode.getValue() != null) ? notesMode.getValue() : NotesMode.VIEW;
+    String currentSavedNote = (savedNote.getValue() != null) ? savedNote.getValue() : "";
+    String currentNoteDraft = (noteDraft.getValue() != null) ? noteDraft.getValue() : "";
+    boolean isNoteSaving = Boolean.TRUE.equals(noteSaving.getValue());
     uiState.setValue(new UiState(
         scanId,
         scan,
         tab,
         currentFactsState,
         currentNotesMode,
+        currentSavedNote,
+        currentNoteDraft,
+        isNoteSaving,
         formatBreedLabel(selectedBreedLabel),
         selectedConfidencePercent
     ));
@@ -152,6 +260,7 @@ public class ScanDisplayViewModel extends ViewModel {
 
   private void onScanChanged(ScanWithPredictions scanWithPredictions) {
     Scan scan = (scanWithPredictions != null) ? scanWithPredictions.getScan() : null;
+    syncNoteFromScan(scan);
     String selectedBreedLabel = getPersistedSelectedBreedLabel(scan);
     if (selectedBreedLabel == null) {
       factsSelectedBreedLabel = null;
@@ -235,6 +344,28 @@ public class ScanDisplayViewModel extends ViewModel {
       return null;
     }
     return selectedBreedLabel.trim();
+  }
+
+  private void syncNoteFromScan(Scan scan) {
+    if (notesMode.getValue() == NotesMode.EDIT) {
+      return;
+    }
+    if (scan == null) {
+      savedNote.setValue("");
+      noteDraft.setValue("");
+      return;
+    }
+    String persisted = normalizeNote(scan.getNote());
+    savedNote.setValue(persisted);
+    noteDraft.setValue(persisted);
+  }
+
+  private String normalizeNote(String value) {
+    return (value == null) ? "" : value.trim();
+  }
+
+  private void postMessage(String message) {
+    messageEvent.postValue(new UiMessage(++messageCounter, message));
   }
 
   private boolean hasDisplayableFacts(BreedInfo breedInfo) {
@@ -324,6 +455,9 @@ public class ScanDisplayViewModel extends ViewModel {
     public final ContentTab selectedTab;
     public final FactsState factsState;
     public final NotesMode notesMode;
+    public final String savedNote;
+    public final String noteDraft;
+    public final boolean noteSaving;
     public final String selectedBreedLabel;
     public final Integer selectedConfidencePercent;
 
@@ -333,6 +467,9 @@ public class ScanDisplayViewModel extends ViewModel {
         @NonNull ContentTab selectedTab,
         @NonNull FactsState factsState,
         @NonNull NotesMode notesMode,
+        @NonNull String savedNote,
+        @NonNull String noteDraft,
+        boolean noteSaving,
         String selectedBreedLabel,
         Integer selectedConfidencePercent
     ) {
@@ -341,6 +478,9 @@ public class ScanDisplayViewModel extends ViewModel {
       this.selectedTab = selectedTab;
       this.factsState = factsState;
       this.notesMode = notesMode;
+      this.savedNote = savedNote;
+      this.noteDraft = noteDraft;
+      this.noteSaving = noteSaving;
       this.selectedBreedLabel = selectedBreedLabel;
       this.selectedConfidencePercent = selectedConfidencePercent;
     }
@@ -356,6 +496,17 @@ public class ScanDisplayViewModel extends ViewModel {
       this.status = status;
       this.breedInfo = breedInfo;
       this.errorMessage = errorMessage;
+    }
+  }
+
+  public static class UiMessage {
+
+    public final long id;
+    public final String message;
+
+    UiMessage(long id, @NonNull String message) {
+      this.id = id;
+      this.message = message;
     }
   }
 

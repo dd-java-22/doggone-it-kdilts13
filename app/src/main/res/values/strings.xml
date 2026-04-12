@@ -71,6 +71,11 @@
   <string name="scan_display_measurement_metric_cm">cm</string>
   <string name="scan_display_measurement_imperial_lb">lb</string>
   <string name="scan_display_measurement_imperial_in">in</string>
+  <string name="scan_display_notes_empty">No notes yet. Tap Edit to add one.</string>
+  <string name="scan_display_notes_hint">Add notes about this scan</string>
+  <string name="scan_display_notes_edit_action">Edit</string>
+  <string name="scan_display_notes_save_action">Save</string>
+  <string name="scan_display_notes_cancel_action">Cancel</string>
   <string name="scan_display_notes_placeholder">Notes will appear here.</string>
   <string name="scan_display_notes_edit_placeholder">Notes editor coming soon.</string>
   <string name="scans_gallery_empty">No saved scans yet.</string>

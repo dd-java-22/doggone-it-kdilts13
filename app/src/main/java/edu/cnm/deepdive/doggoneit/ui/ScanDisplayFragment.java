@@ -17,10 +17,13 @@ package edu.cnm.deepdive.doggoneit.ui;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -45,6 +48,9 @@ public class ScanDisplayFragment extends Fragment {
   private ScanDisplayFragmentArgs navArgs;
   private ScanDisplayViewModel viewModel;
   private boolean updatingFavoriteControl;
+  private boolean updatingNoteInput;
+  private long lastMessageId;
+  private TextWatcher noteWatcher;
 
   @Override
   public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -75,10 +81,15 @@ public class ScanDisplayFragment extends Fragment {
     }
     setupControls();
     viewModel.getUiState().observe(getViewLifecycleOwner(), this::renderState);
+    viewModel.getMessageEvent().observe(getViewLifecycleOwner(), this::renderMessage);
   }
 
   @Override
   public void onDestroyView() {
+    if (noteWatcher != null) {
+      binding.notesEditInput.removeTextChangedListener(noteWatcher);
+      noteWatcher = null;
+    }
     navArgs = null;
     binding = null;
     super.onDestroyView();
@@ -134,6 +145,27 @@ public class ScanDisplayFragment extends Fragment {
         viewModel.setSelectedTab(ScanDisplayViewModel.ContentTab.NOTES);
       }
     });
+    binding.notesEditButton.setOnClickListener(v -> viewModel.beginEditNote());
+    binding.notesCancelButton.setOnClickListener(v -> viewModel.cancelEditNote());
+    binding.notesSaveButton.setOnClickListener(v -> viewModel.saveNote());
+    noteWatcher = new TextWatcher() {
+      @Override
+      public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+      }
+
+      @Override
+      public void onTextChanged(CharSequence s, int start, int before, int count) {
+      }
+
+      @Override
+      public void afterTextChanged(Editable s) {
+        if (updatingNoteInput) {
+          return;
+        }
+        viewModel.updateNoteDraft((s != null) ? s.toString() : "");
+      }
+    };
+    binding.notesEditInput.addTextChangedListener(noteWatcher);
   }
 
   private void renderState(ScanDisplayViewModel.UiState state) {
@@ -184,18 +216,67 @@ public class ScanDisplayFragment extends Fragment {
       binding.factsLoadingIndicator.setVisibility(View.GONE);
       binding.factsPlaceholderText.setVisibility(View.GONE);
       binding.factsDetailsText.setVisibility(View.GONE);
-      binding.notesPlaceholderText.setVisibility(View.VISIBLE);
+      renderNotesState(state);
     } else {
       if (binding.contentTabGroup.getCheckedButtonId() != R.id.tab_facts) {
         binding.contentTabGroup.check(R.id.tab_facts);
       }
       renderFactsState(state.factsState);
       binding.notesPlaceholderText.setVisibility(View.GONE);
+      binding.notesViewText.setVisibility(View.GONE);
+      binding.notesEditInput.setVisibility(View.GONE);
+      binding.notesActionsRow.setVisibility(View.GONE);
     }
-    if (state.notesMode == ScanDisplayViewModel.NotesMode.EDIT) {
-      binding.notesPlaceholderText.setText(R.string.scan_display_notes_edit_placeholder);
+  }
+
+  private void renderNotesState(ScanDisplayViewModel.UiState state) {
+    boolean isEditing = state.notesMode == ScanDisplayViewModel.NotesMode.EDIT;
+    String savedNote = (state.savedNote != null) ? state.savedNote : "";
+    String draftNote = (state.noteDraft != null) ? state.noteDraft : "";
+    boolean hasSavedNote = !savedNote.isBlank();
+
+    binding.notesActionsRow.setVisibility(View.VISIBLE);
+    if (isEditing) {
+      binding.notesPlaceholderText.setVisibility(View.GONE);
+      binding.notesViewText.setVisibility(View.GONE);
+      binding.notesEditInput.setVisibility(View.VISIBLE);
+      updatingNoteInput = true;
+      if (!binding.notesEditInput.getText().toString().equals(draftNote)) {
+        binding.notesEditInput.setText(draftNote);
+        binding.notesEditInput.setSelection(draftNote.length());
+      }
+      updatingNoteInput = false;
+      binding.notesEditButton.setVisibility(View.GONE);
+      binding.notesCancelButton.setVisibility(View.VISIBLE);
+      binding.notesSaveButton.setVisibility(View.VISIBLE);
+      binding.notesSaveButton.setEnabled(!state.noteSaving);
+      binding.notesCancelButton.setEnabled(!state.noteSaving);
+      binding.notesEditInput.setEnabled(!state.noteSaving);
     } else {
-      binding.notesPlaceholderText.setText(R.string.scan_display_notes_placeholder);
+      binding.notesEditInput.setVisibility(View.GONE);
+      binding.notesEditButton.setVisibility(View.VISIBLE);
+      binding.notesCancelButton.setVisibility(View.GONE);
+      binding.notesSaveButton.setVisibility(View.GONE);
+      binding.notesEditButton.setEnabled(true);
+      if (hasSavedNote) {
+        binding.notesPlaceholderText.setVisibility(View.GONE);
+        binding.notesViewText.setVisibility(View.VISIBLE);
+        binding.notesViewText.setText(savedNote);
+      } else {
+        binding.notesViewText.setVisibility(View.GONE);
+        binding.notesPlaceholderText.setVisibility(View.VISIBLE);
+        binding.notesPlaceholderText.setText(R.string.scan_display_notes_empty);
+      }
+    }
+  }
+
+  private void renderMessage(ScanDisplayViewModel.UiMessage message) {
+    if (message == null || message.id <= lastMessageId || binding == null) {
+      return;
+    }
+    lastMessageId = message.id;
+    if (message.message != null && !message.message.isBlank()) {
+      Toast.makeText(requireContext(), message.message, Toast.LENGTH_SHORT).show();
     }
   }
 

@@ -148,6 +148,56 @@
         android:text="@string/scan_display_notes_placeholder"
         android:visibility="gone"/>
 
+      <TextView
+        android:id="@+id/notes_view_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?attr/textAppearanceBodyMedium"
+        android:visibility="gone"/>
+
+      <EditText
+        android:id="@+id/notes_edit_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="top|start"
+        android:hint="@string/scan_display_notes_hint"
+        android:inputType="textCapSentences|textMultiLine"
+        android:minLines="4"
+        android:visibility="gone"/>
+
+      <LinearLayout
+        android:id="@+id/notes_actions_row"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:gravity="end"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <com.google.android.material.button.MaterialButton
+          android:id="@+id/notes_edit_button"
+          style="@style/Widget.Material3.Button.OutlinedButton"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="@string/scan_display_notes_edit_action"/>
+
+        <com.google.android.material.button.MaterialButton
+          android:id="@+id/notes_cancel_button"
+          style="@style/Widget.Material3.Button.OutlinedButton"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginStart="8dp"
+          android:text="@string/scan_display_notes_cancel_action"/>
+
+        <com.google.android.material.button.MaterialButton
+          android:id="@+id/notes_save_button"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginStart="8dp"
+          android:text="@string/scan_display_notes_save_action"/>
+
+      </LinearLayout>
+
     </LinearLayout>
 
   </LinearLayout>
