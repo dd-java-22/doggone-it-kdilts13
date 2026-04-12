@@ -11,6 +11,8 @@ public interface BreedInfoRepository {
 
   LiveData<BreedInfo> getByDogApiBreedId(long dogApiBreedId);
 
+  CompletableFuture<BreedInfo> getByDogApiBreedIdNow(long dogApiBreedId);
+
   LiveData<List<BreedInfo>> getByNameFragment(String nameFragment);
 
   LiveData<List<BreedInfo>> getAll();

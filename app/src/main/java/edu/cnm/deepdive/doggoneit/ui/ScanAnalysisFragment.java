@@ -39,14 +39,15 @@ import edu.cnm.deepdive.doggoneit.ml.DogBreedInference;
 import edu.cnm.deepdive.doggoneit.ml.DogBreedInferenceResult;
 import edu.cnm.deepdive.doggoneit.ml.DogBreedPrediction;
 import edu.cnm.deepdive.doggoneit.model.entity.BreedInfo;
+import edu.cnm.deepdive.doggoneit.model.entity.BreedMapping;
 import edu.cnm.deepdive.doggoneit.model.entity.BreedPrediction;
 import edu.cnm.deepdive.doggoneit.model.entity.Scan;
 import edu.cnm.deepdive.doggoneit.model.entity.ScanWithPredictions;
 import edu.cnm.deepdive.doggoneit.service.dogapi.BreedDetailsMapper;
 import edu.cnm.deepdive.doggoneit.service.dogapi.DogApiService;
 import edu.cnm.deepdive.doggoneit.service.dogapi.dto.BreedDetailsDto;
-import edu.cnm.deepdive.doggoneit.service.dogapi.dto.BreedSearchResultDto;
 import edu.cnm.deepdive.doggoneit.service.repository.BreedInfoRepository;
+import edu.cnm.deepdive.doggoneit.service.repository.BreedMappingRepository;
 import edu.cnm.deepdive.doggoneit.service.repository.ScanRepository;
 import edu.cnm.deepdive.doggoneit.service.repository.UserSessionRepository;
 import edu.cnm.deepdive.doggoneit.storage.ImageStorage;
@@ -63,7 +64,6 @@ import retrofit2.Response;
 public class ScanAnalysisFragment extends Fragment {
 
   private static final String TAG = ScanAnalysisFragment.class.getSimpleName();
-  private static final String TEST_BREED_QUERY = "beagle";
 
   private enum AnalysisState {
     IDLE,
@@ -86,6 +86,8 @@ public class ScanAnalysisFragment extends Fragment {
   ScanRepository scanRepository;
   @Inject
   BreedInfoRepository breedInfoRepository;
+  @Inject
+  BreedMappingRepository breedMappingRepository;
   @Inject
   UserSessionRepository userSessionRepository;
   @Inject
@@ -147,28 +149,32 @@ public class ScanAnalysisFragment extends Fragment {
   }
 
   private void onTestDogApiClicked() {
-    Log.d(TAG, "Starting temporary Dog API test for query: " + TEST_BREED_QUERY);
+    String topPredictedLabel = getTopPredictedLabel();
+    if (topPredictedLabel == null) {
+      postAnalysisOutput("No prediction is available yet. Run analysis first.");
+      return;
+    }
+    Log.d(TAG, "Starting temporary Dog API test for predicted label: " + topPredictedLabel);
     binding.analysisOutputText.setText(R.string.test_dog_api_loading);
     dogApiExecutor.execute(() -> {
       try {
-        Response<List<BreedSearchResultDto>> searchResponse =
-            dogApiService.searchBreeds(TEST_BREED_QUERY).execute();
-        if (!searchResponse.isSuccessful()) {
-          throw new IllegalStateException(
-              "Breed search failed with code " + searchResponse.code());
-        }
-        List<BreedSearchResultDto> breeds = searchResponse.body();
-        if (breeds == null || breeds.isEmpty()) {
-          postAnalysisOutput(getString(R.string.test_dog_api_no_breed_found, TEST_BREED_QUERY));
-          Log.d(TAG, "No breed found for query: " + TEST_BREED_QUERY);
+        BreedMapping mapping = breedMappingRepository.getByModelLabelNow(topPredictedLabel).join();
+        if (mapping == null) {
+          Log.w(TAG, "Missing Dog API mapping for predicted label: " + topPredictedLabel);
+          postAnalysisOutput("No Dog API mapping is available for predicted label: "
+              + topPredictedLabel);
           return;
         }
 
-        BreedSearchResultDto breed = breeds.get(0);
-        String breedName = breed.getName();
-        Log.d(TAG, "Dog API breed search returned id=" + breed.getId() + ", name=" + breedName);
+        long dogApiBreedId = mapping.getDogApiBreedId();
+        BreedInfo cached = breedInfoRepository.getByDogApiBreedIdNow(dogApiBreedId).join();
+        if (cached != null) {
+          Log.d(TAG, "Using cached breed info for id=" + dogApiBreedId);
+          postAnalysisOutput(formatBreedInfo(cached, topPredictedLabel));
+          return;
+        }
 
-        Response<BreedDetailsDto> detailsResponse = dogApiService.getBreedDetails(breed.getId())
+        Response<BreedDetailsDto> detailsResponse = dogApiService.getBreedDetails(dogApiBreedId)
             .execute();
         if (!detailsResponse.isSuccessful()) {
           throw new IllegalStateException(
@@ -176,14 +182,22 @@ public class ScanAnalysisFragment extends Fragment {
         }
         BreedDetailsDto details = detailsResponse.body();
         if (details == null) {
-          postAnalysisOutput("Breed details response was empty for: " + breedName);
-          Log.d(TAG, "Breed details response body was null for breed: " + breedName);
+          postAnalysisOutput("Breed details response was empty for predicted label: "
+              + topPredictedLabel);
+          Log.d(TAG, "Breed details response body was null for id: " + dogApiBreedId);
           return;
         }
 
-        Log.d(TAG, "Dog API details received for breed: " + breedName);
-        cacheBreedInfo(details);
-        postAnalysisOutput(formatBreedDetails(details, breedName));
+        BreedInfo breedInfo = BreedDetailsMapper.toBreedInfo(details);
+        if (breedInfo == null) {
+          postAnalysisOutput("Breed details response was malformed for predicted label: "
+              + topPredictedLabel);
+          Log.w(TAG, "Unable to map breed details for id: " + dogApiBreedId);
+          return;
+        }
+        breedInfoRepository.saveOrUpdate(breedInfo).join();
+        Log.d(TAG, "Fetched and cached breed info for id=" + dogApiBreedId);
+        postAnalysisOutput(formatBreedInfo(breedInfo, topPredictedLabel));
       } catch (Exception e) {
         Log.e(TAG, "Dog API test request failed", e);
         String message = e.getMessage();
@@ -195,12 +209,17 @@ public class ScanAnalysisFragment extends Fragment {
     });
   }
 
-  private void cacheBreedInfo(BreedDetailsDto details) {
-    BreedInfo breedInfo = BreedDetailsMapper.toBreedInfo(details);
-    if (breedInfo == null) {
-      return;
+  private String getTopPredictedLabel() {
+    if (currentResult == null || currentResult.topPredictions() == null
+        || currentResult.topPredictions().isEmpty()) {
+      return null;
     }
-    breedInfoRepository.saveOrUpdate(breedInfo).join();
+    DogBreedPrediction topPrediction = currentResult.topPredictions().get(0);
+    if (topPrediction == null) {
+      return null;
+    }
+    String label = topPrediction.label();
+    return (label == null || label.isBlank()) ? null : label;
   }
 
   private void runInference(Context appContext, Uri imageUri) {
@@ -350,22 +369,14 @@ public class ScanAnalysisFragment extends Fragment {
     }
   }
 
-  private String formatBreedDetails(BreedDetailsDto details, String fallbackName) {
+  private String formatBreedInfo(BreedInfo info, String fallbackName) {
     StringBuilder builder = new StringBuilder();
-    appendLine(builder, "Breed", firstNonBlank(details.getName(), fallbackName, "Unknown"));
-    appendLine(builder, "Group", valueOrUnknown(details.getBreedGroup()));
-    appendLine(builder, "Weight (metric)", valueOrUnknown(
-        details.getWeight() != null ? details.getWeight().getMetric() : null));
-    appendLine(builder, "Weight (imperial)", valueOrUnknown(
-        details.getWeight() != null ? details.getWeight().getImperial() : null));
-    appendLine(builder, "Height (metric)", valueOrUnknown(
-        details.getHeight() != null ? details.getHeight().getMetric() : null));
-    appendLine(builder, "Height (imperial)", valueOrUnknown(
-        details.getHeight() != null ? details.getHeight().getImperial() : null));
-    appendLine(builder, "Life span", valueOrUnknown(details.getLifeSpan()));
-    appendLine(builder, "Temperament", valueOrUnknown(details.getTemperament()));
-    appendLine(builder, "Bred for", valueOrUnknown(details.getBredFor()));
-    appendLine(builder, "Origin", valueOrUnknown(details.getOrigin()));
+    appendLine(builder, "Breed", firstNonBlank(info.getName(), fallbackName, "Unknown"));
+    appendLine(builder, "Group", info.getBreedGroup());
+    appendLine(builder, "Life span", info.getLifeSpan());
+    appendLine(builder, "Temperament", info.getTemperament());
+    appendLine(builder, "Bred for", info.getBredFor());
+    appendLine(builder, "Origin", info.getOrigin());
     return builder.toString();
   }
 
@@ -377,10 +388,6 @@ public class ScanAnalysisFragment extends Fragment {
       builder.append('\n');
     }
     builder.append(label).append(": ").append(value);
-  }
-
-  private static String valueOrUnknown(String value) {
-    return (value == null || value.isBlank()) ? "Unknown" : value;
   }
 
   private static String firstNonBlank(String... values) {

@@ -29,6 +29,11 @@ public class BreedInfoRepositoryImpl implements BreedInfoRepository {
   }
 
   @Override
+  public CompletableFuture<BreedInfo> getByDogApiBreedIdNow(long dogApiBreedId) {
+    return CompletableFuture.supplyAsync(() -> breedInfoDao.findByDogApiBreedIdNow(dogApiBreedId));
+  }
+
+  @Override
   public LiveData<List<BreedInfo>> getByNameFragment(String nameFragment) {
     return breedInfoDao.findByNameFragment(nameFragment);
   }
