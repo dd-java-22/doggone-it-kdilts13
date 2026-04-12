@@ -1,5 +1,6 @@
 package edu.cnm.deepdive.doggoneit.service.dogapi;
 
+import android.util.Log;
 import dagger.Module;
 import dagger.Provides;
 import dagger.hilt.InstallIn;
@@ -18,6 +19,7 @@ public class DogApiModule {
 
   private static final String BASE_URL = "https://api.thedogapi.com/";
   private static final String API_KEY_HEADER = "x-api-key";
+  private static final String HTTP_LOG_TAG = "DogApiHttp";
 
   @Provides
   @Singleton
@@ -29,8 +31,20 @@ public class DogApiModule {
           .build();
       return chain.proceed(request);
     };
+    Interceptor httpDebugInterceptor = (chain) -> {
+      Request request = chain.request();
+      if (BuildConfig.DEBUG) {
+        Log.i(HTTP_LOG_TAG, request.method() + " " + request.url());
+      }
+      okhttp3.Response response = chain.proceed(request);
+      if (BuildConfig.DEBUG) {
+        Log.i(HTTP_LOG_TAG, "Response code: " + response.code() + " for " + request.url());
+      }
+      return response;
+    };
     return new OkHttpClient.Builder()
         .addInterceptor(apiKeyInterceptor)
+        .addInterceptor(httpDebugInterceptor)
         .build();
   }
 
