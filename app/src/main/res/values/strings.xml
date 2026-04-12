@@ -98,6 +98,13 @@
   <string name="settings_sort_by">Sort by</string>
   <string name="settings_sort_direction">Sort direction</string>
   <string name="settings_gallery_columns">Gallery columns</string>
+  <string name="settings_sort_field_date_created">Date created</string>
+  <string name="settings_sort_field_breed_name">Breed name</string>
+  <string name="settings_sort_direction_descending">Descending</string>
+  <string name="settings_sort_direction_ascending">Ascending</string>
+  <string name="settings_gallery_columns_2">2</string>
+  <string name="settings_gallery_columns_3">3</string>
+  <string name="settings_gallery_columns_4">4</string>
   <string name="logout_action">Log out</string>
 
   <string-array name="settings_sort_field_entries">
