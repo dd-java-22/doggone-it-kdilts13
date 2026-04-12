@@ -159,10 +159,7 @@ public class ScansGalleryViewModel extends ViewModel {
   private Comparator<ScanGalleryItem> getComparator() {
     Comparator<ScanGalleryItem> comparator;
     if (sortField.getValue() == SortField.BREED) {
-      comparator = Comparator
-          .comparing(this::breedValue, String.CASE_INSENSITIVE_ORDER)
-          .thenComparing(this::timestampValue)
-          .thenComparingLong(ScanGalleryItem::getScanId);
+      comparator = this::compareByBreed;
     } else {
       comparator = Comparator
           .comparing(this::timestampValue)
@@ -173,6 +170,45 @@ public class ScansGalleryViewModel extends ViewModel {
       comparator = comparator.reversed();
     }
     return comparator;
+  }
+
+  private int compareByBreed(ScanGalleryItem first, ScanGalleryItem second) {
+    String firstBreed = breedValue(first);
+    String secondBreed = breedValue(second);
+    boolean firstBlank = firstBreed.isBlank();
+    boolean secondBlank = secondBreed.isBlank();
+
+    if (firstBlank && secondBlank) {
+      return compareBreedTieBreakers(first, second);
+    } else if (firstBlank) {
+      return 1;
+    } else if (secondBlank) {
+      return -1;
+    }
+
+    int breedComparison = String.CASE_INSENSITIVE_ORDER.compare(firstBreed, secondBreed);
+    if (sortDirection.getValue() == SortDirection.DESCENDING) {
+      breedComparison = -breedComparison;
+    }
+    if (breedComparison != 0) {
+      return breedComparison;
+    }
+    return compareBreedTieBreakers(first, second);
+  }
+
+  private int compareBreedTieBreakers(ScanGalleryItem first, ScanGalleryItem second) {
+    int timestampComparison = timestampValue(first).compareTo(timestampValue(second));
+    int idComparison = Long.compare(first.getScanId(), second.getScanId());
+    if (sortDirection.getValue() == SortDirection.DESCENDING) {
+      if (timestampComparison != 0) {
+        return -timestampComparison;
+      }
+      return -idComparison;
+    }
+    if (timestampComparison != 0) {
+      return timestampComparison;
+    }
+    return idComparison;
   }
 
   private Instant timestampValue(ScanGalleryItem item) {
