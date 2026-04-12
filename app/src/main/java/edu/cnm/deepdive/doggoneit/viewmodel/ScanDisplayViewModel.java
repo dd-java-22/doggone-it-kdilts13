@@ -165,7 +165,6 @@ public class ScanDisplayViewModel extends ViewModel {
           favoriteSaving.postValue(false);
           if (rowsUpdated == null || rowsUpdated <= 0) {
             scan.setFavorite(previousFavorite);
-            emitUiState();
             postMessage("Unable to update favorite right now.");
           }
         })
@@ -173,7 +172,6 @@ public class ScanDisplayViewModel extends ViewModel {
           if (requestId == favoriteRequestCounter) {
             favoriteSaving.postValue(false);
             scan.setFavorite(previousFavorite);
-            emitUiState();
             postMessage("Unable to update favorite right now.");
           }
           return null;
