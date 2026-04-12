@@ -73,6 +73,7 @@ public class ScanAnalysisFragment extends Fragment {
   private Context appContext;
   private Uri currentImageUri;
   private DogBreedInferenceResult currentResult;
+  private boolean isSaving;
   private AnalysisState analysisState = AnalysisState.IDLE;
   @Inject
   ScanRepository scanRepository;
@@ -114,6 +115,7 @@ public class ScanAnalysisFragment extends Fragment {
     appContext = requireContext().getApplicationContext();
     currentImageUri = parsedUri;
     currentResult = null;
+    isSaving = false;
     analysisState = AnalysisState.IDLE;
     binding.capturedImage.setImageURI(parsedUri);
     binding.capturedImage.setVisibility(View.VISIBLE);
@@ -181,10 +183,11 @@ public class ScanAnalysisFragment extends Fragment {
   }
 
   private void onSaveClicked() {
-    if (!canSave()) {
+    if (isSaving || !canSave()) {
       showSaveMissing();
       return;
     }
+    setSavingInProgress(true);
     Toast.makeText(requireContext(), R.string.save_image_saving, Toast.LENGTH_SHORT).show();
     saveExecutor.execute(() -> {
       Uri savedUri = null;
@@ -215,6 +218,7 @@ public class ScanAnalysisFragment extends Fragment {
           }
           long scanId = (saved != null && saved.getScan() != null) ? saved.getScan().getId() : 0;
           if (scanId <= 0) {
+            setSavingInProgress(false);
             String errorText = getString(R.string.save_image_failed, "Missing scan ID");
             Toast.makeText(requireContext(), errorText, Toast.LENGTH_LONG).show();
             return;
@@ -234,6 +238,7 @@ public class ScanAnalysisFragment extends Fragment {
         String errorText = getString(R.string.save_image_failed, message);
         mainHandler.post(() -> {
           if (binding != null) {
+            setSavingInProgress(false);
             Toast.makeText(requireContext(), errorText, Toast.LENGTH_LONG).show();
           }
         });
@@ -248,6 +253,7 @@ public class ScanAnalysisFragment extends Fragment {
   private void clearAnalysisState() {
     currentImageUri = null;
     currentResult = null;
+    isSaving = false;
     analysisState = AnalysisState.IDLE;
     predictionAdapter.submitItems(List.of(), 0);
   }
@@ -260,6 +266,7 @@ public class ScanAnalysisFragment extends Fragment {
 
   private boolean canSave() {
     return analysisState == AnalysisState.ANALYSIS_READY
+        && !isSaving
         && currentResult != null
         && currentImageUri != null
         && appContext != null
@@ -336,6 +343,17 @@ public class ScanAnalysisFragment extends Fragment {
     binding.analysisLoadingContainer.setVisibility(View.GONE);
     binding.analysisProgress.setVisibility(View.GONE);
     binding.analysisStatusText.setText("");
+  }
+
+  private void setSavingInProgress(boolean saving) {
+    isSaving = saving;
+    if (saving) {
+      showStatus(getString(R.string.save_image_saving), true);
+    } else if (analysisState == AnalysisState.ANALYSIS_READY) {
+      hideStatus();
+      binding.predictionsList.setVisibility(View.VISIBLE);
+    }
+    updateSaveButtonState();
   }
 
   private String toFriendlyBreedName(String rawLabel) {
