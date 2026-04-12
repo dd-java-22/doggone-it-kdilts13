@@ -16,7 +16,10 @@
 package edu.cnm.deepdive.doggoneit;
 
 import android.app.Application;
+import android.util.Log;
+import edu.cnm.deepdive.doggoneit.service.repository.BreedMappingRepository;
 import dagger.hilt.android.HiltAndroidApp;
+import javax.inject.Inject;
 
 /**
  * Initializes (in the {@link #onCreate()} method) application-level resources that cannot be
@@ -26,9 +29,24 @@ import dagger.hilt.android.HiltAndroidApp;
 @HiltAndroidApp
 public class DoggoneItApplication extends Application {
 
+  private static final String TAG = DoggoneItApplication.class.getSimpleName();
+
+  @Inject
+  BreedMappingRepository breedMappingRepository;
+
   @Override
   public void onCreate() {
     super.onCreate();
+    breedMappingRepository.ensureBreedMappingsSeeded()
+        .thenAccept(inserted -> {
+          if (inserted > 0) {
+            Log.i(TAG, "Seeded " + inserted + " breed mappings from assets.");
+          }
+        })
+        .exceptionally(throwable -> {
+          Log.e(TAG, "Failed to seed breed mappings.", throwable);
+          return null;
+        });
   }
 
 }

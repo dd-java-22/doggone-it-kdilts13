@@ -17,6 +17,12 @@ public interface BreedMappingDao {
   @Insert(onConflict = OnConflictStrategy.REPLACE)
   List<Long> insert(BreedMapping... mappings);
 
+  @Insert(onConflict = OnConflictStrategy.REPLACE)
+  List<Long> insertAll(List<BreedMapping> mappings);
+
+  @Query("SELECT COUNT(*) FROM breed_mapping")
+  int count();
+
   @Query("SELECT * FROM breed_mapping WHERE model_label = :modelLabel")
   LiveData<BreedMapping> findByModelLabel(String modelLabel);
 

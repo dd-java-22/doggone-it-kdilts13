@@ -13,4 +13,6 @@ public interface BreedMappingRepository {
   CompletableFuture<BreedMapping> save(BreedMapping mapping);
 
   CompletableFuture<int[]> saveAll(BreedMapping... mappings);
+
+  CompletableFuture<Integer> ensureBreedMappingsSeeded();
 }

@@ -1,8 +1,10 @@
 package edu.cnm.deepdive.doggoneit.service.repository;
 
+import android.util.Log;
 import androidx.lifecycle.LiveData;
 import edu.cnm.deepdive.doggoneit.model.dao.BreedMappingDao;
 import edu.cnm.deepdive.doggoneit.model.entity.BreedMapping;
+import edu.cnm.deepdive.doggoneit.service.seed.BreedMappingSeedLoader;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import javax.inject.Inject;
@@ -11,11 +13,15 @@ import javax.inject.Singleton;
 @Singleton
 public class BreedMappingRepositoryImpl implements BreedMappingRepository {
 
+  private static final String TAG = BreedMappingRepositoryImpl.class.getSimpleName();
+
   private final BreedMappingDao breedMappingDao;
+  private final BreedMappingSeedLoader seedLoader;
 
   @Inject
-  BreedMappingRepositoryImpl(BreedMappingDao breedMappingDao) {
+  BreedMappingRepositoryImpl(BreedMappingDao breedMappingDao, BreedMappingSeedLoader seedLoader) {
     this.breedMappingDao = breedMappingDao;
+    this.seedLoader = seedLoader;
   }
 
   @Override
@@ -45,6 +51,21 @@ public class BreedMappingRepositoryImpl implements BreedMappingRepository {
         results[i] = (ids.get(i) > 0) ? 1 : 0;
       }
       return results;
+    });
+  }
+
+  @Override
+  public CompletableFuture<Integer> ensureBreedMappingsSeeded() {
+    return CompletableFuture.supplyAsync(() -> {
+      if (breedMappingDao.count() > 0) {
+        return 0;
+      }
+      List<BreedMapping> mappings = seedLoader.loadMappings();
+      if (mappings.isEmpty()) {
+        Log.e(TAG, "Breed mapping seed failed or returned no rows.");
+        return 0;
+      }
+      return breedMappingDao.insertAll(mappings).size();
     });
   }
 }
