@@ -17,7 +17,7 @@
   },
   {
     "modelLabel": "Australian_terrier",
-    "dogApiBreedId": 23
+    "dogApiBreedId": 24
   },
   {
     "modelLabel": "Bedlington_terrier",
@@ -25,7 +25,7 @@
   },
   {
     "modelLabel": "Bernese_mountain_dog",
-    "dogApiBreedId": 35
+    "dogApiBreedId": 41
   },
   {
     "modelLabel": "Blenheim_spaniel",
@@ -49,7 +49,7 @@
   },
   {
     "modelLabel": "Brittany_spaniel",
-    "dogApiBreedId": 55
+    "dogApiBreedId": 59
   },
   {
     "modelLabel": "Cardigan",
@@ -57,7 +57,7 @@
   },
   {
     "modelLabel": "Chesapeake_Bay_retriever",
-    "dogApiBreedId": 73
+    "dogApiBreedId": 76
   },
   {
     "modelLabel": "Doberman",
@@ -117,7 +117,7 @@
   },
   {
     "modelLabel": "Japanese_spaniel",
-    "dogApiBreedId": 105
+    "dogApiBreedId": 140
   },
   {
     "modelLabel": "Labrador_retriever",
@@ -137,31 +137,31 @@
   },
   {
     "modelLabel": "Mexican_hairless",
-    "dogApiBreedId": 238
+    "dogApiBreedId": 262
   },
   {
     "modelLabel": "Newfoundland",
-    "dogApiBreedId": 166
-  },
-  {
-    "modelLabel": "Norfolk_terrier",
-    "dogApiBreedId": 167
-  },
-  {
-    "modelLabel": "Norwich_terrier",
-    "dogApiBreedId": 169
-  },
-  {
-    "modelLabel": "Old_English_sheepdog",
-    "dogApiBreedId": 170
-  },
-  {
-    "modelLabel": "Pekinese",
     "dogApiBreedId": 171
   },
   {
+    "modelLabel": "Norfolk_terrier",
+    "dogApiBreedId": 172
+  },
+  {
+    "modelLabel": "Norwich_terrier",
+    "dogApiBreedId": 176
+  },
+  {
+    "modelLabel": "Old_English_sheepdog",
+    "dogApiBreedId": 178
+  },
+  {
+    "modelLabel": "Pekinese",
+    "dogApiBreedId": 183
+  },
+  {
     "modelLabel": "Pembroke",
-    "dogApiBreedId": 189
+    "dogApiBreedId": 184
   },
   {
     "modelLabel": "Pomeranian",
@@ -169,71 +169,71 @@
   },
   {
     "modelLabel": "Rhodesian_ridgeback",
-    "dogApiBreedId": 197
-  },
-  {
-    "modelLabel": "Rottweiler",
-    "dogApiBreedId": 198
-  },
-  {
-    "modelLabel": "Saint_Bernard",
-    "dogApiBreedId": 201
-  },
-  {
-    "modelLabel": "Saluki",
-    "dogApiBreedId": 202
-  },
-  {
-    "modelLabel": "Samoyed",
-    "dogApiBreedId": 203
-  },
-  {
-    "modelLabel": "Scotch_terrier",
-    "dogApiBreedId": 204
-  },
-  {
-    "modelLabel": "Scottish_deerhound",
-    "dogApiBreedId": 205
-  },
-  {
-    "modelLabel": "Shetland_sheepdog",
-    "dogApiBreedId": 206
-  },
-  {
-    "modelLabel": "Shih-Tzu",
     "dogApiBreedId": 209
   },
   {
-    "modelLabel": "Siberian_husky",
+    "modelLabel": "Rottweiler",
+    "dogApiBreedId": 210
+  },
+  {
+    "modelLabel": "Saint_Bernard",
     "dogApiBreedId": 212
   },
   {
-    "modelLabel": "Staffordshire_bullterrier",
+    "modelLabel": "Saluki",
     "dogApiBreedId": 213
   },
   {
-    "modelLabel": "Tibetan_mastiff",
-    "dogApiBreedId": 222
+    "modelLabel": "Samoyed",
+    "dogApiBreedId": 214
   },
   {
-    "modelLabel": "Tibetan_terrier",
+    "modelLabel": "Scotch_terrier",
+    "dogApiBreedId": 219
+  },
+  {
+    "modelLabel": "Scottish_deerhound",
+    "dogApiBreedId": 218
+  },
+  {
+    "modelLabel": "Shetland_sheepdog",
+    "dogApiBreedId": 221
+  },
+  {
+    "modelLabel": "Shih-Tzu",
     "dogApiBreedId": 223
   },
   {
-    "modelLabel": "Weimaraner",
+    "modelLabel": "Siberian_husky",
     "dogApiBreedId": 226
   },
   {
+    "modelLabel": "Staffordshire_bullterrier",
+    "dogApiBreedId": 238
+  },
+  {
+    "modelLabel": "Tibetan_mastiff",
+    "dogApiBreedId": 244
+  },
+  {
+    "modelLabel": "Tibetan_terrier",
+    "dogApiBreedId": 246
+  },
+  {
+    "modelLabel": "Weimaraner",
+    "dogApiBreedId": 253
+  },
+  {
     "modelLabel": "Welsh_springer_spaniel",
-    "dogApiBreedId": 227
+    "dogApiBreedId": 254
   },
   {
     "modelLabel": "West_Highland_white_terrier",
-    "dogApiBreedId": 228
+    "dogApiBreedId": 256
   },
   {
     "modelLabel": "Yorkshire_terrier",
-    "dogApiBreedId": 230
+    "dogApiBreedId": 264
   },
   {
     "modelLabel": "affenpinscher",
@@ -245,7 +245,7 @@
   },
   {
     "modelLabel": "basset",
-    "dogApiBreedId": 29
+    "dogApiBreedId": 30
   },
   {
     "modelLabel": "beagle",
@@ -257,15 +257,15 @@
   },
   {
     "modelLabel": "bluetick",
-    "dogApiBreedId": 46
+    "dogApiBreedId": 47
   },
   {
     "modelLabel": "boxer",
-    "dogApiBreedId": 56
+    "dogApiBreedId": 55
   },
   {
     "modelLabel": "briard",
-    "dogApiBreedId": 57
+    "dogApiBreedId": 58
   },
   {
     "modelLabel": "bull_mastiff",
@@ -281,19 +281,15 @@
   },
   {
     "modelLabel": "clumber",
-    "dogApiBreedId": 83
+    "dogApiBreedId": 84
   },
   {
     "modelLabel": "cocker_spaniel",
-    "dogApiBreedId": 87
-  },
-  {
-    "modelLabel": "flat-coated_retriever",
-    "dogApiBreedId": 110
+    "dogApiBreedId": 86
   },
   {
     "modelLabel": "giant_schnauzer",
-    "dogApiBreedId": 120
+    "dogApiBreedId": 119
   },
   {
     "modelLabel": "golden_retriever",
@@ -301,7 +297,7 @@
   },
   {
     "modelLabel": "keeshond",
-    "dogApiBreedId": 144
+    "dogApiBreedId": 142
   },
   {
     "modelLabel": "kelpie",
@@ -309,11 +305,11 @@
   },
   {
     "modelLabel": "komondor",
-    "dogApiBreedId": 147
+    "dogApiBreedId": 144
   },
   {
     "modelLabel": "kuvasz",
-    "dogApiBreedId": 148
+    "dogApiBreedId": 147
   },
   {
     "modelLabel": "malamute",
@@ -321,19 +317,19 @@
   },
   {
     "modelLabel": "malinois",
-    "dogApiBreedId": 159
+    "dogApiBreedId": 36
   },
   {
     "modelLabel": "miniature_pinscher",
-    "dogApiBreedId": 160
+    "dogApiBreedId": 167
   },
   {
     "modelLabel": "miniature_poodle",
-    "dogApiBreedId": 161
+    "dogApiBreedId": 196
   },
   {
     "modelLabel": "miniature_schnauzer",
-    "dogApiBreedId": 162
+    "dogApiBreedId": 168
   },
   {
     "modelLabel": "papillon",
@@ -341,46 +337,46 @@
   },
   {
     "modelLabel": "pug",
-    "dogApiBreedId": 185
+    "dogApiBreedId": 201
   },
   {
     "modelLabel": "redbone",
-    "dogApiBreedId": 196
+    "dogApiBreedId": 208
   },
   {
     "modelLabel": "schipperke",
-    "dogApiBreedId": 207
+    "dogApiBreedId": 216
   },
   {
     "modelLabel": "silky_terrier",
-    "dogApiBreedId": 210
+    "dogApiBreedId": 228
   },
   {
     "modelLabel": "soft-coated_wheaten_terrier",
-    "dogApiBreedId": 214
+    "dogApiBreedId": 233
   },
   {
     "modelLabel": "standard_schnauzer",
-    "dogApiBreedId": 215
+    "dogApiBreedId": 239
   },
   {
     "modelLabel": "toy_poodle",
-    "dogApiBreedId": 217
+    "dogApiBreedId": 197
   },
   {
     "modelLabel": "toy_terrier",
-    "dogApiBreedId": 246
+    "dogApiBreedId": 105
   },
   {
     "modelLabel": "vizsla",
-    "dogApiBreedId": 224
+    "dogApiBreedId": 251
   },
   {
     "modelLabel": "whippet",
-    "dogApiBreedId": 225
+    "dogApiBreedId": 257
   },
   {
     "modelLabel": "wire-haired_fox_terrier",
-    "dogApiBreedId": 229
+    "dogApiBreedId": 259
   }
 ]
