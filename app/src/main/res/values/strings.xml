@@ -95,7 +95,42 @@
   </string-array>
 
   <string name="settings_title">Settings</string>
+  <string name="settings_sort_by">Sort by</string>
+  <string name="settings_sort_direction">Sort direction</string>
+  <string name="settings_gallery_columns">Gallery columns</string>
   <string name="logout_action">Log out</string>
+
+  <string-array name="settings_sort_field_entries">
+    <item>Date created</item>
+    <item>Breed name</item>
+  </string-array>
+
+  <string-array name="settings_sort_field_values">
+    <item>date_created</item>
+    <item>breed_name</item>
+  </string-array>
+
+  <string-array name="settings_sort_direction_entries">
+    <item>Descending</item>
+    <item>Ascending</item>
+  </string-array>
+
+  <string-array name="settings_sort_direction_values">
+    <item>descending</item>
+    <item>ascending</item>
+  </string-array>
+
+  <string-array name="settings_gallery_column_entries">
+    <item>2</item>
+    <item>3</item>
+    <item>4</item>
+  </string-array>
+
+  <string-array name="settings_gallery_column_values">
+    <item>2</item>
+    <item>3</item>
+    <item>4</item>
+  </string-array>
 
   <string name="nav_gallery">Analyze from Gallery</string>
   <string name="nav_saved">View Saved</string>

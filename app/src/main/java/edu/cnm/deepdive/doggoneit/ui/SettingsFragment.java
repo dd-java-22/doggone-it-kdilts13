@@ -31,6 +31,20 @@ import edu.cnm.deepdive.doggoneit.viewmodel.LoginViewModel;
 @AndroidEntryPoint
 public class SettingsFragment extends PreferenceFragmentCompat {
 
+  public static final String PREF_KEY_SORT_FIELD = "pref_default_sort_field";
+  public static final String PREF_KEY_SORT_DIRECTION = "pref_default_sort_direction";
+  public static final String PREF_KEY_GALLERY_COLUMNS = "pref_gallery_column_count";
+  public static final String SORT_FIELD_DATE_CREATED = "date_created";
+  public static final String SORT_FIELD_BREED_NAME = "breed_name";
+  public static final String SORT_DIRECTION_DESCENDING = "descending";
+  public static final String SORT_DIRECTION_ASCENDING = "ascending";
+  public static final String GALLERY_COLUMNS_2 = "2";
+  public static final String GALLERY_COLUMNS_3 = "3";
+  public static final String GALLERY_COLUMNS_4 = "4";
+  public static final String DEFAULT_SORT_FIELD = SORT_FIELD_DATE_CREATED;
+  public static final String DEFAULT_SORT_DIRECTION = SORT_DIRECTION_DESCENDING;
+  public static final String DEFAULT_GALLERY_COLUMNS = GALLERY_COLUMNS_3;
+
   private LoginViewModel viewModel;
 
   @Override

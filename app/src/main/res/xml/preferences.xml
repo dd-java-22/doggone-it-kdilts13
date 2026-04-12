@@ -16,6 +16,27 @@
 -->
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
+  <ListPreference
+    android:key="pref_default_sort_field"
+    android:title="@string/settings_sort_by"
+    android:entries="@array/settings_sort_field_entries"
+    android:entryValues="@array/settings_sort_field_values"
+    android:defaultValue="date_created"/>
+
+  <ListPreference
+    android:key="pref_default_sort_direction"
+    android:title="@string/settings_sort_direction"
+    android:entries="@array/settings_sort_direction_entries"
+    android:entryValues="@array/settings_sort_direction_values"
+    android:defaultValue="descending"/>
+
+  <ListPreference
+    android:key="pref_gallery_column_count"
+    android:title="@string/settings_gallery_columns"
+    android:entries="@array/settings_gallery_column_entries"
+    android:entryValues="@array/settings_gallery_column_values"
+    android:defaultValue="3"/>
+
   <Preference
     android:key="logout"
     android:layout="@layout/preference_logout"
