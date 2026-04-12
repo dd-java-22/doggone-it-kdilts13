@@ -24,26 +24,23 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import dagger.hilt.android.AndroidEntryPoint;
 import edu.cnm.deepdive.doggoneit.MainActivity;
 import edu.cnm.deepdive.doggoneit.R;
 import edu.cnm.deepdive.doggoneit.databinding.FragmentScanDisplayBinding;
-import edu.cnm.deepdive.doggoneit.model.entity.BreedPrediction;
 import edu.cnm.deepdive.doggoneit.model.entity.Scan;
-import edu.cnm.deepdive.doggoneit.model.entity.ScanWithPredictions;
-import edu.cnm.deepdive.doggoneit.service.repository.ScanRepository;
-import java.util.List;
-import javax.inject.Inject;
+import edu.cnm.deepdive.doggoneit.viewmodel.ScanDisplayViewModel;
 
 @AndroidEntryPoint
 public class ScanDisplayFragment extends Fragment {
 
   private FragmentScanDisplayBinding binding;
   private ScanDisplayFragmentArgs navArgs;
-  @Inject
-  ScanRepository scanRepository;
+  private ScanDisplayViewModel viewModel;
+  private boolean updatingFavoriteControl;
 
   @Override
   public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -55,28 +52,25 @@ public class ScanDisplayFragment extends Fragment {
   @Override
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
+    viewModel = new ViewModelProvider(this).get(ScanDisplayViewModel.class);
     Bundle args = getArguments();
     if (args == null) {
-      showMissingImage();
-      return;
-    }
-    navArgs = ScanDisplayFragmentArgs.fromBundle(args);
-    requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(),
-        new OnBackPressedCallback(true) {
-          @Override
-          public void handleOnBackPressed() {
-            if (!handleReturnToParentContext()) {
-              NavHostFragment.findNavController(ScanDisplayFragment.this).navigateUp();
+      viewModel.loadScan(0);
+    } else {
+      navArgs = ScanDisplayFragmentArgs.fromBundle(args);
+      requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(),
+          new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+              if (!handleReturnToParentContext()) {
+                NavHostFragment.findNavController(ScanDisplayFragment.this).navigateUp();
+              }
             }
-          }
-        });
-    long scanId = navArgs.getScanId();
-    if (scanId <= 0) {
-      showMissingScan();
-      return;
+          });
+      viewModel.loadScan(navArgs.getScanId());
     }
-    scanRepository.getWithPredictionsById(scanId).observe(getViewLifecycleOwner(),
-        this::renderScan);
+    setupControls();
+    viewModel.getUiState().observe(getViewLifecycleOwner(), this::renderState);
   }
 
   @Override
@@ -103,27 +97,54 @@ public class ScanDisplayFragment extends Fragment {
 
   private void showMissingImage() {
     binding.savedImage.setVisibility(View.GONE);
-    binding.scanDisplayStatus.setVisibility(View.VISIBLE);
-    binding.scanDisplayStatus.setText(R.string.scan_display_missing_image);
-    binding.scanPredictions.setVisibility(View.GONE);
+    binding.summaryStatusText.setVisibility(View.VISIBLE);
+    binding.summaryStatusText.setText(R.string.scan_display_missing_image);
+    binding.breedNameText.setText(R.string.scan_display_unknown_breed);
+    binding.breedConfidenceText.setVisibility(View.GONE);
+    binding.favoriteToggle.setEnabled(false);
   }
 
   private void showMissingScan() {
     binding.savedImage.setVisibility(View.GONE);
-    binding.scanDisplayStatus.setVisibility(View.VISIBLE);
-    binding.scanDisplayStatus.setText(R.string.scan_display_missing_scan);
-    binding.scanPredictions.setVisibility(View.GONE);
+    binding.summaryStatusText.setVisibility(View.VISIBLE);
+    binding.summaryStatusText.setText(R.string.scan_display_missing_scan);
+    binding.breedNameText.setText(R.string.scan_display_unknown_breed);
+    binding.breedConfidenceText.setVisibility(View.GONE);
+    binding.favoriteToggle.setEnabled(false);
   }
 
-  private void renderScan(ScanWithPredictions scanWithPredictions) {
-    if (binding == null) {
+  private void setupControls() {
+    binding.favoriteToggle.setOnCheckedChangeListener((buttonView, isChecked) -> {
+      if (updatingFavoriteControl) {
+        return;
+      }
+      viewModel.toggleFavorite(isChecked);
+    });
+    binding.contentTabGroup.addOnButtonCheckedListener((group, checkedId, isChecked) -> {
+      if (!isChecked) {
+        return;
+      }
+      if (checkedId == R.id.tab_facts) {
+        viewModel.setSelectedTab(ScanDisplayViewModel.ContentTab.FACTS);
+      } else if (checkedId == R.id.tab_notes) {
+        viewModel.setSelectedTab(ScanDisplayViewModel.ContentTab.NOTES);
+      }
+    });
+  }
+
+  private void renderState(ScanDisplayViewModel.UiState state) {
+    if (binding == null || state == null) {
       return;
     }
-    if (scanWithPredictions == null || scanWithPredictions.getScan() == null) {
+    if (state.scanId <= 0) {
       showMissingScan();
       return;
     }
-    Scan scan = scanWithPredictions.getScan();
+    Scan scan = state.scan;
+    if (scan == null) {
+      showMissingScan();
+      return;
+    }
     String imagePath = (scan != null) ? scan.getImagePath() : null;
     if (imagePath == null || imagePath.isBlank()) {
       showMissingImage();
@@ -132,37 +153,46 @@ public class ScanDisplayFragment extends Fragment {
     Uri parsedUri = Uri.parse(imagePath);
     binding.savedImage.setImageURI(parsedUri);
     binding.savedImage.setVisibility(View.VISIBLE);
-    binding.scanDisplayStatus.setVisibility(View.GONE);
-    renderPredictions(scanWithPredictions.getPredictions());
-  }
+    binding.summaryStatusText.setVisibility(View.GONE);
 
-  private void renderPredictions(List<BreedPrediction> predictions) {
-    if (predictions == null || predictions.isEmpty()) {
-      binding.scanPredictions.setText(R.string.scan_display_missing_predictions);
-      binding.scanPredictions.setVisibility(View.VISIBLE);
-      return;
-    }
-    StringBuilder builder = new StringBuilder();
-    for (int i = 0; i < predictions.size(); i++) {
-      BreedPrediction prediction = predictions.get(i);
-      if (prediction == null) {
-        continue;
-      }
-      builder.append(i + 1)
-          .append(". ")
-          .append(prediction.getName())
-          .append(" - ")
-          .append(prediction.getProbability());
-      if (i < predictions.size() - 1) {
-        builder.append('\n');
-      }
-    }
-    if (builder.length() == 0) {
-      binding.scanPredictions.setText(R.string.scan_display_missing_predictions);
+    if (state.selectedBreedLabel == null || state.selectedBreedLabel.isBlank()) {
+      binding.breedNameText.setText(R.string.scan_display_unknown_breed);
     } else {
-      binding.scanPredictions.setText(builder.toString());
+      binding.breedNameText.setText(state.selectedBreedLabel);
     }
-    binding.scanPredictions.setVisibility(View.VISIBLE);
+    if (state.selectedConfidencePercent == null) {
+      binding.breedConfidenceText.setVisibility(View.GONE);
+    } else {
+      binding.breedConfidenceText.setVisibility(View.VISIBLE);
+      binding.breedConfidenceText.setText(
+          getString(R.string.scan_display_confidence_percent, state.selectedConfidencePercent));
+    }
+
+    updatingFavoriteControl = true;
+    binding.favoriteToggle.setEnabled(true);
+    binding.favoriteToggle.setChecked(scan.isFavorite());
+    updatingFavoriteControl = false;
+
+    if (state.selectedTab == ScanDisplayViewModel.ContentTab.NOTES) {
+      if (binding.contentTabGroup.getCheckedButtonId() != R.id.tab_notes) {
+        binding.contentTabGroup.check(R.id.tab_notes);
+      }
+      binding.factsLoadingIndicator.setVisibility(View.GONE);
+      binding.factsPlaceholderText.setVisibility(View.GONE);
+      binding.notesPlaceholderText.setVisibility(View.VISIBLE);
+    } else {
+      if (binding.contentTabGroup.getCheckedButtonId() != R.id.tab_facts) {
+        binding.contentTabGroup.check(R.id.tab_facts);
+      }
+      binding.factsLoadingIndicator.setVisibility(state.factsLoading ? View.VISIBLE : View.GONE);
+      binding.factsPlaceholderText.setVisibility(state.factsLoading ? View.GONE : View.VISIBLE);
+      binding.notesPlaceholderText.setVisibility(View.GONE);
+    }
+    if (state.notesMode == ScanDisplayViewModel.NotesMode.EDIT) {
+      binding.notesPlaceholderText.setText(R.string.scan_display_notes_edit_placeholder);
+    } else {
+      binding.notesPlaceholderText.setText(R.string.scan_display_notes_placeholder);
+    }
   }
 
 }

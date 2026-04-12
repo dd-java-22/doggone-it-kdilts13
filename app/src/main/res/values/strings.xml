@@ -46,7 +46,14 @@
   <string name="save_image_missing">No image provided.</string>
   <string name="scan_display_missing_image">No saved image provided.</string>
   <string name="scan_display_missing_scan">Saved scan not found.</string>
-  <string name="scan_display_missing_predictions">No saved predictions available.</string>
+  <string name="scan_display_unknown_breed">Breed unavailable</string>
+  <string name="scan_display_confidence_percent">Confidence: %1$d%%</string>
+  <string name="scan_display_favorite_toggle">Favorite</string>
+  <string name="scan_display_tab_facts">Facts</string>
+  <string name="scan_display_tab_notes">Notes</string>
+  <string name="scan_display_facts_placeholder">Breed facts will appear here.</string>
+  <string name="scan_display_notes_placeholder">Notes will appear here.</string>
+  <string name="scan_display_notes_edit_placeholder">Notes editor coming soon.</string>
   <string name="scans_gallery_empty">No saved scans yet.</string>
   <string name="scans_gallery_no_filter_matches">No scans match this filter.</string>
   <string name="scans_gallery_sort_by">Sort by</string>

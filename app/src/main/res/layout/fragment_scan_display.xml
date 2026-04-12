@@ -14,39 +14,135 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<LinearLayout
+<ScrollView
   xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
-  android:gravity="center"
-  android:orientation="vertical"
   android:padding="@dimen/activity_horizontal_margin">
 
-  <TextView
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="@string/scan_display_title"/>
-
-  <ImageView
-    android:id="@+id/saved_image"
-    android:layout_width="200dp"
-    android:layout_height="200dp"
-    android:layout_marginTop="@dimen/activity_vertical_margin"
-    android:contentDescription="@string/scan_display_title"
-    android:scaleType="centerCrop"/>
-
-  <TextView
-    android:id="@+id/scan_display_status"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="@dimen/activity_vertical_margin"
-    android:text="@string/scan_display_missing_image"/>
-
-  <TextView
-    android:id="@+id/scan_predictions"
+  <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="@dimen/activity_vertical_margin"
-    android:text="@string/scan_display_missing_predictions"/>
+    android:orientation="vertical">
 
-</LinearLayout>
+    <TextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="@string/scan_display_title"/>
+
+    <ImageView
+      android:id="@+id/saved_image"
+      android:layout_width="match_parent"
+      android:layout_height="220dp"
+      android:layout_marginTop="@dimen/activity_vertical_margin"
+      android:contentDescription="@string/saved_scan_image_content_description"
+      android:scaleType="centerCrop"/>
+
+    <TextView
+      android:id="@+id/summary_status_text"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="8dp"
+      android:text="@string/scan_display_missing_image"
+      android:visibility="gone"/>
+
+    <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="@dimen/activity_vertical_margin"
+      android:gravity="center_vertical"
+      android:orientation="horizontal">
+
+      <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+          android:id="@+id/breed_name_text"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:text="@string/scan_display_unknown_breed"
+          android:textAppearance="?attr/textAppearanceTitleMedium"/>
+
+        <TextView
+          android:id="@+id/breed_confidence_text"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="4dp"
+          android:textAppearance="?attr/textAppearanceBodyMedium"
+          android:visibility="gone"/>
+
+      </LinearLayout>
+
+      <com.google.android.material.checkbox.MaterialCheckBox
+        android:id="@+id/favorite_toggle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/scan_display_favorite_toggle"/>
+
+    </LinearLayout>
+
+    <com.google.android.material.button.MaterialButtonToggleGroup
+      android:id="@+id/content_tab_group"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="@dimen/activity_vertical_margin"
+      app:singleSelection="true"
+      app:selectionRequired="true">
+
+      <com.google.android.material.button.MaterialButton
+        android:id="@+id/tab_facts"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="@string/scan_display_tab_facts"/>
+
+      <com.google.android.material.button.MaterialButton
+        android:id="@+id/tab_notes"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="@string/scan_display_tab_notes"/>
+
+    </com.google.android.material.button.MaterialButtonToggleGroup>
+
+    <LinearLayout
+      android:id="@+id/tab_content_container"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="@dimen/activity_vertical_margin"
+      android:background="?attr/colorSurfaceContainerLow"
+      android:minHeight="140dp"
+      android:orientation="vertical"
+      android:padding="16dp">
+
+      <ProgressBar
+        android:id="@+id/facts_loading_indicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:visibility="gone"/>
+
+      <TextView
+        android:id="@+id/facts_placeholder_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/scan_display_facts_placeholder"/>
+
+      <TextView
+        android:id="@+id/notes_placeholder_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/scan_display_notes_placeholder"
+        android:visibility="gone"/>
+
+    </LinearLayout>
+
+  </LinearLayout>
+
+</ScrollView>
