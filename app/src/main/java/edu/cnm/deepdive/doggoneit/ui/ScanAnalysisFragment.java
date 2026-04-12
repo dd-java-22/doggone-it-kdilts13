@@ -20,7 +20,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,9 +27,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.navigation.fragment.NavHostFragment;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import dagger.hilt.android.AndroidEntryPoint;
 import edu.cnm.deepdive.doggoneit.MainActivity;
 import edu.cnm.deepdive.doggoneit.R;
@@ -38,46 +36,40 @@ import edu.cnm.deepdive.doggoneit.databinding.FragmentScanAnalysisBinding;
 import edu.cnm.deepdive.doggoneit.ml.DogBreedInference;
 import edu.cnm.deepdive.doggoneit.ml.DogBreedInferenceResult;
 import edu.cnm.deepdive.doggoneit.ml.DogBreedPrediction;
-import edu.cnm.deepdive.doggoneit.model.entity.BreedInfo;
-import edu.cnm.deepdive.doggoneit.model.entity.BreedMapping;
 import edu.cnm.deepdive.doggoneit.model.entity.BreedPrediction;
 import edu.cnm.deepdive.doggoneit.model.entity.Scan;
 import edu.cnm.deepdive.doggoneit.model.entity.ScanWithPredictions;
-import edu.cnm.deepdive.doggoneit.service.dogapi.BreedDetailsMapper;
-import edu.cnm.deepdive.doggoneit.service.dogapi.DogApiService;
-import edu.cnm.deepdive.doggoneit.service.dogapi.dto.BreedDetailsDto;
-import edu.cnm.deepdive.doggoneit.service.repository.BreedInfoRepository;
-import edu.cnm.deepdive.doggoneit.service.repository.BreedMappingRepository;
 import edu.cnm.deepdive.doggoneit.service.repository.ScanRepository;
 import edu.cnm.deepdive.doggoneit.service.repository.UserSessionRepository;
 import edu.cnm.deepdive.doggoneit.storage.ImageStorage;
+import edu.cnm.deepdive.doggoneit.ui.ScanPredictionAdapter.ScanPredictionItem;
 import java.io.File;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javax.inject.Inject;
-import retrofit2.Response;
 
 @AndroidEntryPoint
 public class ScanAnalysisFragment extends Fragment {
-
-  private static final String TAG = ScanAnalysisFragment.class.getSimpleName();
 
   private enum AnalysisState {
     IDLE,
     ANALYZING,
     ANALYSIS_READY,
-    ANALYSIS_FAILED
+    ANALYSIS_FAILED,
+    ANALYSIS_EMPTY
   }
 
   private FragmentScanAnalysisBinding binding;
   private final ExecutorService inferenceExecutor = Executors.newSingleThreadExecutor();
-  private final ExecutorService dogApiExecutor = Executors.newSingleThreadExecutor();
   private final ExecutorService saveExecutor = Executors.newSingleThreadExecutor();
   private final Handler mainHandler = new Handler(Looper.getMainLooper());
-  private final Gson gson = new GsonBuilder().setPrettyPrinting().create();
+  private final ScanPredictionAdapter predictionAdapter =
+      new ScanPredictionAdapter(item -> updateSaveButtonState());
   private Context appContext;
   private Uri currentImageUri;
   private DogBreedInferenceResult currentResult;
@@ -85,13 +77,7 @@ public class ScanAnalysisFragment extends Fragment {
   @Inject
   ScanRepository scanRepository;
   @Inject
-  BreedInfoRepository breedInfoRepository;
-  @Inject
-  BreedMappingRepository breedMappingRepository;
-  @Inject
   UserSessionRepository userSessionRepository;
-  @Inject
-  DogApiService dogApiService;
 
   @Override
   public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -104,12 +90,13 @@ public class ScanAnalysisFragment extends Fragment {
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
     binding.saveImageButton.setOnClickListener(v -> onSaveClicked());
-    binding.testDogApiButton.setOnClickListener(v -> onTestDogApiClicked());
+    binding.predictionsList.setLayoutManager(new LinearLayoutManager(requireContext()));
+    binding.predictionsList.setAdapter(predictionAdapter);
     Bundle args = getArguments();
     if (args == null) {
       binding.capturedImage.setVisibility(View.GONE);
-      binding.analysisOutputText.setText(R.string.scan_analysis_missing_image);
       clearAnalysisState();
+      showStatus(getString(R.string.scan_analysis_missing_image), false);
       updateSaveButtonState();
       return;
     }
@@ -117,8 +104,8 @@ public class ScanAnalysisFragment extends Fragment {
     String imageUri = ScanAnalysisFragmentArgs.fromBundle(args).getImageUri();
     if (imageUri == null || imageUri.isBlank()) {
       binding.capturedImage.setVisibility(View.GONE);
-      binding.analysisOutputText.setText(R.string.scan_analysis_missing_image);
       clearAnalysisState();
+      showStatus(getString(R.string.scan_analysis_missing_image), false);
       updateSaveButtonState();
       return;
     }
@@ -143,99 +130,34 @@ public class ScanAnalysisFragment extends Fragment {
   @Override
   public void onDestroy() {
     inferenceExecutor.shutdownNow();
-    dogApiExecutor.shutdownNow();
     saveExecutor.shutdownNow();
     super.onDestroy();
   }
 
-  private void onTestDogApiClicked() {
-    String topPredictedLabel = getTopPredictedLabel();
-    if (topPredictedLabel == null) {
-      postAnalysisOutput("No prediction is available yet. Run analysis first.");
-      return;
-    }
-    Log.d(TAG, "Starting temporary Dog API test for predicted label: " + topPredictedLabel);
-    binding.analysisOutputText.setText(R.string.test_dog_api_loading);
-    dogApiExecutor.execute(() -> {
-      try {
-        BreedMapping mapping = breedMappingRepository.getByModelLabelNow(topPredictedLabel).join();
-        if (mapping == null) {
-          Log.w(TAG, "Missing Dog API mapping for predicted label: " + topPredictedLabel);
-          postAnalysisOutput("No Dog API mapping is available for predicted label: "
-              + topPredictedLabel);
-          return;
-        }
-
-        long dogApiBreedId = mapping.getDogApiBreedId();
-        BreedInfo cached = breedInfoRepository.getByDogApiBreedIdNow(dogApiBreedId).join();
-        if (cached != null) {
-          Log.d(TAG, "Using cached breed info for id=" + dogApiBreedId);
-          postAnalysisOutput(formatBreedInfo(cached, topPredictedLabel));
-          return;
-        }
-
-        Response<BreedDetailsDto> detailsResponse = dogApiService.getBreedDetails(dogApiBreedId)
-            .execute();
-        if (!detailsResponse.isSuccessful()) {
-          throw new IllegalStateException(
-              "Breed details failed with code " + detailsResponse.code());
-        }
-        BreedDetailsDto details = detailsResponse.body();
-        if (details == null) {
-          postAnalysisOutput("Breed details response was empty for predicted label: "
-              + topPredictedLabel);
-          Log.d(TAG, "Breed details response body was null for id: " + dogApiBreedId);
-          return;
-        }
-
-        BreedInfo breedInfo = BreedDetailsMapper.toBreedInfo(details);
-        if (breedInfo == null) {
-          postAnalysisOutput("Breed details response was malformed for predicted label: "
-              + topPredictedLabel);
-          Log.w(TAG, "Unable to map breed details for id: " + dogApiBreedId);
-          return;
-        }
-        breedInfoRepository.saveOrUpdate(breedInfo).join();
-        Log.d(TAG, "Fetched and cached breed info for id=" + dogApiBreedId);
-        postAnalysisOutput(formatBreedInfo(breedInfo, topPredictedLabel));
-      } catch (Exception e) {
-        Log.e(TAG, "Dog API test request failed", e);
-        String message = e.getMessage();
-        if (message == null || message.isBlank()) {
-          message = e.getClass().getSimpleName();
-        }
-        postAnalysisOutput(getString(R.string.test_dog_api_error, message));
-      }
-    });
-  }
-
-  private String getTopPredictedLabel() {
-    if (currentResult == null || currentResult.topPredictions() == null
-        || currentResult.topPredictions().isEmpty()) {
-      return null;
-    }
-    DogBreedPrediction topPrediction = currentResult.topPredictions().get(0);
-    if (topPrediction == null) {
-      return null;
-    }
-    String label = topPrediction.label();
-    return (label == null || label.isBlank()) ? null : label;
-  }
-
   private void runInference(Context appContext, Uri imageUri) {
-    binding.analysisOutputText.setText(R.string.scan_analysis_loading);
     analysisState = AnalysisState.ANALYZING;
     currentResult = null;
+    predictionAdapter.submitItems(List.of(), 0);
+    showStatus(getString(R.string.scan_analysis_loading), true);
     updateSaveButtonState();
     inferenceExecutor.execute(() -> {
       try {
         DogBreedInferenceResult result = DogBreedInference.run(appContext, imageUri);
-        String json = gson.toJson(result);
+        List<ScanPredictionItem> topPredictions = toDisplayPredictions(result);
         mainHandler.post(() -> {
           if (binding != null) {
-            currentResult = result;
-            analysisState = AnalysisState.ANALYSIS_READY;
-            binding.analysisOutputText.setText(json);
+            if (topPredictions.isEmpty()) {
+              currentResult = null;
+              analysisState = AnalysisState.ANALYSIS_EMPTY;
+              predictionAdapter.submitItems(List.of(), 0);
+              showStatus(getString(R.string.scan_analysis_empty), false);
+            } else {
+              currentResult = result;
+              analysisState = AnalysisState.ANALYSIS_READY;
+              predictionAdapter.submitItems(topPredictions, 0);
+              hideStatus();
+              binding.predictionsList.setVisibility(View.VISIBLE);
+            }
             updateSaveButtonState();
           }
         });
@@ -249,7 +171,8 @@ public class ScanAnalysisFragment extends Fragment {
           if (binding != null) {
             currentResult = null;
             analysisState = AnalysisState.ANALYSIS_FAILED;
-            binding.analysisOutputText.setText(errorText);
+            predictionAdapter.submitItems(List.of(), 0);
+            showStatus(errorText, false);
             updateSaveButtonState();
           }
         });
@@ -276,10 +199,10 @@ public class ScanAnalysisFragment extends Fragment {
         scan.setImagePath(savedUri.toString());
         scan.setTimestamp(Instant.now());
         List<BreedPrediction> predictions = toBreedPredictions(currentResult);
-        DogBreedPrediction selectedPrediction = getSelectedPrediction();
-        String selectedBreedLabel = (selectedPrediction != null) ? selectedPrediction.label() : null;
+        ScanPredictionItem selected = predictionAdapter.getSelectedItem();
+        String selectedBreedLabel = (selected != null) ? selected.rawLabel() : null;
         Double selectedBreedConfidence =
-            (selectedPrediction != null) ? (double) selectedPrediction.score() : null;
+            (selected != null) ? (double) selected.score() : null;
         ScanWithPredictions saved = scanRepository.saveWithPredictions(
             scan,
             predictions,
@@ -311,7 +234,6 @@ public class ScanAnalysisFragment extends Fragment {
         String errorText = getString(R.string.save_image_failed, message);
         mainHandler.post(() -> {
           if (binding != null) {
-            Log.e(">>>", errorText);
             Toast.makeText(requireContext(), errorText, Toast.LENGTH_LONG).show();
           }
         });
@@ -323,18 +245,11 @@ public class ScanAnalysisFragment extends Fragment {
     Toast.makeText(requireContext(), R.string.save_image_missing, Toast.LENGTH_SHORT).show();
   }
 
-  private void postAnalysisOutput(String text) {
-    mainHandler.post(() -> {
-      if (binding != null) {
-        binding.analysisOutputText.setText(text);
-      }
-    });
-  }
-
   private void clearAnalysisState() {
     currentImageUri = null;
     currentResult = null;
     analysisState = AnalysisState.IDLE;
+    predictionAdapter.submitItems(List.of(), 0);
   }
 
   private void updateSaveButtonState() {
@@ -347,7 +262,8 @@ public class ScanAnalysisFragment extends Fragment {
     return analysisState == AnalysisState.ANALYSIS_READY
         && currentResult != null
         && currentImageUri != null
-        && appContext != null;
+        && appContext != null
+        && predictionAdapter.getSelectedItem() != null;
   }
 
   private List<BreedPrediction> toBreedPredictions(DogBreedInferenceResult result) {
@@ -364,12 +280,29 @@ public class ScanAnalysisFragment extends Fragment {
     return predictions;
   }
 
-  private DogBreedPrediction getSelectedPrediction() {
-    if (currentResult == null || currentResult.topPredictions() == null
-        || currentResult.topPredictions().isEmpty()) {
-      return null;
+  private List<ScanPredictionItem> toDisplayPredictions(DogBreedInferenceResult result) {
+    List<ScanPredictionItem> displayItems = new ArrayList<>();
+    if (result == null || result.topPredictions() == null) {
+      return displayItems;
     }
-    return currentResult.topPredictions().get(0);
+    for (DogBreedPrediction prediction : result.topPredictions()) {
+      if (prediction == null || prediction.label() == null || prediction.label().isBlank()) {
+        continue;
+      }
+      float score = prediction.score();
+      int percent = Math.round(score * 100f);
+      displayItems.add(new ScanPredictionItem(
+          prediction.label(),
+          toFriendlyBreedName(prediction.label()),
+          score,
+          Math.max(0, Math.min(percent, 100))
+      ));
+    }
+    displayItems.sort(Comparator.comparingDouble(ScanPredictionItem::score).reversed());
+    if (displayItems.size() > 5) {
+      return new ArrayList<>(displayItems.subList(0, 5));
+    }
+    return displayItems;
   }
 
   private void bestEffortDelete(Uri savedUri) {
@@ -386,34 +319,48 @@ public class ScanAnalysisFragment extends Fragment {
     }
   }
 
-  private String formatBreedInfo(BreedInfo info, String fallbackName) {
-    StringBuilder builder = new StringBuilder();
-    appendLine(builder, "Breed", firstNonBlank(info.getName(), fallbackName, "Unknown"));
-    appendLine(builder, "Group", info.getBreedGroup());
-    appendLine(builder, "Life span", info.getLifeSpan());
-    appendLine(builder, "Temperament", info.getTemperament());
-    appendLine(builder, "Bred for", info.getBredFor());
-    appendLine(builder, "Origin", info.getOrigin());
-    return builder.toString();
-  }
-
-  private static void appendLine(StringBuilder builder, String label, String value) {
-    if (value == null || value.isBlank()) {
+  private void showStatus(String message, boolean loading) {
+    if (binding == null) {
       return;
     }
-    if (builder.length() > 0) {
-      builder.append('\n');
-    }
-    builder.append(label).append(": ").append(value);
+    binding.analysisLoadingContainer.setVisibility(View.VISIBLE);
+    binding.analysisProgress.setVisibility(loading ? View.VISIBLE : View.GONE);
+    binding.analysisStatusText.setText(message);
+    binding.predictionsList.setVisibility(View.GONE);
   }
 
-  private static String firstNonBlank(String... values) {
-    for (String value : values) {
-      if (value != null && !value.isBlank()) {
-        return value;
+  private void hideStatus() {
+    if (binding == null) {
+      return;
+    }
+    binding.analysisLoadingContainer.setVisibility(View.GONE);
+    binding.analysisProgress.setVisibility(View.GONE);
+    binding.analysisStatusText.setText("");
+  }
+
+  private String toFriendlyBreedName(String rawLabel) {
+    if (rawLabel == null) {
+      return "";
+    }
+    String cleaned = rawLabel.trim().replace('_', ' ').replace('-', ' ');
+    if (cleaned.isBlank()) {
+      return rawLabel;
+    }
+    String[] words = cleaned.split("\\s+");
+    StringBuilder builder = new StringBuilder();
+    for (String word : words) {
+      if (word.isBlank()) {
+        continue;
+      }
+      if (builder.length() > 0) {
+        builder.append(' ');
+      }
+      builder.append(word.substring(0, 1).toUpperCase(Locale.US));
+      if (word.length() > 1) {
+        builder.append(word.substring(1).toLowerCase(Locale.US));
       }
     }
-    return null;
+    return (builder.length() > 0) ? builder.toString() : rawLabel;
   }
 
 }

@@ -30,6 +30,8 @@
   <string name="analyze_action">Analyze</string>
   <string name="view_details_action">View Details</string>
   <string name="scan_analysis_loading">Analyzing image...</string>
+  <string name="scan_analysis_instruction">Select the breed that best matches your dog.</string>
+  <string name="scan_analysis_empty">No breed predictions were found for this image.</string>
   <string name="scan_analysis_missing_image">No image available for analysis.</string>
   <string name="scan_analysis_error">Analysis failed: %1$s</string>
   <string name="test_dog_api_action">Test Dog API</string>
