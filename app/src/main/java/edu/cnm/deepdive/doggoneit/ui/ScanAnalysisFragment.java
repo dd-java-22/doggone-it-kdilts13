@@ -276,7 +276,16 @@ public class ScanAnalysisFragment extends Fragment {
         scan.setImagePath(savedUri.toString());
         scan.setTimestamp(Instant.now());
         List<BreedPrediction> predictions = toBreedPredictions(currentResult);
-        ScanWithPredictions saved = scanRepository.saveWithPredictions(scan, predictions).join();
+        DogBreedPrediction selectedPrediction = getSelectedPrediction();
+        String selectedBreedLabel = (selectedPrediction != null) ? selectedPrediction.label() : null;
+        Double selectedBreedConfidence =
+            (selectedPrediction != null) ? (double) selectedPrediction.score() : null;
+        ScanWithPredictions saved = scanRepository.saveWithPredictions(
+            scan,
+            predictions,
+            selectedBreedLabel,
+            selectedBreedConfidence
+        ).join();
         mainHandler.post(() -> {
           if (!isAdded()) {
             return;
@@ -353,6 +362,14 @@ public class ScanAnalysisFragment extends Fragment {
       predictions.add(entity);
     }
     return predictions;
+  }
+
+  private DogBreedPrediction getSelectedPrediction() {
+    if (currentResult == null || currentResult.topPredictions() == null
+        || currentResult.topPredictions().isEmpty()) {
+      return null;
+    }
+    return currentResult.topPredictions().get(0);
   }
 
   private void bestEffortDelete(Uri savedUri) {

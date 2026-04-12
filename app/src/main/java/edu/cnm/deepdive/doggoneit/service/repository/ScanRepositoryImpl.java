@@ -70,10 +70,15 @@ public class ScanRepositoryImpl implements ScanRepository {
   }
 
   @Override
-  public CompletableFuture<ScanWithPredictions> saveWithPredictions(Scan scan,
-      List<BreedPrediction> predictions) {
+  public CompletableFuture<ScanWithPredictions> saveWithPredictions(
+      Scan scan,
+      List<BreedPrediction> predictions,
+      String selectedBreedLabel,
+      Double selectedBreedConfidence
+  ) {
     return CompletableFuture.supplyAsync(() -> {
       requireUserProfile(scan);
+      applySelectedBreed(scan, selectedBreedLabel, selectedBreedConfidence);
       List<BreedPrediction> prepared = prepareTopPredictions(predictions);
       long id = scanDao.insertWithPredictions(scan, prepared);
       scan.setId(id);
@@ -125,5 +130,13 @@ public class ScanRepositoryImpl implements ScanRepository {
     if (scan == null || scan.getUserProfileId() <= 0) {
       throw new IllegalStateException("Scan save requires a valid user profile id.");
     }
+  }
+
+  private void applySelectedBreed(Scan scan, String selectedBreedLabel,
+      Double selectedBreedConfidence) {
+    String normalizedLabel = (selectedBreedLabel == null || selectedBreedLabel.isBlank())
+        ? null : selectedBreedLabel.trim();
+    scan.setSelectedBreedLabel(normalizedLabel);
+    scan.setSelectedBreedConfidence(selectedBreedConfidence);
   }
 }

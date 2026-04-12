@@ -24,8 +24,12 @@ public interface ScanRepository {
 
   CompletableFuture<Scan> save(Scan scan);
 
-  CompletableFuture<ScanWithPredictions> saveWithPredictions(Scan scan,
-      List<BreedPrediction> predictions);
+  CompletableFuture<ScanWithPredictions> saveWithPredictions(
+      Scan scan,
+      List<BreedPrediction> predictions,
+      String selectedBreedLabel,
+      Double selectedBreedConfidence
+  );
 
   CompletableFuture<Integer> update(Scan scan);
 

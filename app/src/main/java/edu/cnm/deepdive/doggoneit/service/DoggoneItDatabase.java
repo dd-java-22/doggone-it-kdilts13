@@ -28,7 +28,7 @@ import java.time.Instant;
 public abstract class DoggoneItDatabase extends RoomDatabase {
 
   static final String DATABASE_NAME = "doggone_it";
-  static final int VERSION = 4;
+  static final int VERSION = 5;
   private static final String LEGACY_BREED_FACT_ID = "`breed_" + "fact_id`";
 
   public static final Migration MIGRATION_1_2 = new Migration(1, 2) {
@@ -127,6 +127,14 @@ public abstract class DoggoneItDatabase extends RoomDatabase {
               + "`dog_api_breed_id` INTEGER NOT NULL, "
               + "PRIMARY KEY(`model_label`))"
       );
+    }
+  };
+
+  public static final Migration MIGRATION_4_5 = new Migration(4, 5) {
+    @Override
+    public void migrate(SupportSQLiteDatabase database) {
+      database.execSQL("ALTER TABLE scan ADD COLUMN selected_breed_label TEXT");
+      database.execSQL("ALTER TABLE scan ADD COLUMN selected_breed_confidence REAL");
     }
   };
 

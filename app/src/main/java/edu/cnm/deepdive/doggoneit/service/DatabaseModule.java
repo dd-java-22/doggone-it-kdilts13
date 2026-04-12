@@ -28,7 +28,8 @@ public class DatabaseModule {
     ).addMigrations(
         DoggoneItDatabase.MIGRATION_1_2,
         DoggoneItDatabase.MIGRATION_2_3,
-        DoggoneItDatabase.MIGRATION_3_4
+        DoggoneItDatabase.MIGRATION_3_4,
+        DoggoneItDatabase.MIGRATION_4_5
     )
         .build();
   }

@@ -44,6 +44,12 @@ public class Scan {
 
   private boolean favorite;
 
+  @ColumnInfo(name = "selected_breed_label")
+  private String selectedBreedLabel;
+
+  @ColumnInfo(name = "selected_breed_confidence")
+  private Double selectedBreedConfidence;
+
   public long getId() {
     return id;
   }
@@ -93,5 +99,21 @@ public class Scan {
 
   public void setFavorite(boolean favorite) {
     this.favorite = favorite;
+  }
+
+  public String getSelectedBreedLabel() {
+    return selectedBreedLabel;
+  }
+
+  public void setSelectedBreedLabel(String selectedBreedLabel) {
+    this.selectedBreedLabel = selectedBreedLabel;
+  }
+
+  public Double getSelectedBreedConfidence() {
+    return selectedBreedConfidence;
+  }
+
+  public void setSelectedBreedConfidence(Double selectedBreedConfidence) {
+    this.selectedBreedConfidence = selectedBreedConfidence;
   }
 }
