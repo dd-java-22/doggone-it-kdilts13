@@ -15,6 +15,7 @@
  */
 package edu.cnm.deepdive.doggoneit.ui;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -27,6 +28,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
+import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.GridLayoutManager;
 import dagger.hilt.android.AndroidEntryPoint;
 import edu.cnm.deepdive.doggoneit.MainActivity;
@@ -37,11 +39,11 @@ import edu.cnm.deepdive.doggoneit.viewmodel.ScansGalleryViewModel;
 @AndroidEntryPoint
 public class ScansGalleryFragment extends Fragment {
 
-  private static final int GRID_COLUMN_COUNT = 3;
-
   private FragmentScansGalleryBinding binding;
   private SavedScanGridAdapter adapter;
   private ScansGalleryViewModel viewModel;
+  private SharedPreferences preferences;
+  private GridLayoutManager layoutManager;
   private TextWatcher filterWatcher;
 
   @Override
@@ -55,11 +57,13 @@ public class ScansGalleryFragment extends Fragment {
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
     viewModel = new ViewModelProvider(this).get(ScansGalleryViewModel.class);
+    preferences = PreferenceManager.getDefaultSharedPreferences(requireContext());
     adapter = new SavedScanGridAdapter(this::openScan);
     setupControls();
-    binding.savedScansGrid.setLayoutManager(new GridLayoutManager(requireContext(),
-        getGridColumnCount()));
+    layoutManager = new GridLayoutManager(requireContext(), 3);
+    binding.savedScansGrid.setLayoutManager(layoutManager);
     binding.savedScansGrid.setAdapter(adapter);
+    applySettingsDefaults();
     viewModel.getGalleryItems().observe(getViewLifecycleOwner(), items -> {
       adapter.submitList(items);
       boolean isEmpty = items == null || items.isEmpty();
@@ -96,17 +100,20 @@ public class ScansGalleryFragment extends Fragment {
   }
 
   @Override
+  public void onResume() {
+    super.onResume();
+    applySettingsDefaults();
+  }
+
+  @Override
   public void onDestroyView() {
     binding.filterInput.removeTextChangedListener(filterWatcher);
     binding.savedScansGrid.setAdapter(null);
+    layoutManager = null;
     adapter = null;
     filterWatcher = null;
     binding = null;
     super.onDestroyView();
-  }
-
-  private int getGridColumnCount() {
-    return GRID_COLUMN_COUNT;
   }
 
   private void openScan(long scanId) {
@@ -166,6 +173,68 @@ public class ScansGalleryFragment extends Fragment {
       }
     };
     binding.filterInput.addTextChangedListener(filterWatcher);
+  }
+
+  private void applySettingsDefaults() {
+    if (preferences == null || binding == null) {
+      return;
+    }
+
+    String sortFieldValue = preferences.getString(
+        SettingsFragment.PREF_KEY_SORT_FIELD,
+        SettingsFragment.DEFAULT_SORT_FIELD
+    );
+    ScansGalleryViewModel.SortField sortField = SettingsFragment.SORT_FIELD_BREED_NAME.equals(
+        sortFieldValue
+    )
+        ? ScansGalleryViewModel.SortField.BREED
+        : ScansGalleryViewModel.SortField.DATE;
+    if (!SettingsFragment.SORT_FIELD_DATE_CREATED.equals(sortFieldValue)
+        && !SettingsFragment.SORT_FIELD_BREED_NAME.equals(sortFieldValue)) {
+      preferences.edit()
+          .putString(SettingsFragment.PREF_KEY_SORT_FIELD, SettingsFragment.DEFAULT_SORT_FIELD)
+          .apply();
+    }
+    viewModel.setSortField(sortField);
+
+    String sortDirectionValue = preferences.getString(
+        SettingsFragment.PREF_KEY_SORT_DIRECTION,
+        SettingsFragment.DEFAULT_SORT_DIRECTION
+    );
+    ScansGalleryViewModel.SortDirection direction =
+        SettingsFragment.SORT_DIRECTION_ASCENDING.equals(sortDirectionValue)
+            ? ScansGalleryViewModel.SortDirection.ASCENDING
+            : ScansGalleryViewModel.SortDirection.DESCENDING;
+    if (!SettingsFragment.SORT_DIRECTION_DESCENDING.equals(sortDirectionValue)
+        && !SettingsFragment.SORT_DIRECTION_ASCENDING.equals(sortDirectionValue)) {
+      preferences.edit().putString(
+          SettingsFragment.PREF_KEY_SORT_DIRECTION,
+          SettingsFragment.DEFAULT_SORT_DIRECTION
+      ).apply();
+    }
+    viewModel.setSortDirection(direction);
+
+    String columnsValue = preferences.getString(
+        SettingsFragment.PREF_KEY_GALLERY_COLUMNS,
+        SettingsFragment.DEFAULT_GALLERY_COLUMNS
+    );
+    int columns;
+    if (SettingsFragment.GALLERY_COLUMNS_2.equals(columnsValue)) {
+      columns = 2;
+    } else if (SettingsFragment.GALLERY_COLUMNS_4.equals(columnsValue)) {
+      columns = 4;
+    } else {
+      columns = 3;
+      if (!SettingsFragment.GALLERY_COLUMNS_3.equals(columnsValue)) {
+        preferences.edit().putString(
+            SettingsFragment.PREF_KEY_GALLERY_COLUMNS,
+            SettingsFragment.DEFAULT_GALLERY_COLUMNS
+        ).apply();
+      }
+    }
+    if (layoutManager != null && layoutManager.getSpanCount() != columns) {
+      layoutManager.setSpanCount(columns);
+    }
   }
 
 }
