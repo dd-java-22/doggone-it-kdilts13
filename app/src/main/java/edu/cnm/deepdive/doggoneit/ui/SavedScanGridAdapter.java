@@ -109,7 +109,8 @@ public class SavedScanGridAdapter
       return oldItem.getScanId() == newItem.getScanId()
           && Objects.equals(oldItem.getImagePath(), newItem.getImagePath())
           && Objects.equals(oldItem.getTimestamp(), newItem.getTimestamp())
-          && Objects.equals(oldItem.getTopBreedLabel(), newItem.getTopBreedLabel());
+          && Objects.equals(oldItem.getTopBreedLabel(), newItem.getTopBreedLabel())
+          && Objects.equals(oldItem.getTopBreedConfidence(), newItem.getTopBreedConfidence());
     }
   }
 }

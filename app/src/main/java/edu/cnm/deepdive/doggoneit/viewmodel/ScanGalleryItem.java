@@ -11,6 +11,7 @@ public class ScanGalleryItem {
   private Instant timestamp;
   @NonNull
   private String topBreedLabel = "";
+  private Double topBreedConfidence;
 
   public long getScanId() {
     return scanId;
@@ -44,5 +45,13 @@ public class ScanGalleryItem {
 
   public void setTopBreedLabel(@NonNull String topBreedLabel) {
     this.topBreedLabel = topBreedLabel;
+  }
+
+  public Double getTopBreedConfidence() {
+    return topBreedConfidence;
+  }
+
+  public void setTopBreedConfidence(Double topBreedConfidence) {
+    this.topBreedConfidence = topBreedConfidence;
   }
 }

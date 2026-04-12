@@ -137,7 +137,7 @@ public class ScansGalleryViewModel extends ViewModel {
     if (query.isEmpty()) {
       return true;
     }
-    return normalize(item.getTopBreedLabel()).contains(query);
+    return normalizeBreed(item.getTopBreedLabel()).contains(query);
   }
 
   private Comparator<ScanGalleryItem> getComparator() {
@@ -164,10 +164,15 @@ public class ScansGalleryViewModel extends ViewModel {
   }
 
   private String breedValue(ScanGalleryItem item) {
-    return normalize((item != null) ? item.getTopBreedLabel() : "");
+    return normalizeBreed((item != null) ? item.getTopBreedLabel() : "");
   }
 
   private String normalize(String value) {
     return (value != null) ? value.trim().toLowerCase(Locale.US) : "";
+  }
+
+  private String normalizeBreed(String value) {
+    String normalized = normalize(value);
+    return normalized.replace('_', ' ').replace('-', ' ');
   }
 }
