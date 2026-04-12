@@ -102,42 +102,10 @@
   <string name="settings_sort_field_breed_name">Breed name</string>
   <string name="settings_sort_direction_descending">Descending</string>
   <string name="settings_sort_direction_ascending">Ascending</string>
-  <string name="settings_gallery_columns_2">2</string>
-  <string name="settings_gallery_columns_3">3</string>
-  <string name="settings_gallery_columns_4">4</string>
+  <string name="settings_gallery_columns_2">2 columns</string>
+  <string name="settings_gallery_columns_3">3 columns</string>
+  <string name="settings_gallery_columns_4">4 columns</string>
   <string name="logout_action">Log out</string>
-
-  <string-array name="settings_sort_field_entries">
-    <item>Date created</item>
-    <item>Breed name</item>
-  </string-array>
-
-  <string-array name="settings_sort_field_values">
-    <item>date_created</item>
-    <item>breed_name</item>
-  </string-array>
-
-  <string-array name="settings_sort_direction_entries">
-    <item>Descending</item>
-    <item>Ascending</item>
-  </string-array>
-
-  <string-array name="settings_sort_direction_values">
-    <item>descending</item>
-    <item>ascending</item>
-  </string-array>
-
-  <string-array name="settings_gallery_column_entries">
-    <item>2</item>
-    <item>3</item>
-    <item>4</item>
-  </string-array>
-
-  <string-array name="settings_gallery_column_values">
-    <item>2</item>
-    <item>3</item>
-    <item>4</item>
-  </string-array>
 
   <string name="nav_gallery">Analyze from Gallery</string>
   <string name="nav_saved">View Saved</string>
