@@ -135,6 +135,13 @@
         android:text="@string/scan_display_facts_placeholder"/>
 
       <TextView
+        android:id="@+id/facts_details_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="?attr/textAppearanceBodyMedium"
+        android:visibility="gone"/>
+
+      <TextView
         android:id="@+id/notes_placeholder_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

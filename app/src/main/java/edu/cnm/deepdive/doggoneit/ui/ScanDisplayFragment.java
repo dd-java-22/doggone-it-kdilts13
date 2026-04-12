@@ -17,6 +17,7 @@ package edu.cnm.deepdive.doggoneit.ui;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,8 +32,11 @@ import dagger.hilt.android.AndroidEntryPoint;
 import edu.cnm.deepdive.doggoneit.MainActivity;
 import edu.cnm.deepdive.doggoneit.R;
 import edu.cnm.deepdive.doggoneit.databinding.FragmentScanDisplayBinding;
+import edu.cnm.deepdive.doggoneit.model.entity.BreedInfo;
 import edu.cnm.deepdive.doggoneit.model.entity.Scan;
 import edu.cnm.deepdive.doggoneit.viewmodel.ScanDisplayViewModel;
+import java.util.ArrayList;
+import java.util.List;
 
 @AndroidEntryPoint
 public class ScanDisplayFragment extends Fragment {
@@ -179,13 +183,13 @@ public class ScanDisplayFragment extends Fragment {
       }
       binding.factsLoadingIndicator.setVisibility(View.GONE);
       binding.factsPlaceholderText.setVisibility(View.GONE);
+      binding.factsDetailsText.setVisibility(View.GONE);
       binding.notesPlaceholderText.setVisibility(View.VISIBLE);
     } else {
       if (binding.contentTabGroup.getCheckedButtonId() != R.id.tab_facts) {
         binding.contentTabGroup.check(R.id.tab_facts);
       }
-      binding.factsLoadingIndicator.setVisibility(state.factsLoading ? View.VISIBLE : View.GONE);
-      binding.factsPlaceholderText.setVisibility(state.factsLoading ? View.GONE : View.VISIBLE);
+      renderFactsState(state.factsState);
       binding.notesPlaceholderText.setVisibility(View.GONE);
     }
     if (state.notesMode == ScanDisplayViewModel.NotesMode.EDIT) {
@@ -193,6 +197,114 @@ public class ScanDisplayFragment extends Fragment {
     } else {
       binding.notesPlaceholderText.setText(R.string.scan_display_notes_placeholder);
     }
+  }
+
+  private void renderFactsState(ScanDisplayViewModel.FactsState factsState) {
+    if (factsState == null) {
+      binding.factsLoadingIndicator.setVisibility(View.GONE);
+      binding.factsDetailsText.setVisibility(View.GONE);
+      binding.factsPlaceholderText.setVisibility(View.VISIBLE);
+      binding.factsPlaceholderText.setText(R.string.scan_display_facts_placeholder);
+      return;
+    }
+    switch (factsState.status) {
+      case LOADING -> {
+        binding.factsLoadingIndicator.setVisibility(View.VISIBLE);
+        binding.factsDetailsText.setVisibility(View.GONE);
+        binding.factsPlaceholderText.setVisibility(View.GONE);
+      }
+      case LOADED -> {
+        binding.factsLoadingIndicator.setVisibility(View.GONE);
+        String detailsText = buildFactsDetails(factsState.breedInfo);
+        if (detailsText.isBlank()) {
+          binding.factsDetailsText.setVisibility(View.GONE);
+          binding.factsPlaceholderText.setVisibility(View.VISIBLE);
+          binding.factsPlaceholderText.setText(R.string.scan_display_facts_no_data);
+        } else {
+          binding.factsPlaceholderText.setVisibility(View.GONE);
+          binding.factsDetailsText.setVisibility(View.VISIBLE);
+          binding.factsDetailsText.setText(detailsText);
+        }
+      }
+      case SELECTED_BREED_MISSING -> {
+        showFactsMessage(R.string.scan_display_facts_selected_breed_missing);
+      }
+      case BREED_MAPPING_MISSING -> {
+        showFactsMessage(R.string.scan_display_facts_mapping_missing);
+      }
+      case FETCH_FAILED -> {
+        showFactsMessage(R.string.scan_display_facts_fetch_failed);
+      }
+      case NO_FACTS_AVAILABLE -> {
+        showFactsMessage(R.string.scan_display_facts_no_data);
+      }
+      case IDLE -> {
+        showFactsMessage(R.string.scan_display_facts_placeholder);
+      }
+    }
+  }
+
+  private void showFactsMessage(int messageResId) {
+    binding.factsLoadingIndicator.setVisibility(View.GONE);
+    binding.factsDetailsText.setVisibility(View.GONE);
+    binding.factsPlaceholderText.setVisibility(View.VISIBLE);
+    binding.factsPlaceholderText.setText(messageResId);
+  }
+
+  private String buildFactsDetails(BreedInfo breedInfo) {
+    if (breedInfo == null) {
+      return "";
+    }
+    List<String> lines = new ArrayList<>();
+    appendFactLine(lines, getString(R.string.scan_display_facts_name), breedInfo.getName());
+    appendFactLine(lines, getString(R.string.scan_display_facts_group), breedInfo.getBreedGroup());
+    appendFactLine(lines, getString(R.string.scan_display_facts_bred_for), breedInfo.getBredFor());
+    appendFactLine(lines, getString(R.string.scan_display_facts_life_span), breedInfo.getLifeSpan());
+    appendFactLine(lines, getString(R.string.scan_display_facts_temperament),
+        breedInfo.getTemperament());
+    appendFactLine(lines, getString(R.string.scan_display_facts_origin), breedInfo.getOrigin());
+    appendFactLine(lines, getString(R.string.scan_display_facts_weight), formatMeasurement(
+        breedInfo.getWeightMetric(),
+        getString(R.string.scan_display_measurement_metric_kg),
+        breedInfo.getWeightImperial(),
+        getString(R.string.scan_display_measurement_imperial_lb)
+    ));
+    appendFactLine(lines, getString(R.string.scan_display_facts_height), formatMeasurement(
+        breedInfo.getHeightMetric(),
+        getString(R.string.scan_display_measurement_metric_cm),
+        breedInfo.getHeightImperial(),
+        getString(R.string.scan_display_measurement_imperial_in)
+    ));
+    return TextUtils.join("\n", lines);
+  }
+
+  private void appendFactLine(List<String> lines, String label, String value) {
+    if (value == null || value.isBlank()) {
+      return;
+    }
+    lines.add(getString(R.string.scan_display_facts_line_format, label, value.trim()));
+  }
+
+  private String formatMeasurement(String metric, String metricUnit, String imperial,
+      String imperialUnit) {
+    boolean hasMetric = metric != null && !metric.isBlank();
+    boolean hasImperial = imperial != null && !imperial.isBlank();
+    if (!hasMetric && !hasImperial) {
+      return null;
+    }
+    if (hasMetric && hasImperial) {
+      return getString(
+          R.string.scan_display_measurement_both,
+          metric.trim(),
+          metricUnit,
+          imperial.trim(),
+          imperialUnit
+      );
+    }
+    if (hasMetric) {
+      return getString(R.string.scan_display_measurement_single, metric.trim(), metricUnit);
+    }
+    return getString(R.string.scan_display_measurement_single, imperial.trim(), imperialUnit);
   }
 
 }

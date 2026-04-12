@@ -6,12 +6,22 @@ import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import dagger.hilt.android.lifecycle.HiltViewModel;
+import edu.cnm.deepdive.doggoneit.model.entity.BreedInfo;
+import edu.cnm.deepdive.doggoneit.model.entity.BreedMapping;
 import edu.cnm.deepdive.doggoneit.model.entity.BreedPrediction;
 import edu.cnm.deepdive.doggoneit.model.entity.Scan;
 import edu.cnm.deepdive.doggoneit.model.entity.ScanWithPredictions;
+import edu.cnm.deepdive.doggoneit.service.dogapi.BreedDetailsMapper;
+import edu.cnm.deepdive.doggoneit.service.dogapi.DogApiService;
+import edu.cnm.deepdive.doggoneit.service.dogapi.dto.BreedDetailsDto;
+import edu.cnm.deepdive.doggoneit.service.repository.BreedInfoRepository;
+import edu.cnm.deepdive.doggoneit.service.repository.BreedMappingRepository;
 import edu.cnm.deepdive.doggoneit.service.repository.ScanRepository;
+import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.CompletableFuture;
+import retrofit2.Response;
 import javax.inject.Inject;
 
 @HiltViewModel
@@ -27,23 +37,44 @@ public class ScanDisplayViewModel extends ViewModel {
     EDIT
   }
 
+  public enum FactsStatus {
+    IDLE,
+    LOADING,
+    LOADED,
+    SELECTED_BREED_MISSING,
+    BREED_MAPPING_MISSING,
+    FETCH_FAILED,
+    NO_FACTS_AVAILABLE
+  }
+
   private final ScanRepository scanRepository;
+  private final BreedMappingRepository breedMappingRepository;
+  private final BreedInfoRepository breedInfoRepository;
+  private final DogApiService dogApiService;
   private final MediatorLiveData<UiState> uiState;
   private final MutableLiveData<ContentTab> selectedTab;
-  private final MutableLiveData<Boolean> factsLoading;
+  private final MutableLiveData<FactsState> factsState;
   private final MutableLiveData<NotesMode> notesMode;
   private LiveData<ScanWithPredictions> scanSource;
   private long scanId;
+  private String factsSelectedBreedLabel;
+  private int factsRequestCounter;
 
   @Inject
-  public ScanDisplayViewModel(ScanRepository scanRepository) {
+  public ScanDisplayViewModel(ScanRepository scanRepository,
+      BreedMappingRepository breedMappingRepository,
+      BreedInfoRepository breedInfoRepository,
+      DogApiService dogApiService) {
     this.scanRepository = scanRepository;
+    this.breedMappingRepository = breedMappingRepository;
+    this.breedInfoRepository = breedInfoRepository;
+    this.dogApiService = dogApiService;
     uiState = new MediatorLiveData<>();
     selectedTab = new MutableLiveData<>(ContentTab.FACTS);
-    factsLoading = new MutableLiveData<>(false);
+    factsState = new MutableLiveData<>(new FactsState(FactsStatus.IDLE, null, null));
     notesMode = new MutableLiveData<>(NotesMode.VIEW);
     uiState.addSource(selectedTab, value -> emitUiState());
-    uiState.addSource(factsLoading, value -> emitUiState());
+    uiState.addSource(factsState, value -> emitUiState());
     uiState.addSource(notesMode, value -> emitUiState());
     emitUiState();
   }
@@ -60,6 +91,9 @@ public class ScanDisplayViewModel extends ViewModel {
           uiState.removeSource(scanSource);
           scanSource = null;
         }
+        factsSelectedBreedLabel = null;
+        factsRequestCounter++;
+        factsState.setValue(new FactsState(FactsStatus.IDLE, null, null));
         emitUiState();
       }
       return;
@@ -69,7 +103,10 @@ public class ScanDisplayViewModel extends ViewModel {
       uiState.removeSource(scanSource);
     }
     scanSource = scanRepository.getWithPredictionsById(scanId);
-    uiState.addSource(scanSource, value -> emitUiState());
+    uiState.addSource(scanSource, value -> {
+      onScanChanged(value);
+      emitUiState();
+    });
     emitUiState();
   }
 
@@ -97,18 +134,127 @@ public class ScanDisplayViewModel extends ViewModel {
     String selectedBreedLabel = resolveSelectedBreedLabel(scanWithPredictions);
     Integer selectedConfidencePercent = resolveSelectedConfidencePercent(scanWithPredictions);
     ContentTab tab = (selectedTab.getValue() != null) ? selectedTab.getValue() : ContentTab.FACTS;
-    boolean isFactsLoading = Boolean.TRUE.equals(factsLoading.getValue());
+    FactsState currentFactsState = (factsState.getValue() != null)
+        ? factsState.getValue()
+        : new FactsState(FactsStatus.IDLE, null, null);
     NotesMode currentNotesMode =
         (notesMode.getValue() != null) ? notesMode.getValue() : NotesMode.VIEW;
     uiState.setValue(new UiState(
         scanId,
         scan,
         tab,
-        isFactsLoading,
+        currentFactsState,
         currentNotesMode,
         formatBreedLabel(selectedBreedLabel),
         selectedConfidencePercent
     ));
+  }
+
+  private void onScanChanged(ScanWithPredictions scanWithPredictions) {
+    Scan scan = (scanWithPredictions != null) ? scanWithPredictions.getScan() : null;
+    String selectedBreedLabel = getPersistedSelectedBreedLabel(scan);
+    if (selectedBreedLabel == null) {
+      factsSelectedBreedLabel = null;
+      factsRequestCounter++;
+      factsState.setValue(new FactsState(FactsStatus.SELECTED_BREED_MISSING, null, null));
+      return;
+    }
+    if (selectedBreedLabel.equals(factsSelectedBreedLabel)) {
+      return;
+    }
+    factsSelectedBreedLabel = selectedBreedLabel;
+    loadFacts(selectedBreedLabel);
+  }
+
+  private void loadFacts(String selectedBreedLabel) {
+    final int requestId = ++factsRequestCounter;
+    factsState.setValue(new FactsState(FactsStatus.LOADING, null, null));
+    CompletableFuture
+        .supplyAsync(() -> resolveFacts(selectedBreedLabel))
+        .thenAccept(state -> postFactsStateIfCurrent(requestId, state))
+        .exceptionally(throwable -> {
+          postFactsStateIfCurrent(requestId, new FactsState(
+              FactsStatus.FETCH_FAILED,
+              null,
+              throwable.getMessage()
+          ));
+          return null;
+        });
+  }
+
+  private FactsState resolveFacts(String selectedBreedLabel) {
+    try {
+      BreedMapping mapping = breedMappingRepository.getByModelLabelNow(selectedBreedLabel).join();
+      if (mapping == null || mapping.getDogApiBreedId() <= 0) {
+        return new FactsState(FactsStatus.BREED_MAPPING_MISSING, null, null);
+      }
+      long dogApiBreedId = mapping.getDogApiBreedId();
+      BreedInfo cached = breedInfoRepository.getByDogApiBreedIdNow(dogApiBreedId).join();
+      if (cached != null && hasDisplayableFacts(cached)) {
+        return new FactsState(FactsStatus.LOADED, cached, null);
+      }
+      BreedInfo fetched = fetchBreedInfoFromApi(dogApiBreedId);
+      if (fetched == null) {
+        return new FactsState(FactsStatus.NO_FACTS_AVAILABLE, null, null);
+      }
+      BreedInfo saved = breedInfoRepository.saveOrUpdate(fetched).join();
+      if (saved == null || !hasDisplayableFacts(saved)) {
+        return new FactsState(FactsStatus.NO_FACTS_AVAILABLE, null, null);
+      }
+      return new FactsState(FactsStatus.LOADED, saved, null);
+    } catch (Exception e) {
+      return new FactsState(FactsStatus.FETCH_FAILED, null, e.getMessage());
+    }
+  }
+
+  private BreedInfo fetchBreedInfoFromApi(long dogApiBreedId) throws IOException {
+    Response<BreedDetailsDto> response = dogApiService.getBreedDetails(dogApiBreedId).execute();
+    if (!response.isSuccessful()) {
+      throw new IOException("Dog API returned " + response.code());
+    }
+    BreedDetailsDto body = response.body();
+    if (body == null) {
+      return null;
+    }
+    return BreedDetailsMapper.toBreedInfo(body);
+  }
+
+  private void postFactsStateIfCurrent(int requestId, FactsState state) {
+    if (requestId != factsRequestCounter) {
+      return;
+    }
+    factsState.postValue(state);
+  }
+
+  private String getPersistedSelectedBreedLabel(Scan scan) {
+    if (scan == null) {
+      return null;
+    }
+    String selectedBreedLabel = scan.getSelectedBreedLabel();
+    if (selectedBreedLabel == null || selectedBreedLabel.isBlank()) {
+      return null;
+    }
+    return selectedBreedLabel.trim();
+  }
+
+  private boolean hasDisplayableFacts(BreedInfo breedInfo) {
+    if (breedInfo == null) {
+      return false;
+    }
+    return hasValue(breedInfo.getName())
+        || hasValue(breedInfo.getBreedGroup())
+        || hasValue(breedInfo.getBredFor())
+        || hasValue(breedInfo.getLifeSpan())
+        || hasValue(breedInfo.getTemperament())
+        || hasValue(breedInfo.getOrigin())
+        || hasValue(breedInfo.getWeightMetric())
+        || hasValue(breedInfo.getWeightImperial())
+        || hasValue(breedInfo.getHeightMetric())
+        || hasValue(breedInfo.getHeightImperial());
+  }
+
+  private boolean hasValue(String value) {
+    return value != null && !value.isBlank();
   }
 
   private String resolveSelectedBreedLabel(ScanWithPredictions scanWithPredictions) {
@@ -176,7 +322,7 @@ public class ScanDisplayViewModel extends ViewModel {
     public final long scanId;
     public final Scan scan;
     public final ContentTab selectedTab;
-    public final boolean factsLoading;
+    public final FactsState factsState;
     public final NotesMode notesMode;
     public final String selectedBreedLabel;
     public final Integer selectedConfidencePercent;
@@ -185,7 +331,7 @@ public class ScanDisplayViewModel extends ViewModel {
         long scanId,
         Scan scan,
         @NonNull ContentTab selectedTab,
-        boolean factsLoading,
+        @NonNull FactsState factsState,
         @NonNull NotesMode notesMode,
         String selectedBreedLabel,
         Integer selectedConfidencePercent
@@ -193,10 +339,23 @@ public class ScanDisplayViewModel extends ViewModel {
       this.scanId = scanId;
       this.scan = scan;
       this.selectedTab = selectedTab;
-      this.factsLoading = factsLoading;
+      this.factsState = factsState;
       this.notesMode = notesMode;
       this.selectedBreedLabel = selectedBreedLabel;
       this.selectedConfidencePercent = selectedConfidencePercent;
+    }
+  }
+
+  public static class FactsState {
+
+    public final FactsStatus status;
+    public final BreedInfo breedInfo;
+    public final String errorMessage;
+
+    FactsState(@NonNull FactsStatus status, BreedInfo breedInfo, String errorMessage) {
+      this.status = status;
+      this.breedInfo = breedInfo;
+      this.errorMessage = errorMessage;
     }
   }
 
