@@ -12,6 +12,7 @@ public class ScanGalleryItem {
   @NonNull
   private String topBreedLabel = "";
   private Double topBreedConfidence;
+  private boolean favorite;
 
   public long getScanId() {
     return scanId;
@@ -53,5 +54,13 @@ public class ScanGalleryItem {
 
   public void setTopBreedConfidence(Double topBreedConfidence) {
     this.topBreedConfidence = topBreedConfidence;
+  }
+
+  public boolean isFavorite() {
+    return favorite;
+  }
+
+  public void setFavorite(boolean favorite) {
+    this.favorite = favorite;
   }
 }

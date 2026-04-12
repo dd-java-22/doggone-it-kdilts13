@@ -39,6 +39,7 @@ public class ScansGalleryViewModel extends ViewModel {
   private final MutableLiveData<SortField> sortField;
   private final MutableLiveData<SortDirection> sortDirection;
   private final MutableLiveData<String> filterText;
+  private final MutableLiveData<Boolean> favoritesOnly;
 
   @Inject
   public ScansGalleryViewModel(ScanRepository scanRepository,
@@ -49,6 +50,7 @@ public class ScansGalleryViewModel extends ViewModel {
     sortField = new MutableLiveData<>(SortField.DATE);
     sortDirection = new MutableLiveData<>(SortDirection.DESCENDING);
     filterText = new MutableLiveData<>("");
+    favoritesOnly = new MutableLiveData<>(false);
     sourceGalleryItems = Transformations.switchMap(
         userSessionRepository.getCurrentUser(),
         this::resolveGalleryItems
@@ -59,10 +61,12 @@ public class ScansGalleryViewModel extends ViewModel {
     galleryItems.addSource(sortField, value -> updateGalleryItems());
     galleryItems.addSource(sortDirection, value -> updateGalleryItems());
     galleryItems.addSource(filterText, value -> updateGalleryItems());
+    galleryItems.addSource(favoritesOnly, value -> updateGalleryItems());
     emptyMessageResId.addSource(sourceGalleryItems, items -> updateGalleryItems());
     emptyMessageResId.addSource(sortField, value -> updateGalleryItems());
     emptyMessageResId.addSource(sortDirection, value -> updateGalleryItems());
     emptyMessageResId.addSource(filterText, value -> updateGalleryItems());
+    emptyMessageResId.addSource(favoritesOnly, value -> updateGalleryItems());
     updateGalleryItems();
   }
 
@@ -86,6 +90,10 @@ public class ScansGalleryViewModel extends ViewModel {
     return filterText;
   }
 
+  public LiveData<Boolean> getFavoritesOnly() {
+    return favoritesOnly;
+  }
+
   public void setSortField(SortField value) {
     sortField.setValue((value != null) ? value : SortField.DATE);
   }
@@ -96,6 +104,10 @@ public class ScansGalleryViewModel extends ViewModel {
 
   public void setFilterText(String value) {
     filterText.setValue((value != null) ? value : "");
+  }
+
+  public void setFavoritesOnly(boolean value) {
+    favoritesOnly.setValue(value);
   }
 
   private LiveData<List<ScanGalleryItem>> resolveGalleryItems(UserProfile userProfile) {
@@ -123,9 +135,10 @@ public class ScansGalleryViewModel extends ViewModel {
       return Collections.emptyList();
     }
     String query = normalize(filterText.getValue());
+    boolean favoritesOnlyValue = Boolean.TRUE.equals(favoritesOnly.getValue());
     List<ScanGalleryItem> result = new ArrayList<>();
     for (ScanGalleryItem item : source) {
-      if (item != null && matchesFilter(item, query)) {
+      if (item != null && matchesFilter(item, query, favoritesOnlyValue)) {
         result.add(item);
       }
     }
@@ -133,7 +146,10 @@ public class ScansGalleryViewModel extends ViewModel {
     return result;
   }
 
-  private boolean matchesFilter(ScanGalleryItem item, String query) {
+  private boolean matchesFilter(ScanGalleryItem item, String query, boolean favoritesOnlyValue) {
+    if (favoritesOnlyValue && !item.isFavorite()) {
+      return false;
+    }
     if (query.isEmpty()) {
       return true;
     }

@@ -97,6 +97,12 @@ public class ScansGalleryFragment extends Fragment {
         binding.filterInput.setSelection(target.length());
       }
     });
+    viewModel.getFavoritesOnly().observe(getViewLifecycleOwner(), favoritesOnly -> {
+      boolean checked = Boolean.TRUE.equals(favoritesOnly);
+      if (binding.favoritesOnlyCheckbox.isChecked() != checked) {
+        binding.favoritesOnlyCheckbox.setChecked(checked);
+      }
+    });
   }
 
   @Override
@@ -173,6 +179,9 @@ public class ScansGalleryFragment extends Fragment {
       }
     };
     binding.filterInput.addTextChangedListener(filterWatcher);
+    binding.favoritesOnlyCheckbox.setOnCheckedChangeListener(
+        (buttonView, isChecked) -> viewModel.setFavoritesOnly(isChecked)
+    );
   }
 
   private void applySettingsDefaults() {

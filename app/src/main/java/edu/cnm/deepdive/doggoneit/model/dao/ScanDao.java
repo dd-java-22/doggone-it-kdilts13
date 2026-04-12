@@ -46,6 +46,7 @@ public interface ScanDao {
           + "scan.scan_id AS scanId, "
           + "scan.image_path AS imagePath, "
           + "scan.timestamp AS timestamp, "
+          + "scan.favorite AS favorite, "
           + "COALESCE(NULLIF(scan.selected_breed_label, ''), top_prediction.name, '') AS topBreedLabel, "
           + "COALESCE(scan.selected_breed_confidence, top_prediction.probability) AS topBreedConfidence "
           + "FROM scan "

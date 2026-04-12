@@ -82,6 +82,7 @@
   <string name="scans_gallery_no_filter_matches">No scans match this filter.</string>
   <string name="scans_gallery_sort_by">Sort by</string>
   <string name="scans_gallery_filter_hint">Filter by breed</string>
+  <string name="scans_gallery_favorites_only">Favorites only</string>
   <string name="saved_scan_image_content_description">Saved scan image</string>
 
   <string-array name="scans_gallery_sort_fields">
