@@ -54,6 +54,7 @@ public class ScanDisplayViewModel extends ViewModel {
   private final MediatorLiveData<UiState> uiState;
   private final MutableLiveData<ContentTab> selectedTab;
   private final MutableLiveData<FactsState> factsState;
+  private final MutableLiveData<Boolean> favoriteSaving;
   private final MutableLiveData<String> savedNote;
   private final MutableLiveData<String> noteDraft;
   private final MutableLiveData<Boolean> noteSaving;
@@ -79,6 +80,7 @@ public class ScanDisplayViewModel extends ViewModel {
     uiState = new MediatorLiveData<>();
     selectedTab = new MutableLiveData<>(ContentTab.FACTS);
     factsState = new MutableLiveData<>(new FactsState(FactsStatus.IDLE, null, null));
+    favoriteSaving = new MutableLiveData<>(false);
     savedNote = new MutableLiveData<>("");
     noteDraft = new MutableLiveData<>("");
     noteSaving = new MutableLiveData<>(false);
@@ -86,6 +88,7 @@ public class ScanDisplayViewModel extends ViewModel {
     messageEvent = new MutableLiveData<>();
     uiState.addSource(selectedTab, value -> emitUiState());
     uiState.addSource(factsState, value -> emitUiState());
+    uiState.addSource(favoriteSaving, value -> emitUiState());
     uiState.addSource(savedNote, value -> emitUiState());
     uiState.addSource(noteDraft, value -> emitUiState());
     uiState.addSource(noteSaving, value -> emitUiState());
@@ -112,6 +115,7 @@ public class ScanDisplayViewModel extends ViewModel {
         factsSelectedBreedLabel = null;
         factsRequestCounter++;
         factsState.setValue(new FactsState(FactsStatus.IDLE, null, null));
+        favoriteSaving.setValue(false);
         savedNote.setValue("");
         noteDraft.setValue("");
         noteSaving.setValue(false);
@@ -141,12 +145,16 @@ public class ScanDisplayViewModel extends ViewModel {
     if (currentState == null || currentState.scan == null) {
       return;
     }
+    if (Boolean.TRUE.equals(favoriteSaving.getValue())) {
+      return;
+    }
     Scan scan = currentState.scan;
     boolean previousFavorite = scan.isFavorite();
     if (previousFavorite == favorite) {
       return;
     }
     final int requestId = ++favoriteRequestCounter;
+    favoriteSaving.setValue(true);
     scan.setFavorite(favorite);
     emitUiState();
     scanRepository.update(scan)
@@ -154,6 +162,7 @@ public class ScanDisplayViewModel extends ViewModel {
           if (requestId != favoriteRequestCounter) {
             return;
           }
+          favoriteSaving.postValue(false);
           if (rowsUpdated == null || rowsUpdated <= 0) {
             scan.setFavorite(previousFavorite);
             emitUiState();
@@ -162,6 +171,7 @@ public class ScanDisplayViewModel extends ViewModel {
         })
         .exceptionally(throwable -> {
           if (requestId == favoriteRequestCounter) {
+            favoriteSaving.postValue(false);
             scan.setFavorite(previousFavorite);
             emitUiState();
             postMessage("Unable to update favorite right now.");
@@ -244,6 +254,7 @@ public class ScanDisplayViewModel extends ViewModel {
     String currentSavedNote = (savedNote.getValue() != null) ? savedNote.getValue() : "";
     String currentNoteDraft = (noteDraft.getValue() != null) ? noteDraft.getValue() : "";
     boolean isNoteSaving = Boolean.TRUE.equals(noteSaving.getValue());
+    boolean isFavoriteSaving = Boolean.TRUE.equals(favoriteSaving.getValue());
     uiState.setValue(new UiState(
         scanId,
         scan,
@@ -253,6 +264,7 @@ public class ScanDisplayViewModel extends ViewModel {
         currentSavedNote,
         currentNoteDraft,
         isNoteSaving,
+        isFavoriteSaving,
         formatBreedLabel(selectedBreedLabel),
         selectedConfidencePercent
     ));
@@ -458,6 +470,7 @@ public class ScanDisplayViewModel extends ViewModel {
     public final String savedNote;
     public final String noteDraft;
     public final boolean noteSaving;
+    public final boolean favoriteSaving;
     public final String selectedBreedLabel;
     public final Integer selectedConfidencePercent;
 
@@ -470,6 +483,7 @@ public class ScanDisplayViewModel extends ViewModel {
         @NonNull String savedNote,
         @NonNull String noteDraft,
         boolean noteSaving,
+        boolean favoriteSaving,
         String selectedBreedLabel,
         Integer selectedConfidencePercent
     ) {
@@ -481,6 +495,7 @@ public class ScanDisplayViewModel extends ViewModel {
       this.savedNote = savedNote;
       this.noteDraft = noteDraft;
       this.noteSaving = noteSaving;
+      this.favoriteSaving = favoriteSaving;
       this.selectedBreedLabel = selectedBreedLabel;
       this.selectedConfidencePercent = selectedConfidencePercent;
     }

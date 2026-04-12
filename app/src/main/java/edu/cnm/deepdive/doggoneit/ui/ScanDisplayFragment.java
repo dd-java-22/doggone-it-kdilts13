@@ -205,9 +205,9 @@ public class ScanDisplayFragment extends Fragment {
     }
 
     updatingFavoriteControl = true;
-    binding.favoriteToggle.setEnabled(true);
     binding.favoriteToggle.setChecked(scan.isFavorite());
     updatingFavoriteControl = false;
+    binding.favoriteToggle.setEnabled(!state.favoriteSaving);
 
     if (state.selectedTab == ScanDisplayViewModel.ContentTab.NOTES) {
       if (binding.contentTabGroup.getCheckedButtonId() != R.id.tab_notes) {
