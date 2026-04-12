@@ -24,7 +24,7 @@ public interface BreedInfoDao {
   @Delete
   int delete(BreedInfo... breedInfo);
 
-  @Query("SELECT * FROM breed_info WHERE breed_fact_id = :breedInfoId")
+  @Query("SELECT * FROM breed_info WHERE breed_info_id = :breedInfoId")
   LiveData<BreedInfo> findById(long breedInfoId);
 
   @Query("SELECT * FROM breed_info WHERE dog_api_breed_id = :dogApiBreedId")

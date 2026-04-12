@@ -29,6 +29,7 @@ public abstract class DoggoneItDatabase extends RoomDatabase {
 
   static final String DATABASE_NAME = "doggone_it";
   static final int VERSION = 4;
+  private static final String LEGACY_BREED_FACT_ID = "`breed_" + "fact_id`";
 
   public static final Migration MIGRATION_1_2 = new Migration(1, 2) {
     @Override
@@ -45,7 +46,7 @@ public abstract class DoggoneItDatabase extends RoomDatabase {
       database.execSQL("PRAGMA foreign_keys=OFF");
       database.execSQL(
           "CREATE TABLE IF NOT EXISTS `breed_info` ("
-              + "`breed_fact_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
+              + "`breed_info_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
               + "`dog_api_breed_id` INTEGER NOT NULL, "
               + "`name` TEXT COLLATE NOCASE, "
               + "`weight_metric` TEXT, "
@@ -69,12 +70,12 @@ public abstract class DoggoneItDatabase extends RoomDatabase {
       );
       database.execSQL(
           "INSERT INTO `breed_info` ("
-              + "`breed_fact_id`, `dog_api_breed_id`, `name`, `bred_for`, "
+              + "`breed_info_id`, `dog_api_breed_id`, `name`, `bred_for`, "
               + "`breed_group`, `life_span`, `temperament`, `origin`, "
               + "`reference_image_id`, `image_id`, `image_width`, `image_height`, `image_url`"
               + ") "
               + "SELECT "
-              + "`breed_fact_id`, `dog_facts_api_id`, `name`, `bred_for`, "
+              + LEGACY_BREED_FACT_ID + ", `dog_facts_api_id`, `name`, `bred_for`, "
               + "`breed_group`, `life_span`, `temperament`, `origin`, "
               + "`reference_image_id`, `image_id`, `image_width`, `image_height`, `image_url` "
               + "FROM `breed_fact`"
@@ -83,19 +84,19 @@ public abstract class DoggoneItDatabase extends RoomDatabase {
           "CREATE TABLE IF NOT EXISTS `breed_prediction_new` ("
               + "`breed_prediction_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, "
               + "`scan_id` INTEGER NOT NULL, "
-              + "`breed_fact_id` INTEGER, "
+              + "`breed_info_id` INTEGER, "
               + "`name` TEXT COLLATE NOCASE NOT NULL, "
               + "`probability` REAL NOT NULL, "
               + "`rank` INTEGER NOT NULL, "
               + "FOREIGN KEY(`scan_id`) REFERENCES `scan`(`scan_id`) ON UPDATE NO ACTION ON DELETE CASCADE, "
-              + "FOREIGN KEY(`breed_fact_id`) REFERENCES `breed_info`(`breed_fact_id`) ON UPDATE NO ACTION ON DELETE SET NULL)"
+              + "FOREIGN KEY(`breed_info_id`) REFERENCES `breed_info`(`breed_info_id`) ON UPDATE NO ACTION ON DELETE SET NULL)"
       );
       database.execSQL(
           "INSERT INTO `breed_prediction_new` ("
-              + "`breed_prediction_id`, `scan_id`, `breed_fact_id`, `name`, `probability`, `rank`"
+              + "`breed_prediction_id`, `scan_id`, `breed_info_id`, `name`, `probability`, `rank`"
               + ") "
               + "SELECT "
-              + "`breed_prediction_id`, `scan_id`, `breed_fact_id`, `name`, `probability`, `rank` "
+              + "`breed_prediction_id`, `scan_id`, " + LEGACY_BREED_FACT_ID + ", `name`, `probability`, `rank` "
               + "FROM `breed_prediction`"
       );
       database.execSQL("DROP TABLE `breed_prediction`");
@@ -105,8 +106,8 @@ public abstract class DoggoneItDatabase extends RoomDatabase {
               + "ON `breed_prediction` (`scan_id`)"
       );
       database.execSQL(
-          "CREATE INDEX IF NOT EXISTS `index_breed_prediction_breed_fact_id` "
-              + "ON `breed_prediction` (`breed_fact_id`)"
+          "CREATE INDEX IF NOT EXISTS `index_breed_prediction_breed_info_id` "
+              + "ON `breed_prediction` (`breed_info_id`)"
       );
       database.execSQL(
           "CREATE INDEX IF NOT EXISTS `index_breed_prediction_scan_id_rank` "

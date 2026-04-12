@@ -14,7 +14,7 @@ import androidx.room.PrimaryKey;
 public class BreedInfo {
 
   @PrimaryKey(autoGenerate = true)
-  @ColumnInfo(name = "breed_fact_id")
+  @ColumnInfo(name = "breed_info_id")
   private long id;
 
   @ColumnInfo(name = "dog_api_breed_id")

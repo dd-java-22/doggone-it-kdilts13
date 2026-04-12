@@ -18,14 +18,14 @@ import androidx.room.PrimaryKey;
         ),
         @ForeignKey(
             entity = BreedInfo.class,
-            parentColumns = "breed_fact_id",
-            childColumns = "breed_fact_id",
+            parentColumns = "breed_info_id",
+            childColumns = "breed_info_id",
             onDelete = ForeignKey.SET_NULL
         )
     },
     indices = {
         @Index(value = "scan_id"),
-        @Index(value = "breed_fact_id"),
+        @Index(value = "breed_info_id"),
         @Index(value = {"scan_id", "rank"})
     }
 )
@@ -38,8 +38,8 @@ public class BreedPrediction {
   @ColumnInfo(name = "scan_id")
   private long scanId;
 
-  @ColumnInfo(name = "breed_fact_id")
-  private Long breedFactId;
+  @ColumnInfo(name = "breed_info_id")
+  private Long breedInfoId;
 
   @ColumnInfo(collate = ColumnInfo.NOCASE)
   @NonNull
@@ -65,12 +65,12 @@ public class BreedPrediction {
     this.scanId = scanId;
   }
 
-  public Long getBreedFactId() {
-    return breedFactId;
+  public Long getBreedInfoId() {
+    return breedInfoId;
   }
 
-  public void setBreedFactId(Long breedFactId) {
-    this.breedFactId = breedFactId;
+  public void setBreedInfoId(Long breedInfoId) {
+    this.breedInfoId = breedInfoId;
   }
 
   @NonNull

@@ -30,8 +30,8 @@ public interface BreedPredictionDao {
   @Query("SELECT * FROM breed_prediction WHERE scan_id = :scanId ORDER BY rank ASC, probability DESC")
   LiveData<List<BreedPrediction>> findByScanId(long scanId);
 
-  @Query("SELECT * FROM breed_prediction WHERE breed_fact_id = :breedFactId ORDER BY probability DESC")
-  LiveData<List<BreedPrediction>> findByBreedFactId(long breedFactId);
+  @Query("SELECT * FROM breed_prediction WHERE breed_info_id = :breedInfoId ORDER BY probability DESC")
+  LiveData<List<BreedPrediction>> findByBreedInfoId(long breedInfoId);
 
   @Query("SELECT * FROM breed_prediction ORDER BY probability DESC")
   LiveData<List<BreedPrediction>> findAll();

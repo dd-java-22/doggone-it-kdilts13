@@ -81,7 +81,7 @@ CREATE TABLE IF NOT EXISTS `breed_prediction`
     INTEGER
     NOT
     NULL,
-    `breed_fact_id`
+    `breed_info_id`
     INTEGER,
     `name`
     TEXT
@@ -103,21 +103,21 @@ CREATE TABLE IF NOT EXISTS `breed_prediction`
 ) ON UPDATE NO ACTION
   ON DELETE CASCADE , FOREIGN KEY
 (
-    `breed_fact_id`
+    `breed_info_id`
 ) REFERENCES `breed_fact`
 (
-    `breed_fact_id`
+    `breed_info_id`
 )
   ON UPDATE NO ACTION
   ON DELETE SET NULL );
 
 CREATE INDEX IF NOT EXISTS `index_breed_prediction_scan_id` ON `breed_prediction` (`scan_id`);
 
-CREATE INDEX IF NOT EXISTS `index_breed_prediction_breed_fact_id` ON `breed_prediction` (`breed_fact_id`);
+CREATE INDEX IF NOT EXISTS `index_breed_prediction_breed_info_id` ON `breed_prediction` (`breed_info_id`);
 
 CREATE TABLE IF NOT EXISTS `breed_fact`
 (
-    `breed_fact_id`
+    `breed_info_id`
     INTEGER
     PRIMARY
     KEY

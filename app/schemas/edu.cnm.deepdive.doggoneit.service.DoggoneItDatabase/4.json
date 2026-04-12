@@ -136,7 +136,7 @@
       },
       {
         "tableName": "breed_prediction",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`breed_prediction_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `scan_id` INTEGER NOT NULL, `breed_fact_id` INTEGER, `name` TEXT NOT NULL COLLATE NOCASE, `probability` REAL NOT NULL, `rank` INTEGER NOT NULL, FOREIGN KEY(`scan_id`) REFERENCES `scan`(`scan_id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`breed_fact_id`) REFERENCES `breed_info`(`breed_fact_id`) ON UPDATE NO ACTION ON DELETE SET NULL )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`breed_prediction_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `scan_id` INTEGER NOT NULL, `breed_info_id` INTEGER, `name` TEXT NOT NULL COLLATE NOCASE, `probability` REAL NOT NULL, `rank` INTEGER NOT NULL, FOREIGN KEY(`scan_id`) REFERENCES `scan`(`scan_id`) ON UPDATE NO ACTION ON DELETE CASCADE , FOREIGN KEY(`breed_info_id`) REFERENCES `breed_info`(`breed_info_id`) ON UPDATE NO ACTION ON DELETE SET NULL )",
         "fields": [
           {
             "fieldPath": "id",
@@ -151,8 +151,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "breedFactId",
-            "columnName": "breed_fact_id",
+            "fieldPath": "breedInfoId",
+            "columnName": "breed_info_id",
             "affinity": "INTEGER"
           },
           {
@@ -191,13 +191,13 @@
             "createSql": "CREATE INDEX IF NOT EXISTS `index_breed_prediction_scan_id` ON `${TABLE_NAME}` (`scan_id`)"
           },
           {
-            "name": "index_breed_prediction_breed_fact_id",
+            "name": "index_breed_prediction_breed_info_id",
             "unique": false,
             "columnNames": [
-              "breed_fact_id"
+              "breed_info_id"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_breed_prediction_breed_fact_id` ON `${TABLE_NAME}` (`breed_fact_id`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_breed_prediction_breed_info_id` ON `${TABLE_NAME}` (`breed_info_id`)"
           },
           {
             "name": "index_breed_prediction_scan_id_rank",
@@ -227,21 +227,21 @@
             "onDelete": "SET NULL",
             "onUpdate": "NO ACTION",
             "columns": [
-              "breed_fact_id"
+              "breed_info_id"
             ],
             "referencedColumns": [
-              "breed_fact_id"
+              "breed_info_id"
             ]
           }
         ]
       },
       {
         "tableName": "breed_info",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`breed_fact_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `dog_api_breed_id` INTEGER NOT NULL, `name` TEXT COLLATE NOCASE, `weight_metric` TEXT, `weight_imperial` TEXT, `height_metric` TEXT, `height_imperial` TEXT, `bred_for` TEXT, `breed_group` TEXT, `life_span` TEXT, `temperament` TEXT, `origin` TEXT, `reference_image_id` TEXT, `image_id` TEXT, `image_width` INTEGER, `image_height` INTEGER, `image_url` TEXT)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`breed_info_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `dog_api_breed_id` INTEGER NOT NULL, `name` TEXT COLLATE NOCASE, `weight_metric` TEXT, `weight_imperial` TEXT, `height_metric` TEXT, `height_imperial` TEXT, `bred_for` TEXT, `breed_group` TEXT, `life_span` TEXT, `temperament` TEXT, `origin` TEXT, `reference_image_id` TEXT, `image_id` TEXT, `image_width` INTEGER, `image_height` INTEGER, `image_url` TEXT)",
         "fields": [
           {
             "fieldPath": "id",
-            "columnName": "breed_fact_id",
+            "columnName": "breed_info_id",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -330,7 +330,7 @@
         "primaryKey": {
           "autoGenerate": true,
           "columnNames": [
-            "breed_fact_id"
+            "breed_info_id"
           ]
         },
         "indices": [
