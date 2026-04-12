@@ -17,11 +17,12 @@ import java.util.Objects;
 public class SavedScanGridAdapter
     extends ListAdapter<ScanGalleryItem, SavedScanGridAdapter.ViewHolder> {
 
-  private static final int GRID_COLUMN_COUNT = 3;
+  private static final int DEFAULT_GRID_COLUMN_COUNT = 3;
   private static final int GRID_SIDE_PADDING_DP = 32;
   private static final int TILE_MARGIN_DP = 12;
 
   private final ScanClickListener scanClickListener;
+  private int gridColumnCount = DEFAULT_GRID_COLUMN_COUNT;
 
   public SavedScanGridAdapter(ScanClickListener scanClickListener) {
     super(new DiffCallback());
@@ -38,7 +39,16 @@ public class SavedScanGridAdapter
 
   @Override
   public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-    holder.bind(getItem(position));
+    holder.bind(getItem(position), gridColumnCount);
+  }
+
+  public void setGridColumnCount(int columnCount) {
+    int normalizedCount = (columnCount >= 2 && columnCount <= 4)
+        ? columnCount : DEFAULT_GRID_COLUMN_COUNT;
+    if (gridColumnCount != normalizedCount) {
+      gridColumnCount = normalizedCount;
+      notifyDataSetChanged();
+    }
   }
 
   public interface ScanClickListener {
@@ -57,7 +67,7 @@ public class SavedScanGridAdapter
       this.scanClickListener = scanClickListener;
     }
 
-    void bind(ScanGalleryItem item) {
+    void bind(ScanGalleryItem item, int gridColumnCount) {
       long scanId = (item != null) ? item.getScanId() : 0;
       binding.getRoot().setOnClickListener(v -> scanClickListener.onScanClick(scanId));
       Glide.with(binding.savedScanImage).clear(binding.savedScanImage);
@@ -70,7 +80,7 @@ public class SavedScanGridAdapter
           .placeholder(R.drawable.dog)
           .error(R.drawable.dog)
           .centerCrop()
-          .override(getThumbnailSizePx(), getThumbnailSizePx())
+          .override(getThumbnailSizePx(gridColumnCount), getThumbnailSizePx(gridColumnCount))
           .thumbnail(0.25f)
           .into(binding.savedScanImage);
     }
@@ -79,14 +89,16 @@ public class SavedScanGridAdapter
       binding.savedScanImage.setImageResource(R.drawable.dog);
     }
 
-    private int getThumbnailSizePx() {
+    private int getThumbnailSizePx(int gridColumnCount) {
+      int normalizedCount = (gridColumnCount >= 2 && gridColumnCount <= 4)
+          ? gridColumnCount : DEFAULT_GRID_COLUMN_COUNT;
       float density = binding.savedScanImage.getResources().getDisplayMetrics().density;
       int screenWidthPx = binding.savedScanImage.getResources().getDisplayMetrics().widthPixels;
       int horizontalSpacingPx = Math.round(
-          (GRID_SIDE_PADDING_DP + (GRID_COLUMN_COUNT * TILE_MARGIN_DP)) * density
+          (GRID_SIDE_PADDING_DP + (normalizedCount * TILE_MARGIN_DP)) * density
       );
       int availableWidthPx = Math.max(screenWidthPx - horizontalSpacingPx, 0);
-      return Math.max(availableWidthPx / GRID_COLUMN_COUNT,
+      return Math.max(availableWidthPx / normalizedCount,
           Math.round(TypedValue.applyDimension(
               TypedValue.COMPLEX_UNIT_DIP,
               120,

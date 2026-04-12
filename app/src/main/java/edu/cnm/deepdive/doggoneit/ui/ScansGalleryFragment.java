@@ -244,6 +244,9 @@ public class ScansGalleryFragment extends Fragment {
     if (layoutManager != null && layoutManager.getSpanCount() != columns) {
       layoutManager.setSpanCount(columns);
     }
+    if (adapter != null) {
+      adapter.setGridColumnCount(columns);
+    }
   }
 
 }
