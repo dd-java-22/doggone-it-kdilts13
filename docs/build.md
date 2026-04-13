@@ -61,6 +61,7 @@ dogApiKey=YOUR_DOG_API_KEY_HERE
 ```
 
 Replace `YOUR_DOG_API_KEY_HERE` with a valid API key.
+You can get an API key for free at [The Dog API Website](https://thedogapi.com/signup).
 
 ### Important note
 
