@@ -18,6 +18,9 @@ import edu.cnm.deepdive.doggoneit.model.entity.Scan;
 import edu.cnm.deepdive.doggoneit.model.entity.UserProfile;
 import java.time.Instant;
 
+/**
+ * Room database containing app entities for users, scans, predictions, and breed metadata.
+ */
 @Database(
     entities = {UserProfile.class, Scan.class, BreedPrediction.class, BreedInfo.class,
         BreedMapping.class},
@@ -25,9 +28,6 @@ import java.time.Instant;
     exportSchema = true
 )
 @TypeConverters(DoggoneItDatabase.Converters.class)
-/**
- * Room database containing app entities for users, scans, predictions, and breed metadata.
- */
 public abstract class DoggoneItDatabase extends RoomDatabase {
 
   static final String DATABASE_NAME = "doggone_it";
