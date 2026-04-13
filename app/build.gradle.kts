@@ -215,6 +215,17 @@ tasks.register<Javadoc>("javadoc") {
     setDestinationDir(file("$rootDir/docs/api"))
 
     (options as StandardJavadocDocletOptions).apply {
+        isAuthor = false
+
+        links(
+            "https://docs.oracle.com/en/java/javase/21/docs/api/",
+            "https://javadoc.io/doc/com.google.dagger/dagger/latest/",
+            "https://javadoc.io/doc/com.google.dagger/hilt-android/latest/",
+            "https://javadoc.io/doc/com.github.bumptech.glide/glide/4.16.0/"
+        )
+
+        linksOffline("https://developer.android.com/reference", "$projectDir")
+
         addBooleanOption("html5", true)
         addStringOption("Xdoclint:none", "-quiet")
         encoding = "UTF-8"

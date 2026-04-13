@@ -85,14 +85,14 @@ loadScripts(document, 'script');</script>
 <h1 title="Class LoginViewModel" class="title">Class LoginViewModel</h1>
 </div>
 <div class="inheritance" title="Inheritance Tree"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">java.lang.Object</a>
-<div class="inheritance">androidx.lifecycle.ViewModel
+<div class="inheritance"><a href="https://developer.android.com/reference/androidx/lifecycle/ViewModel.html" title="class or interface in androidx.lifecycle" class="external-link">androidx.lifecycle.ViewModel</a>
 <div class="inheritance">edu.cnm.deepdive.doggoneit.viewmodel.LoginViewModel</div>
 </div>
 </div>
 <section class="class-description" id="class-description">
 <hr>
 <div class="type-signature"><span class="modifiers">public class </span><span class="element-name type-name-label">LoginViewModel</span>
-<span class="extends-implements">extends androidx.lifecycle.ViewModel</span></div>
+<span class="extends-implements">extends <a href="https://developer.android.com/reference/androidx/lifecycle/ViewModel.html" title="class or interface in androidx.lifecycle" class="external-link">ViewModel</a></span></div>
 <div class="block">Coordinates Google sign-in flows and local session state for login/logout UI.</div>
 </section>
 <section class="summary">
@@ -117,30 +117,30 @@ loadScripts(document, 'script');</script>
 <h2>Method Summary</h2>
 <div id="method-summary-table">
 <div class="table-tabs" role="tablist" aria-orientation="horizontal"><button id="method-summary-table-tab0" role="tab" aria-selected="true" aria-controls="method-summary-table.tabpanel" tabindex="0" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table', 3)" class="active-table-tab">All Methods</button><button id="method-summary-table-tab2" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab2', 3)" class="table-tab">Instance Methods</button><button id="method-summary-table-tab4" role="tab" aria-selected="false" aria-controls="method-summary-table.tabpanel" tabindex="-1" onkeydown="switchTab(event)" onclick="show('method-summary-table', 'method-summary-table-tab4', 3)" class="table-tab">Concrete Methods</button></div>
-<div id="method-summary-table.tabpanel" role="tabpanel">
-<div class="summary-table three-column-summary" aria-labelledby="method-summary-table-tab0">
+<div id="method-summary-table.tabpanel" role="tabpanel" aria-labelledby="method-summary-table-tab0">
+<div class="summary-table three-column-summary">
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>androidx.lifecycle.LiveData<wbr>&lt;com.google.android.libraries.identity.googleid.GoogleIdTokenCredential&gt;</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://developer.android.com/reference/androidx/lifecycle/LiveData.html" title="class or interface in androidx.lifecycle" class="external-link">LiveData</a><wbr>&lt;com.google.android.libraries.identity.googleid.GoogleIdTokenCredential&gt;</code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getCredential()" class="member-name-link">getCredential</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>androidx.lifecycle.LiveData<wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Throwable.html" title="class or interface in java.lang" class="external-link">Throwable</a>&gt;</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://developer.android.com/reference/androidx/lifecycle/LiveData.html" title="class or interface in androidx.lifecycle" class="external-link">LiveData</a><wbr>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Throwable.html" title="class or interface in java.lang" class="external-link">Throwable</a>&gt;</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getThrowable()" class="member-name-link">getThrowable</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">&nbsp;</div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#refreshToken(android.app.Activity,com.google.android.libraries.identity.googleid.GoogleIdTokenCredential)" class="member-name-link">refreshToken</a><wbr>(android.app.Activity&nbsp;activity,
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#refreshToken(android.app.Activity,com.google.android.libraries.identity.googleid.GoogleIdTokenCredential)" class="member-name-link">refreshToken</a><wbr>(<a href="https://developer.android.com/reference/android/app/Activity.html" title="class or interface in android.app" class="external-link">Activity</a>&nbsp;activity,
  com.google.android.libraries.identity.googleid.GoogleIdTokenCredential&nbsp;credential)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Refreshes credential state for an existing Google account.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#signIn(android.app.Activity)" class="member-name-link">signIn</a><wbr>(android.app.Activity&nbsp;activity)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#signIn(android.app.Activity)" class="member-name-link">signIn</a><wbr>(<a href="https://developer.android.com/reference/android/app/Activity.html" title="class or interface in android.app" class="external-link">Activity</a>&nbsp;activity)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Starts explicit Google sign-in flow.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#signInQuickly(android.app.Activity)" class="member-name-link">signInQuickly</a><wbr>(android.app.Activity&nbsp;activity)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#signInQuickly(android.app.Activity)" class="member-name-link">signInQuickly</a><wbr>(<a href="https://developer.android.com/reference/android/app/Activity.html" title="class or interface in android.app" class="external-link">Activity</a>&nbsp;activity)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Attempts one-tap sign-in without forcing account selection.</div>
 </div>
@@ -153,8 +153,8 @@ loadScripts(document, 'script');</script>
 </div>
 </div>
 <div class="inherited-list">
-<h3 id="methods-inherited-from-class-androidx.lifecycle.ViewModel">Methods inherited from class&nbsp;androidx.lifecycle.ViewModel</h3>
-<code>addCloseable, addCloseable, clear$lifecycle_viewmodel, getCloseable, onCleared</code></div>
+<h3 id="methods-inherited-from-class-androidx.lifecycle.ViewModel">Methods inherited from class&nbsp;androidx.lifecycle.<a href="https://developer.android.com/reference/androidx/lifecycle/ViewModel.html" title="class or interface in androidx.lifecycle" class="external-link">ViewModel</a></h3>
+<code><a href="https://developer.android.com/reference/androidx/lifecycle/ViewModel.html#addCloseable-java.lang.AutoCloseable-" title="class or interface in androidx.lifecycle" class="external-link">addCloseable</a>, <a href="https://developer.android.com/reference/androidx/lifecycle/ViewModel.html#addCloseable-java.lang.String-java.lang.AutoCloseable-" title="class or interface in androidx.lifecycle" class="external-link">addCloseable</a>, <a href="https://developer.android.com/reference/androidx/lifecycle/ViewModel.html#clear:Dlifecycle_viewmodel--" title="class or interface in androidx.lifecycle" class="external-link">clear$lifecycle_viewmodel</a>, <a href="https://developer.android.com/reference/androidx/lifecycle/ViewModel.html#getCloseable-java.lang.String-" title="class or interface in androidx.lifecycle" class="external-link">getCloseable</a>, <a href="https://developer.android.com/reference/androidx/lifecycle/ViewModel.html#onCleared--" title="class or interface in androidx.lifecycle" class="external-link">onCleared</a></code></div>
 <div class="inherited-list">
 <h3 id="methods-inherited-from-class-java.lang.Object">Methods inherited from class&nbsp;java.lang.<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></h3>
 <code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#clone()" title="class or interface in java.lang" class="external-link">clone</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#equals(java.lang.Object)" title="class or interface in java.lang" class="external-link">equals</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#finalize()" title="class or interface in java.lang" class="external-link">finalize</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#getClass()" title="class or interface in java.lang" class="external-link">getClass</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#hashCode()" title="class or interface in java.lang" class="external-link">hashCode</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#notify()" title="class or interface in java.lang" class="external-link">notify</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#notifyAll()" title="class or interface in java.lang" class="external-link">notifyAll</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#toString()" title="class or interface in java.lang" class="external-link">toString</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#wait()" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#wait(long)" title="class or interface in java.lang" class="external-link">wait</a>, <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html#wait(long,int)" title="class or interface in java.lang" class="external-link">wait</a></code></div>
@@ -188,7 +188,7 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="getCredential()">
 <h3>getCredential</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">androidx.lifecycle.LiveData&lt;com.google.android.libraries.identity.googleid.GoogleIdTokenCredential&gt;</span>&nbsp;<span class="element-name">getCredential</span>()</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://developer.android.com/reference/androidx/lifecycle/LiveData.html" title="class or interface in androidx.lifecycle" class="external-link">LiveData</a>&lt;com.google.android.libraries.identity.googleid.GoogleIdTokenCredential&gt;</span>&nbsp;<span class="element-name">getCredential</span>()</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>Latest successful Google credential, or <code>null</code>.</dd>
@@ -198,7 +198,7 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="getThrowable()">
 <h3>getThrowable</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">androidx.lifecycle.LiveData&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Throwable.html" title="class or interface in java.lang" class="external-link">Throwable</a>&gt;</span>&nbsp;<span class="element-name">getThrowable</span>()</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://developer.android.com/reference/androidx/lifecycle/LiveData.html" title="class or interface in androidx.lifecycle" class="external-link">LiveData</a>&lt;<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Throwable.html" title="class or interface in java.lang" class="external-link">Throwable</a>&gt;</span>&nbsp;<span class="element-name">getThrowable</span>()</div>
 <dl class="notes">
 <dt>Returns:</dt>
 <dd>Latest sign-in/sign-out error, or <code>null</code>.</dd>
@@ -208,7 +208,7 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="signInQuickly(android.app.Activity)">
 <h3>signInQuickly</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">signInQuickly</span><wbr><span class="parameters">(android.app.Activity&nbsp;activity)</span></div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">signInQuickly</span><wbr><span class="parameters">(<a href="https://developer.android.com/reference/android/app/Activity.html" title="class or interface in android.app" class="external-link">Activity</a>&nbsp;activity)</span></div>
 <div class="block">Attempts one-tap sign-in without forcing account selection.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
@@ -219,7 +219,7 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="signIn(android.app.Activity)">
 <h3>signIn</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">signIn</span><wbr><span class="parameters">(android.app.Activity&nbsp;activity)</span></div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">signIn</span><wbr><span class="parameters">(<a href="https://developer.android.com/reference/android/app/Activity.html" title="class or interface in android.app" class="external-link">Activity</a>&nbsp;activity)</span></div>
 <div class="block">Starts explicit Google sign-in flow.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
@@ -230,7 +230,7 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="refreshToken(android.app.Activity,com.google.android.libraries.identity.googleid.GoogleIdTokenCredential)">
 <h3>refreshToken</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">refreshToken</span><wbr><span class="parameters">(android.app.Activity&nbsp;activity,
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name">refreshToken</span><wbr><span class="parameters">(<a href="https://developer.android.com/reference/android/app/Activity.html" title="class or interface in android.app" class="external-link">Activity</a>&nbsp;activity,
  com.google.android.libraries.identity.googleid.GoogleIdTokenCredential&nbsp;credential)</span></div>
 <div class="block">Refreshes credential state for an existing Google account.</div>
 <dl class="notes">
