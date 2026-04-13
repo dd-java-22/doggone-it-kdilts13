@@ -4,6 +4,14 @@ description: "User Instructions"
 order: 40
 ---
 
+{% include ddc-abbreviations.md %}
+
+## Page contents
+{:.no_toc}
+
+- ToC
+{:toc}
+
 # User Instructions
 
 ## Overview

@@ -4,6 +4,14 @@ description: "Build Instructions"
 order: 30
 ---
 
+{% include ddc-abbreviations.md %}
+
+## Page contents
+{:.no_toc}
+
+- ToC
+{:toc}
+
 # Build Instructions
 
 ## Overview
