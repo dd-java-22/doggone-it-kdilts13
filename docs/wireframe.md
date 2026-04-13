@@ -1,7 +1,7 @@
 ---
 title: Wireframe
 description: "Wireframe diagram"
-order: 10
+order: 20
 ---
 
 {% include ddc-abbreviations.md %}

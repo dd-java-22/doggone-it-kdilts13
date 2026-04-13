@@ -1,7 +1,7 @@
 ---
 title: Build Instructions
 description: "Build Instructions"
-order: 20
+order: 30
 ---
 
 # Build Instructions
