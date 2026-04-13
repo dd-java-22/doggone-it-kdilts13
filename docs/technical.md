@@ -5,6 +5,14 @@ description: "Technical requirements, dependencies, and environment setup"
 order: 60
 ---
 
+{% include ddc-abbreviations.md %}
+
+## Page contents
+{:.no_toc}
+
+- ToC
+{:toc}
+
 # Technical Requirements & Dependencies
 
 ## Overview
