@@ -1,5 +1,4 @@
 /**
- * Base package of Application Starter app. All classes and interfaces defined in the app code (vs.
- * those imported from external libraries) are contained in this package and its sub-packages.
+ * App entry package containing the Hilt application class, main activity, and shared app helpers.
  */
 package edu.cnm.deepdive.doggoneit;
