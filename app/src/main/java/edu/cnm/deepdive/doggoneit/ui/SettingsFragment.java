@@ -34,10 +34,10 @@ import edu.cnm.deepdive.doggoneit.R;
 import edu.cnm.deepdive.doggoneit.databinding.FragmentSettingsBinding;
 import edu.cnm.deepdive.doggoneit.viewmodel.LoginViewModel;
 
-@AndroidEntryPoint
 /**
  * Settings screen for authentication actions and default gallery presentation preferences.
  */
+@AndroidEntryPoint
 public class SettingsFragment extends Fragment {
 
   public static final String PREF_KEY_SORT_FIELD = "pref_default_sort_field";

@@ -19,10 +19,10 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-@Singleton
 /**
  * Loads initial breed mapping rows from bundled JSON seed data.
  */
+@Singleton
 public class BreedMappingSeedLoader {
 
   private static final String TAG = BreedMappingSeedLoader.class.getSimpleName();

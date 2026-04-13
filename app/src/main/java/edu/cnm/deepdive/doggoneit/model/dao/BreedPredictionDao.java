@@ -9,10 +9,10 @@ import androidx.room.Update;
 import edu.cnm.deepdive.doggoneit.model.entity.BreedPrediction;
 import java.util.List;
 
-@Dao
 /**
  * DAO for prediction rows generated from image scans.
  */
+@Dao
 public interface BreedPredictionDao {
 
   /**

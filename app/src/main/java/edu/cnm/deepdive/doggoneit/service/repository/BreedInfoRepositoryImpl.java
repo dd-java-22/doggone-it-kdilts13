@@ -8,10 +8,10 @@ import java.util.concurrent.CompletableFuture;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-@Singleton
 /**
  * Room-backed implementation of {@link BreedInfoRepository}.
  */
+@Singleton
 public class BreedInfoRepositoryImpl implements BreedInfoRepository {
 
   private final BreedInfoDao breedInfoDao;

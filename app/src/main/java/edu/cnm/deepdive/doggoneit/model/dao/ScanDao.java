@@ -13,10 +13,10 @@ import edu.cnm.deepdive.doggoneit.model.entity.ScanWithPredictions;
 import edu.cnm.deepdive.doggoneit.viewmodel.ScanGalleryItem;
 import java.util.List;
 
-@Dao
 /**
  * DAO for scan records and related projection queries used by gallery and detail screens.
  */
+@Dao
 public interface ScanDao {
 
   /**

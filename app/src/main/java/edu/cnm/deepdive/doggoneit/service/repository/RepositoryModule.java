@@ -6,11 +6,11 @@ import dagger.hilt.InstallIn;
 import dagger.hilt.components.SingletonComponent;
 import jakarta.inject.Singleton;
 
-@Module
-@InstallIn(SingletonComponent.class)
 /**
  * Hilt bindings from repository interfaces to concrete implementations.
  */
+@Module
+@InstallIn(SingletonComponent.class)
 public interface RepositoryModule {
 
   @Binds

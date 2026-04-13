@@ -12,10 +12,10 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import org.json.JSONObject;
 
-@Singleton
 /**
  * In-memory session manager backed by {@link UserProfileDao} for profile lookup/creation.
  */
+@Singleton
 public class UserSessionRepositoryImpl implements UserSessionRepository {
 
   private final UserProfileDao userProfileDao;

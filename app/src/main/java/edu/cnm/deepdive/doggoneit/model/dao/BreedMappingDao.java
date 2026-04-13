@@ -8,10 +8,10 @@ import androidx.room.Query;
 import edu.cnm.deepdive.doggoneit.model.entity.BreedMapping;
 import java.util.List;
 
-@Dao
 /**
  * DAO for persisted model-label to Dog API breed-id mappings.
  */
+@Dao
 public interface BreedMappingDao {
 
   /**

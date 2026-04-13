@@ -9,10 +9,10 @@ import androidx.room.Update;
 import edu.cnm.deepdive.doggoneit.model.entity.BreedInfo;
 import java.util.List;
 
-@Dao
 /**
  * DAO for querying and persisting {@link BreedInfo} rows.
  */
+@Dao
 public interface BreedInfoDao {
 
   /**

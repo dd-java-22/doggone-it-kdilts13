@@ -41,10 +41,10 @@ import edu.cnm.deepdive.doggoneit.viewmodel.ScanDisplayViewModel;
 import java.util.ArrayList;
 import java.util.List;
 
-@AndroidEntryPoint
 /**
  * Detail screen for one saved scan, including selected breed summary, facts, and notes.
  */
+@AndroidEntryPoint
 public class ScanDisplayFragment extends Fragment {
 
   private FragmentScanDisplayBinding binding;

@@ -10,10 +10,10 @@ import java.util.concurrent.CompletableFuture;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-@Singleton
 /**
  * Room-backed implementation of {@link BreedMappingRepository} with asset seeding support.
  */
+@Singleton
 public class BreedMappingRepositoryImpl implements BreedMappingRepository {
 
   private static final String TAG = BreedMappingRepositoryImpl.class.getSimpleName();

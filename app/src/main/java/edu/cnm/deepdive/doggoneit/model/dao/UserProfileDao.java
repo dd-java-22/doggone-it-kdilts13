@@ -10,10 +10,10 @@ import androidx.room.Update;
 import edu.cnm.deepdive.doggoneit.model.entity.UserProfile;
 import java.util.List;
 
-@Dao
 /**
  * DAO for user profile persistence and lookup by email.
  */
+@Dao
 public interface UserProfileDao {
 
   /**

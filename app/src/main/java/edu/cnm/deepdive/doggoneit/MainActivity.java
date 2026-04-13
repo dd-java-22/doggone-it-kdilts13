@@ -40,11 +40,11 @@ import edu.cnm.deepdive.doggoneit.databinding.ActivityMainBinding;
 import java.io.File;
 import java.io.IOException;
 
-@AndroidEntryPoint
 /**
  * Hosts the app navigation graph, app bar, and bottom navigation actions for camera/gallery
  * capture and top-level destinations.
  */
+@AndroidEntryPoint
 public class MainActivity extends AppCompatActivity {
 
   public static final String SCAN_DISPLAY_SOURCE_ARG = "source";

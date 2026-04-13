@@ -36,10 +36,10 @@ import edu.cnm.deepdive.doggoneit.R;
 import edu.cnm.deepdive.doggoneit.databinding.FragmentScansGalleryBinding;
 import edu.cnm.deepdive.doggoneit.viewmodel.ScansGalleryViewModel;
 
-@AndroidEntryPoint
 /**
  * Gallery screen showing saved scans with user-controlled sorting and filtering.
  */
+@AndroidEntryPoint
 public class ScansGalleryFragment extends Fragment {
 
   private FragmentScansGalleryBinding binding;

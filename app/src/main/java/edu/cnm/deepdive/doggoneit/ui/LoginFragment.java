@@ -30,10 +30,10 @@ import edu.cnm.deepdive.doggoneit.R;
 import edu.cnm.deepdive.doggoneit.databinding.FragmentLoginBinding;
 import edu.cnm.deepdive.doggoneit.viewmodel.LoginViewModel;
 
-@AndroidEntryPoint
 /**
  * Login screen fragment that initiates Google sign-in and routes authenticated users to home.
  */
+@AndroidEntryPoint
 public class LoginFragment extends Fragment {
 
   private FragmentLoginBinding binding;

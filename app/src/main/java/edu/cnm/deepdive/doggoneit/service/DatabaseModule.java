@@ -14,11 +14,11 @@ import edu.cnm.deepdive.doggoneit.model.dao.ScanDao;
 import edu.cnm.deepdive.doggoneit.model.dao.UserProfileDao;
 import jakarta.inject.Singleton;
 
-@Module
-@InstallIn(SingletonComponent.class)
 /**
  * Hilt module providing Room database and DAO singletons.
  */
+@Module
+@InstallIn(SingletonComponent.class)
 public class DatabaseModule {
 
   @Provides

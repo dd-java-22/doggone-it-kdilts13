@@ -18,10 +18,10 @@ import java.util.List;
 import java.util.Locale;
 import javax.inject.Inject;
 
-@HiltViewModel
 /**
  * ViewModel providing filtered/sorted gallery items for the saved scans screen.
  */
+@HiltViewModel
 public class ScansGalleryViewModel extends ViewModel {
 
   public enum SortField {

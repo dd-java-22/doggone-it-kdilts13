@@ -53,10 +53,10 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import javax.inject.Inject;
 
-@AndroidEntryPoint
 /**
  * Screen that runs local image inference, presents ranked predictions, and saves selected scans.
  */
+@AndroidEntryPoint
 public class ScanAnalysisFragment extends Fragment {
 
   private enum AnalysisState {

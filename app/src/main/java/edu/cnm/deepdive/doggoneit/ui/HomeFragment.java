@@ -35,11 +35,11 @@ import edu.cnm.deepdive.doggoneit.databinding.FragmentHomeBinding;
 import java.io.File;
 import java.io.IOException;
 
-@AndroidEntryPoint
 /**
  * Home screen fragment providing entry actions for camera capture, gallery analysis, and saved
  * scan navigation.
  */
+@AndroidEntryPoint
 public class HomeFragment extends Fragment {
 
   private FragmentHomeBinding binding;

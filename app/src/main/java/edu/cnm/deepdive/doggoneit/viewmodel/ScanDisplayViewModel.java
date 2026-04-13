@@ -24,10 +24,10 @@ import java.util.concurrent.CompletableFuture;
 import retrofit2.Response;
 import javax.inject.Inject;
 
-@HiltViewModel
 /**
  * ViewModel for saved-scan detail UI state, including facts loading, favorites, and notes.
  */
+@HiltViewModel
 public class ScanDisplayViewModel extends ViewModel {
 
   public enum ContentTab {

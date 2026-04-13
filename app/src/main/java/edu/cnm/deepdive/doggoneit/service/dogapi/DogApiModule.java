@@ -13,11 +13,11 @@ import okhttp3.Request;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-@Module
-@InstallIn(SingletonComponent.class)
 /**
  * Hilt module providing configured Dog API networking dependencies.
  */
+@Module
+@InstallIn(SingletonComponent.class)
 public class DogApiModule {
 
   private static final String BASE_URL = "https://api.thedogapi.com/";

@@ -5,10 +5,10 @@ import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-@Entity(tableName = "breed_mapping")
 /**
  * Maps a TensorFlow model output label to a Dog API breed identifier.
  */
+@Entity(tableName = "breed_mapping")
 public class BreedMapping {
 
   @PrimaryKey

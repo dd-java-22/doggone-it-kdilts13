@@ -12,10 +12,10 @@ import edu.cnm.deepdive.doggoneit.service.repository.UserSessionRepository;
 import java.util.function.BiConsumer;
 import javax.inject.Inject;
 
-@HiltViewModel
 /**
  * Coordinates Google sign-in flows and local session state for login/logout UI.
  */
+@HiltViewModel
 public class LoginViewModel extends ViewModel {
 
   private static final String TAG = "LoginViewModel";
