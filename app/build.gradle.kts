@@ -212,7 +212,7 @@ tasks.register<Javadoc>("javadoc") {
         "**/dagger/hilt/internal/**"
     )
 
-    setDestinationDir(layout.buildDirectory.dir("docs/javadoc").get().asFile)
+    setDestinationDir(file("$rootDir/docs/api"))
 
     (options as StandardJavadocDocletOptions).apply {
         addBooleanOption("html5", true)
