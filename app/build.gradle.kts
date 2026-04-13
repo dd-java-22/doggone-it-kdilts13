@@ -185,7 +185,7 @@ dependencies {
 }
 
 roomDdl {
-    source.set(project.file("$projectDir/schemas/edu.cnm.deepdive.doggoneit.service.DoggoneItDatabase/1.json"))
+    source.set(project.file("$projectDir/schemas/edu.cnm.deepdive.doggoneit.service.DoggoneItDatabase/5.json"))
     destination.set(project.file("$projectDir/../docs/sql/ddl.sql"))
 }
 
