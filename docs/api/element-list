@@ -1,0 +1,12 @@
+edu.cnm.deepdive.doggoneit
+edu.cnm.deepdive.doggoneit.ml
+edu.cnm.deepdive.doggoneit.model.dao
+edu.cnm.deepdive.doggoneit.model.entity
+edu.cnm.deepdive.doggoneit.service
+edu.cnm.deepdive.doggoneit.service.dogapi
+edu.cnm.deepdive.doggoneit.service.dogapi.dto
+edu.cnm.deepdive.doggoneit.service.repository
+edu.cnm.deepdive.doggoneit.service.seed
+edu.cnm.deepdive.doggoneit.storage
+edu.cnm.deepdive.doggoneit.ui
+edu.cnm.deepdive.doggoneit.viewmodel
