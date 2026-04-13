@@ -3,7 +3,7 @@
 title: Licenses & Attributions
 description: "Third-party libraries, services, and assets used in the project"
 order: 60
----------
+---
 
 {% include ddc-abbreviations.md %}
 
