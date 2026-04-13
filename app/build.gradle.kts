@@ -13,7 +13,6 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-import com.android.build.gradle.internal.tasks.factory.dependsOn
 import java.io.FileInputStream
 import java.util.*
 
@@ -190,75 +189,52 @@ roomDdl {
     destination.set(project.file("$projectDir/../docs/sql/ddl.sql"))
 }
 
-val documentationUmbrella = tasks.register("javadoc") {
+// Standard Javadoc for app main Java sources (milestone documentation output).
+tasks.register<Javadoc>("javadoc") {
     group = "documentation"
-    description = "Generates Javadoc HTML for all build variants. (Generated output for variants " +
-            "after the first will overwrite the output for previous variants.)"
+    description = "Generates Javadoc HTML for the app module main Java sources."
+
+    val mainSourceSet = android.sourceSets.getByName("main")
+    setSource(mainSourceSet.java.srcDirs)
+    include("**/*.java")
+    exclude(
+        "**/R.java",
+        "**/BuildConfig.java",
+        "**/*Directions.java",
+        "**/*Args.java",
+        "**/databinding/**",
+        "**/Hilt_*",
+        "**/*_Factory.java",
+        "**/*_MembersInjector.java",
+        "**/*_GeneratedInjector.java",
+        "**/Dagger*",
+        "**/hilt_aggregated_deps/**",
+        "**/dagger/hilt/internal/**"
+    )
+
+    setDestinationDir(layout.buildDirectory.dir("docs/javadoc").get().asFile)
+
+    (options as StandardJavadocDocletOptions).apply {
+        addBooleanOption("html5", true)
+        addStringOption("Xdoclint:none", "-quiet")
+        encoding = "UTF-8"
+        charSet = "UTF-8"
+    }
 }
 
 android.applicationVariants.configureEach {
-
-    val simpleName = name
-    val variantName = name.replaceFirstChar {
-        if (it.isLowerCase()) {
-            it.titlecase(Locale.getDefault())
-        } else {
-            it.toString()
+    if (name == "debug") {
+        tasks.named<Javadoc>("javadoc").configure {
+            // Use debug Java compile inputs so Android/third-party symbols resolve during Javadoc.
+            dependsOn(javaCompileProvider)
+            setSource(javaCompileProvider.get().source)
+            classpath = files(
+                android.bootClasspath,
+                javaCompileProvider.get().classpath,
+                layout.buildDirectory.dir("intermediates/javac/debug/compileDebugJavaWithJavac/classes")
+            )
         }
     }
-
-    val docTitle = "${project.property("appName")} ${android.defaultConfig.versionName}"
-
-    val task = project.tasks.register("javadoc${variantName}", Javadoc::class.java) {
-
-        dependsOn(tasks.named("assemble$variantName"))
-        title = docTitle
-        group = "documentation"
-        description = "Generates Javadoc for $simpleName build variant."
-
-        source = javaCompileProvider.get().source
-        exclude(
-            "**/*FragmentDirections.java",
-            "**/*FragmentArgs.java",
-            "**/databinding/*.java",
-            "**/*_*.java",
-            "**/R.java",
-            "**/BuildConfig*.java"
-        )
-
-        if (project.hasProperty("javadocDestDir")) {
-            setDestinationDir(
-                projectDir.toPath().resolve(project.property("javadocDestDir") as String).toFile()
-            )
-        }
-
-        doFirst {
-            classpath = project.files(
-                projectDir.resolve("build/intermediates/javac/$simpleName/compile${variantName}JavaWithJavac/classes"),
-                javaCompileProvider.get().classpath.files,
-                android.bootClasspath
-            )
-        }
-
-        with(options as StandardJavadocDocletOptions) {
-            windowTitle = docTitle
-            memberLevel = JavadocMemberLevel.PROTECTED
-            isLinkSource = true
-            isAuthor = false
-            links(
-                "https://docs.oracle.com/en/java/javase/${libs.versions.java.get()}/docs/api/",
-                "https://javadoc.io/doc/com.google.dagger/dagger/${libs.versions.hilt.get()}/",
-                "https://javadoc.io/doc/com.google.dagger/hilt-android/latest/"
-            )
-            linksOffline("https://developer.android.com/reference", "$projectDir")
-            addBooleanOption("html5", true)
-            addStringOption("Xdoclint:none", "-quiet")
-        }
-
-        isFailOnError = true
-    }
-
-    documentationUmbrella.dependsOn(task)
 }
 
 fun getLocalProperty(name: String): String {
