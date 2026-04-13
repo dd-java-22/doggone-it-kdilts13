@@ -208,9 +208,6 @@ public class ScansGalleryViewModel extends ViewModel {
     }
 
     int breedComparison = String.CASE_INSENSITIVE_ORDER.compare(firstBreed, secondBreed);
-    if (sortDirection.getValue() == SortDirection.DESCENDING) {
-      breedComparison = -breedComparison;
-    }
     if (breedComparison != 0) {
       return breedComparison;
     }
@@ -219,17 +216,10 @@ public class ScansGalleryViewModel extends ViewModel {
 
   private int compareBreedTieBreakers(ScanGalleryItem first, ScanGalleryItem second) {
     int timestampComparison = timestampValue(first).compareTo(timestampValue(second));
-    int idComparison = Long.compare(first.getScanId(), second.getScanId());
-    if (sortDirection.getValue() == SortDirection.DESCENDING) {
-      if (timestampComparison != 0) {
-        return -timestampComparison;
-      }
-      return -idComparison;
-    }
     if (timestampComparison != 0) {
       return timestampComparison;
     }
-    return idComparison;
+    return Long.compare(first.getScanId(), second.getScanId());
   }
 
   private Instant timestampValue(ScanGalleryItem item) {
