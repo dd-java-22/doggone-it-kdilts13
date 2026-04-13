@@ -14,6 +14,9 @@ import edu.cnm.deepdive.doggoneit.databinding.ItemSavedScanBinding;
 import edu.cnm.deepdive.doggoneit.viewmodel.ScanGalleryItem;
 import java.util.Objects;
 
+/**
+ * RecyclerView adapter for the saved-scans gallery grid.
+ */
 public class SavedScanGridAdapter
     extends ListAdapter<ScanGalleryItem, SavedScanGridAdapter.ViewHolder> {
 
@@ -42,6 +45,11 @@ public class SavedScanGridAdapter
     holder.bind(getItem(position), gridColumnCount);
   }
 
+  /**
+   * Sets displayed grid column count and refreshes cell sizing.
+   *
+   * @param columnCount Requested column count; values outside 2-4 are normalized.
+   */
   public void setGridColumnCount(int columnCount) {
     int normalizedCount = (columnCount >= 2 && columnCount <= 4)
         ? columnCount : DEFAULT_GRID_COLUMN_COUNT;
@@ -51,6 +59,9 @@ public class SavedScanGridAdapter
     }
   }
 
+  /**
+   * Callback contract for gallery tile selection.
+   */
   public interface ScanClickListener {
 
     void onScanClick(long scanId);

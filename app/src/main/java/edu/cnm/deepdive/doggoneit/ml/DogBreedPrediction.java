@@ -15,20 +15,35 @@
  */
 package edu.cnm.deepdive.doggoneit.ml;
 
+/**
+ * Immutable label/score pair representing one model prediction.
+ */
 public final class DogBreedPrediction {
 
   private final String label;
   private final float score;
 
+  /**
+   * Creates a prediction.
+   *
+   * @param label Model label.
+   * @param score Confidence score for the label.
+   */
   public DogBreedPrediction(String label, float score) {
     this.label = label;
     this.score = score;
   }
 
+  /**
+   * @return Model label text.
+   */
   public String label() {
     return label;
   }
 
+  /**
+   * @return Confidence score.
+   */
   public float score() {
     return score;
   }

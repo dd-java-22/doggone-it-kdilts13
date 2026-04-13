@@ -15,6 +15,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 @Module
 @InstallIn(SingletonComponent.class)
+/**
+ * Hilt module providing configured Dog API networking dependencies.
+ */
 public class DogApiModule {
 
   private static final String BASE_URL = "https://api.thedogapi.com/";

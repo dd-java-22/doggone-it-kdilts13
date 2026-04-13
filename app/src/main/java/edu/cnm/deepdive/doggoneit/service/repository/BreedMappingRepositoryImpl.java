@@ -11,6 +11,9 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
+/**
+ * Room-backed implementation of {@link BreedMappingRepository} with asset seeding support.
+ */
 public class BreedMappingRepositoryImpl implements BreedMappingRepository {
 
   private static final String TAG = BreedMappingRepositoryImpl.class.getSimpleName();

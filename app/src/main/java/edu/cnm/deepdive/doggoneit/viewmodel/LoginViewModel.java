@@ -13,6 +13,9 @@ import java.util.function.BiConsumer;
 import javax.inject.Inject;
 
 @HiltViewModel
+/**
+ * Coordinates Google sign-in flows and local session state for login/logout UI.
+ */
 public class LoginViewModel extends ViewModel {
 
   private static final String TAG = "LoginViewModel";
@@ -47,32 +50,57 @@ public class LoginViewModel extends ViewModel {
     };
   }
 
+  /**
+   * @return Latest successful Google credential, or {@code null}.
+   */
   public LiveData<GoogleIdTokenCredential> getCredential() {
     return credential;
   }
 
+  /**
+   * @return Latest sign-in/sign-out error, or {@code null}.
+   */
   public LiveData<Throwable> getThrowable() {
     return throwable;
   }
 
+  /**
+   * Attempts one-tap sign-in without forcing account selection.
+   *
+   * @param activity Host activity for credential flow.
+   */
   public void signInQuickly(Activity activity) {
     throwable.setValue(null);
     repository.SignInQuickly(activity)
       .whenComplete(signInConsumer);
   }
 
+  /**
+   * Starts explicit Google sign-in flow.
+   *
+   * @param activity Host activity for credential flow.
+   */
   public void signIn(Activity activity) {
     throwable.setValue(null);
     repository.SignIn(activity)
       .whenComplete(signInConsumer);
   }
 
+  /**
+   * Refreshes credential state for an existing Google account.
+   *
+   * @param activity Host activity for credential flow.
+   * @param credential Existing credential to refresh.
+   */
   public void refreshToken(Activity activity, GoogleIdTokenCredential credential) {
     throwable.setValue(null);
     repository.refreshToken(activity, credential)
       .whenComplete(signInConsumer);
   }
 
+  /**
+   * Signs out and clears locally tracked current-user session state.
+   */
   public void signOut() {
     throwable.setValue(null);
     repository.SignOut()

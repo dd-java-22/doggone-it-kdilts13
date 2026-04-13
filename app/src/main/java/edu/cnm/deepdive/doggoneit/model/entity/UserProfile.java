@@ -31,28 +31,46 @@ public class UserProfile {
   @NonNull
   private String email = "";
 
+  /**
+   * @return Local database identifier.
+   */
   public long getId() {
     return id;
   }
 
+  /**
+   * @param id Local database identifier.
+   */
   public void setId(long id) {
     this.id = id;
   }
 
+  /**
+   * @return Display name for the signed-in user.
+   */
   @NonNull
   public String getName() {
     return name;
   }
 
+  /**
+   * @param name Display name for the signed-in user.
+   */
   public void setName(@NonNull String name) {
     this.name = name;
   }
 
+  /**
+   * @return Unique user email address.
+   */
   @NonNull
   public String getEmail() {
     return email;
   }
 
+  /**
+   * @param email Unique user email address.
+   */
   public void setEmail(@NonNull String email) {
     this.email = email;
   }

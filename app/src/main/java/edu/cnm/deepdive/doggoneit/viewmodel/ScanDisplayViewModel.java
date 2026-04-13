@@ -25,6 +25,9 @@ import retrofit2.Response;
 import javax.inject.Inject;
 
 @HiltViewModel
+/**
+ * ViewModel for saved-scan detail UI state, including facts loading, favorites, and notes.
+ */
 public class ScanDisplayViewModel extends ViewModel {
 
   public enum ContentTab {
@@ -96,14 +99,25 @@ public class ScanDisplayViewModel extends ViewModel {
     emitUiState();
   }
 
+  /**
+   * @return Combined UI state for scan detail rendering.
+   */
   public LiveData<UiState> getUiState() {
     return uiState;
   }
 
+  /**
+   * @return One-shot UI message events for transient feedback.
+   */
   public LiveData<UiMessage> getMessageEvent() {
     return messageEvent;
   }
 
+  /**
+   * Loads and observes scan detail state for the specified scan id.
+   *
+   * @param scanId Scan id to load.
+   */
   public void loadScan(long scanId) {
     if (scanId <= 0 || scanId == this.scanId) {
       if (scanId <= 0) {
@@ -136,10 +150,20 @@ public class ScanDisplayViewModel extends ViewModel {
     emitUiState();
   }
 
+  /**
+   * Selects which detail tab content should be shown.
+   *
+   * @param tab Desired content tab.
+   */
   public void setSelectedTab(ContentTab tab) {
     selectedTab.setValue((tab != null) ? tab : ContentTab.FACTS);
   }
 
+  /**
+   * Persists favorite state for the current scan.
+   *
+   * @param favorite Favorite state selected by the user.
+   */
   public void toggleFavorite(boolean favorite) {
     UiState currentState = uiState.getValue();
     if (currentState == null || currentState.scan == null) {
@@ -178,21 +202,35 @@ public class ScanDisplayViewModel extends ViewModel {
         });
   }
 
+  /**
+   * Switches notes UI into edit mode with current saved note as draft.
+   */
   public void beginEditNote() {
     noteDraft.setValue((savedNote.getValue() != null) ? savedNote.getValue() : "");
     notesMode.setValue(NotesMode.EDIT);
   }
 
+  /**
+   * Updates in-memory note draft text.
+   *
+   * @param value New draft text.
+   */
   public void updateNoteDraft(String value) {
     noteDraft.setValue((value != null) ? value : "");
   }
 
+  /**
+   * Cancels note edits and restores saved note text.
+   */
   public void cancelEditNote() {
     noteDraft.setValue((savedNote.getValue() != null) ? savedNote.getValue() : "");
     notesMode.setValue(NotesMode.VIEW);
     noteSaving.setValue(false);
   }
 
+  /**
+   * Saves current note draft for the active scan.
+   */
   public void saveNote() {
     UiState currentState = uiState.getValue();
     if (currentState == null || currentState.scan == null) {

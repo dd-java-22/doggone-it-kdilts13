@@ -20,6 +20,9 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
+/**
+ * Loads initial breed mapping rows from bundled JSON seed data.
+ */
 public class BreedMappingSeedLoader {
 
   private static final String TAG = BreedMappingSeedLoader.class.getSimpleName();
@@ -34,6 +37,11 @@ public class BreedMappingSeedLoader {
     gson = new Gson();
   }
 
+  /**
+   * Parses the seed asset into mapping entities, skipping invalid rows.
+   *
+   * @return Mapping rows ready for insertion, or an empty list on failure.
+   */
   public List<BreedMapping> loadMappings() {
     try (
         InputStream input = context.getAssets().open(ASSET_FILE);

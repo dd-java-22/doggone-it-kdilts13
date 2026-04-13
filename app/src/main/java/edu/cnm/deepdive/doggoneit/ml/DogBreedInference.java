@@ -42,6 +42,9 @@ import org.tensorflow.lite.DataType;
 import org.tensorflow.lite.Interpreter;
 import org.tensorflow.lite.Tensor;
 
+/**
+ * Runs TensorFlow Lite dog-breed inference for a source image and returns top predictions.
+ */
 public final class DogBreedInference {
 
   private static final String MODEL_ASSET = "breed_model.tflite";
@@ -57,6 +60,14 @@ public final class DogBreedInference {
     // Utility class.
   }
 
+  /**
+   * Executes model inference for a supplied image URI.
+   *
+   * @param context Android context used to read model assets and source data.
+   * @param sourceUri Image URI to analyze.
+   * @return Inference result including model input dimensions and top predictions.
+   * @throws IOException If assets, input image, or model execution fail.
+   */
   public static DogBreedInferenceResult run(Context context, Uri sourceUri) throws IOException {
     if (context == null) {
       throw new IllegalArgumentException("Context must not be null.");

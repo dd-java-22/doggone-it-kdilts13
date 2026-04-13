@@ -5,11 +5,20 @@ import edu.cnm.deepdive.doggoneit.service.dogapi.dto.BreedDetailsDto;
 import edu.cnm.deepdive.doggoneit.service.dogapi.dto.BreedDetailsDto.ImageDto;
 import edu.cnm.deepdive.doggoneit.service.dogapi.dto.BreedDetailsDto.MeasurementDto;
 
+/**
+ * Maps Dog API breed detail responses into local {@link BreedInfo} entities.
+ */
 public final class BreedDetailsMapper {
 
   private BreedDetailsMapper() {
   }
 
+  /**
+   * Converts a Dog API details DTO into a persisted breed-info entity.
+   *
+   * @param details Dog API details payload.
+   * @return Populated {@link BreedInfo}, or {@code null} when input is null.
+   */
   public static BreedInfo toBreedInfo(BreedDetailsDto details) {
     if (details == null) {
       return null;

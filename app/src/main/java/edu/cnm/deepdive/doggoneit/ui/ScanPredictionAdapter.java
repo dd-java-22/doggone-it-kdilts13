@@ -11,6 +11,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * RecyclerView adapter for displaying and selecting top breed predictions.
+ */
 public class ScanPredictionAdapter
     extends RecyclerView.Adapter<ScanPredictionAdapter.ViewHolder> {
 
@@ -43,6 +46,12 @@ public class ScanPredictionAdapter
     return items.size();
   }
 
+  /**
+   * Replaces current prediction items and applies default selection.
+   *
+   * @param newItems New prediction list.
+   * @param defaultSelection Position selected after replacement.
+   */
   public void submitItems(List<ScanPredictionItem> newItems, int defaultSelection) {
     items.clear();
     if (newItems != null) {
@@ -57,6 +66,9 @@ public class ScanPredictionAdapter
     }
   }
 
+  /**
+   * @return Currently selected prediction item, or {@code null}.
+   */
   public ScanPredictionItem getSelectedItem() {
     if (selectedPosition == RecyclerView.NO_POSITION || selectedPosition >= items.size()) {
       return null;
@@ -64,6 +76,9 @@ public class ScanPredictionAdapter
     return items.get(selectedPosition);
   }
 
+  /**
+   * @return Read-only view of displayed prediction items.
+   */
   public List<ScanPredictionItem> getItems() {
     return Collections.unmodifiableList(items);
   }
@@ -83,6 +98,9 @@ public class ScanPredictionAdapter
     }
   }
 
+  /**
+   * Callback contract for prediction selection.
+   */
   public interface OnPredictionSelectedListener {
 
     void onPredictionSelected(ScanPredictionItem item);

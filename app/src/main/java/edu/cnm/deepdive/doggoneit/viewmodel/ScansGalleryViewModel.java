@@ -19,6 +19,9 @@ import java.util.Locale;
 import javax.inject.Inject;
 
 @HiltViewModel
+/**
+ * ViewModel providing filtered/sorted gallery items for the saved scans screen.
+ */
 public class ScansGalleryViewModel extends ViewModel {
 
   public enum SortField {
@@ -70,10 +73,16 @@ public class ScansGalleryViewModel extends ViewModel {
     updateGalleryItems();
   }
 
+  /**
+   * @return Current gallery list after user filters and sorting are applied.
+   */
   public LiveData<List<ScanGalleryItem>> getGalleryItems() {
     return galleryItems;
   }
 
+  /**
+   * @return Message resource shown when gallery is empty after source/filter evaluation.
+   */
   public LiveData<Integer> getEmptyMessageResId() {
     return emptyMessageResId;
   }
@@ -94,18 +103,30 @@ public class ScansGalleryViewModel extends ViewModel {
     return favoritesOnly;
   }
 
+  /**
+   * @param value Selected gallery sort field.
+   */
   public void setSortField(SortField value) {
     sortField.setValue((value != null) ? value : SortField.DATE);
   }
 
+  /**
+   * @param value Selected gallery sort direction.
+   */
   public void setSortDirection(SortDirection value) {
     sortDirection.setValue((value != null) ? value : SortDirection.DESCENDING);
   }
 
+  /**
+   * @param value Breed-name filter text.
+   */
   public void setFilterText(String value) {
     filterText.setValue((value != null) ? value : "");
   }
 
+  /**
+   * @param value Whether only favorited scans should be included.
+   */
   public void setFavoritesOnly(boolean value) {
     favoritesOnly.setValue(value);
   }

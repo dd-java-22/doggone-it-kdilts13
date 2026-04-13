@@ -16,6 +16,9 @@ import jakarta.inject.Singleton;
 
 @Module
 @InstallIn(SingletonComponent.class)
+/**
+ * Hilt module providing Room database and DAO singletons.
+ */
 public class DatabaseModule {
 
   @Provides

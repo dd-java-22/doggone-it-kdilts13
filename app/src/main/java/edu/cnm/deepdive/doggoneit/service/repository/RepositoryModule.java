@@ -8,6 +8,9 @@ import jakarta.inject.Singleton;
 
 @Module
 @InstallIn(SingletonComponent.class)
+/**
+ * Hilt bindings from repository interfaces to concrete implementations.
+ */
 public interface RepositoryModule {
 
   @Binds

@@ -36,6 +36,10 @@ import java.io.File;
 import java.io.IOException;
 
 @AndroidEntryPoint
+/**
+ * Home screen fragment providing entry actions for camera capture, gallery analysis, and saved
+ * scan navigation.
+ */
 public class HomeFragment extends Fragment {
 
   private FragmentHomeBinding binding;

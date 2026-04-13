@@ -24,6 +24,9 @@ import java.time.Instant;
         @Index(value = "favorite")
     }
 )
+/**
+ * Represents one saved image scan and user-selected metadata for that scan.
+ */
 public class Scan {
 
   @PrimaryKey(autoGenerate = true)

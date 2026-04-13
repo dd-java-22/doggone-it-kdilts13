@@ -10,20 +10,47 @@ import edu.cnm.deepdive.doggoneit.model.entity.BreedInfo;
 import java.util.List;
 
 @Dao
+/**
+ * DAO for querying and persisting {@link BreedInfo} rows.
+ */
 public interface BreedInfoDao {
 
+  /**
+   * Inserts one breed-info row.
+   *
+   * @param breedInfo Entity to insert.
+   * @return Generated row id.
+   */
   @Insert
   long insert(BreedInfo breedInfo);
 
   @Insert
   List<Long> insert(BreedInfo... breedInfo);
 
+  /**
+   * Updates existing breed-info rows.
+   *
+   * @param breedInfo Entities to update.
+   * @return Number of rows updated.
+   */
   @Update
   int update(BreedInfo... breedInfo);
 
+  /**
+   * Deletes breed-info rows.
+   *
+   * @param breedInfo Entities to delete.
+   * @return Number of rows deleted.
+   */
   @Delete
   int delete(BreedInfo... breedInfo);
 
+  /**
+   * Observes a breed-info row by local id.
+   *
+   * @param breedInfoId Local row id.
+   * @return Live entity stream.
+   */
   @Query("SELECT * FROM breed_info WHERE breed_info_id = :breedInfoId")
   LiveData<BreedInfo> findById(long breedInfoId);
 

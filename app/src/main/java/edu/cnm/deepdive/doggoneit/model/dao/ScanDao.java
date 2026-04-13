@@ -14,8 +14,17 @@ import edu.cnm.deepdive.doggoneit.viewmodel.ScanGalleryItem;
 import java.util.List;
 
 @Dao
+/**
+ * DAO for scan records and related projection queries used by gallery and detail screens.
+ */
 public interface ScanDao {
 
+  /**
+   * Inserts one scan.
+   *
+   * @param scan Scan to insert.
+   * @return Generated scan id.
+   */
   @Insert
   long insert(Scan scan);
 
@@ -34,6 +43,12 @@ public interface ScanDao {
   @Query("SELECT * FROM scan WHERE scan_id = :scanId")
   LiveData<Scan> findById(long scanId);
 
+  /**
+   * Observes one scan and its predictions as a single transaction.
+   *
+   * @param scanId Scan id.
+   * @return Live scan-with-predictions stream.
+   */
   @Transaction
   @Query("SELECT * FROM scan WHERE scan_id = :scanId")
   LiveData<ScanWithPredictions> findWithPredictionsById(long scanId);
@@ -41,6 +56,12 @@ public interface ScanDao {
   @Query("SELECT * FROM scan WHERE user_profile_id = :userProfileId ORDER BY timestamp DESC")
   LiveData<List<Scan>> findByUserProfileId(long userProfileId);
 
+  /**
+   * Returns gallery projection rows for one user, ordered by most recent scan first.
+   *
+   * @param userProfileId User profile id.
+   * @return Live gallery item list.
+   */
   @Query(
       "SELECT "
           + "scan.scan_id AS scanId, "
@@ -64,6 +85,13 @@ public interface ScanDao {
   @Query("SELECT * FROM scan ORDER BY timestamp DESC")
   LiveData<List<Scan>> findAll();
 
+  /**
+   * Inserts a scan and its associated predictions atomically.
+   *
+   * @param scan Parent scan to insert.
+   * @param predictions Prediction list to associate.
+   * @return Generated scan id.
+   */
   @Transaction
   default long insertWithPredictions(Scan scan, List<BreedPrediction> predictions) {
     long scanId = insert(scan);

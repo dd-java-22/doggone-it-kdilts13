@@ -11,8 +11,17 @@ import edu.cnm.deepdive.doggoneit.model.entity.UserProfile;
 import java.util.List;
 
 @Dao
+/**
+ * DAO for user profile persistence and lookup by email.
+ */
 public interface UserProfileDao {
 
+  /**
+   * Inserts one user profile.
+   *
+   * @param userProfile Profile to insert.
+   * @return Generated row id.
+   */
   @Insert
   long insert(UserProfile userProfile);
 
@@ -34,6 +43,12 @@ public interface UserProfileDao {
   @Query("SELECT * FROM user_profile WHERE email = :email")
   LiveData<UserProfile> findByEmail(String email);
 
+  /**
+   * Finds one profile synchronously by unique email.
+   *
+   * @param email User email address.
+   * @return Matching profile or {@code null}.
+   */
   @Query("SELECT * FROM user_profile WHERE email = :email")
   UserProfile findByEmailSync(String email);
 

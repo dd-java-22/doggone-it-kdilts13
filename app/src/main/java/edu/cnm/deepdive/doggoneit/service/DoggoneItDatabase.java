@@ -25,6 +25,9 @@ import java.time.Instant;
     exportSchema = true
 )
 @TypeConverters(DoggoneItDatabase.Converters.class)
+/**
+ * Room database containing app entities for users, scans, predictions, and breed metadata.
+ */
 public abstract class DoggoneItDatabase extends RoomDatabase {
 
   static final String DATABASE_NAME = "doggone_it";
@@ -138,16 +141,34 @@ public abstract class DoggoneItDatabase extends RoomDatabase {
     }
   };
 
+  /**
+   * @return DAO for user profile operations.
+   */
   public abstract UserProfileDao getUserProfileDao();
 
+  /**
+   * @return DAO for scan and gallery operations.
+   */
   public abstract ScanDao getScanDao();
 
+  /**
+   * @return DAO for prediction row operations.
+   */
   public abstract BreedPredictionDao getBreedPredictionDao();
 
+  /**
+   * @return DAO for breed info operations.
+   */
   public abstract BreedInfoDao getBreedInfoDao();
 
+  /**
+   * @return DAO for model-label to breed-id mappings.
+   */
   public abstract BreedMappingDao getBreedMappingDao();
 
+  /**
+   * Type converters used by Room for unsupported storage types.
+   */
   public static class Converters {
 
     @TypeConverter

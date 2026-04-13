@@ -34,6 +34,9 @@ public class DoggoneItApplication extends Application {
   @Inject
   BreedMappingRepository breedMappingRepository;
 
+  /**
+   * Starts application-level initialization tasks, including breed mapping seed checks.
+   */
   @Override
   public void onCreate() {
     super.onCreate();

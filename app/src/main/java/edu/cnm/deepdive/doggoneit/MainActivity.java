@@ -41,6 +41,10 @@ import java.io.File;
 import java.io.IOException;
 
 @AndroidEntryPoint
+/**
+ * Hosts the app navigation graph, app bar, and bottom navigation actions for camera/gallery
+ * capture and top-level destinations.
+ */
 public class MainActivity extends AppCompatActivity {
 
   public static final String SCAN_DISPLAY_SOURCE_ARG = "source";
@@ -122,6 +126,11 @@ public class MainActivity extends AppCompatActivity {
         (controller, destination, arguments) -> toggleBottomNav(destination, arguments));
   }
 
+  /**
+   * Handles Up navigation, including context-aware return from scan display.
+   *
+   * @return {@code true} if navigation was handled.
+   */
   @Override
   public boolean onSupportNavigateUp() {
     NavDestination currentDestination = navController.getCurrentDestination();
@@ -258,6 +267,12 @@ public class MainActivity extends AppCompatActivity {
     }
   }
 
+  /**
+   * Routes back navigation from scan display to the correct top-level destination based on source.
+   *
+   * @param arguments Scan display navigation arguments.
+   * @return {@code true} if navigation was performed.
+   */
   public boolean handleScanDisplayReturn(Bundle arguments) {
     String source = (arguments != null) ? arguments.getString(SCAN_DISPLAY_SOURCE_ARG) : null;
     int destinationId = SCAN_DISPLAY_SOURCE_SAVED_GALLERY.equals(source)

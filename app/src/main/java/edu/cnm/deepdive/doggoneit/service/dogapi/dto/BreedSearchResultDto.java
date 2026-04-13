@@ -1,5 +1,8 @@
 package edu.cnm.deepdive.doggoneit.service.dogapi.dto;
 
+/**
+ * DTO representing one breed summary row from Dog API search responses.
+ */
 public class BreedSearchResultDto {
 
   private long id;

@@ -9,6 +9,9 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
+/**
+ * Room-backed implementation of {@link UserProfileRepository}.
+ */
 public class UserProfileRepositoryImpl implements UserProfileRepository {
 
   private final UserProfileDao userProfileDao;

@@ -3,6 +3,9 @@ package edu.cnm.deepdive.doggoneit.viewmodel;
 import androidx.annotation.NonNull;
 import java.time.Instant;
 
+/**
+ * Projection model for one tile in the saved-scans gallery.
+ */
 public class ScanGalleryItem {
 
   private long scanId;
@@ -14,10 +17,16 @@ public class ScanGalleryItem {
   private Double topBreedConfidence;
   private boolean favorite;
 
+  /**
+   * @return Scan id backing this gallery tile.
+   */
   public long getScanId() {
     return scanId;
   }
 
+  /**
+   * @param scanId Scan id backing this gallery tile.
+   */
   public void setScanId(long scanId) {
     this.scanId = scanId;
   }

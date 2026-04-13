@@ -23,11 +23,21 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+/**
+ * Utility methods for creating temporary files used by camera capture flows.
+ */
 public final class CameraCaptureHelper {
 
   private CameraCaptureHelper() {
   }
 
+  /**
+   * Creates a temporary JPEG file in the app's external pictures directory for camera capture.
+   *
+   * @param context Android context used to resolve app storage.
+   * @return Newly created temporary image file.
+   * @throws IOException If the file cannot be created.
+   */
   public static File createTempImageFile(Context context) throws IOException {
     String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(new Date());
     File storageDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);

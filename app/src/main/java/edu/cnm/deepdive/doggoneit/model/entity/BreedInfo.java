@@ -11,6 +11,9 @@ import androidx.room.PrimaryKey;
         @Index(value = "dog_api_breed_id", unique = true)
     }
 )
+/**
+ * Room entity storing detailed dog breed metadata fetched from The Dog API.
+ */
 public class BreedInfo {
 
   @PrimaryKey(autoGenerate = true)

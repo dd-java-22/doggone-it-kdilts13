@@ -9,6 +9,9 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
+/**
+ * Room-backed implementation of {@link BreedInfoRepository}.
+ */
 public class BreedInfoRepositoryImpl implements BreedInfoRepository {
 
   private final BreedInfoDao breedInfoDao;

@@ -2,6 +2,9 @@ package edu.cnm.deepdive.doggoneit.service.dogapi.dto;
 
 import com.google.gson.annotations.SerializedName;
 
+/**
+ * DTO representing detailed breed data returned by The Dog API.
+ */
 public class BreedDetailsDto {
 
   private long id;

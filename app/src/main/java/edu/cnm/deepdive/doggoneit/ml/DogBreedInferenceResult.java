@@ -18,6 +18,9 @@ package edu.cnm.deepdive.doggoneit.ml;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Immutable value object containing top dog-breed predictions for one analyzed image.
+ */
 public final class DogBreedInferenceResult {
 
   private final String sourceUri;
@@ -25,6 +28,14 @@ public final class DogBreedInferenceResult {
   private final int inputHeight;
   private final List<DogBreedPrediction> topPredictions;
 
+  /**
+   * Creates a result bundle for one inference run.
+   *
+   * @param sourceUri Image URI string used as inference input.
+   * @param inputWidth Model input width in pixels.
+   * @param inputHeight Model input height in pixels.
+   * @param topPredictions Top-ranked predictions from the model.
+   */
   public DogBreedInferenceResult(String sourceUri, int inputWidth, int inputHeight,
       List<DogBreedPrediction> topPredictions) {
     this.sourceUri = sourceUri;
@@ -35,18 +46,30 @@ public final class DogBreedInferenceResult {
         : Collections.unmodifiableList(topPredictions);
   }
 
+  /**
+   * @return Source image URI string.
+   */
   public String sourceUri() {
     return sourceUri;
   }
 
+  /**
+   * @return Model input width used during inference.
+   */
   public int inputWidth() {
     return inputWidth;
   }
 
+  /**
+   * @return Model input height used during inference.
+   */
   public int inputHeight() {
     return inputHeight;
   }
 
+  /**
+   * @return Unmodifiable top prediction list.
+   */
   public List<DogBreedPrediction> topPredictions() {
     return topPredictions;
   }

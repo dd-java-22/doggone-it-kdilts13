@@ -16,6 +16,9 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
+/**
+ * Room-backed implementation of {@link ScanRepository}.
+ */
 public class ScanRepositoryImpl implements ScanRepository {
 
   private final ScanDao scanDao;

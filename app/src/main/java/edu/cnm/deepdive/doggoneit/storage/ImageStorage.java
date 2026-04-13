@@ -26,6 +26,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.UUID;
 
+/**
+ * Persists selected/captured images into app-private storage for saved scans.
+ */
 public final class ImageStorage {
 
   private static final String SCANS_DIR = "saved_scans";
@@ -36,6 +39,14 @@ public final class ImageStorage {
     // Utility class.
   }
 
+  /**
+   * Copies an image from content URI into app-private scan storage.
+   *
+   * @param context Context used to resolve content and files directories.
+   * @param sourceUri Source image URI.
+   * @return File URI of the saved app-private image.
+   * @throws IOException If read/write operations fail.
+   */
   public static Uri saveImage(Context context, Uri sourceUri) throws IOException {
     if (context == null) {
       throw new IllegalArgumentException("Context must not be null.");

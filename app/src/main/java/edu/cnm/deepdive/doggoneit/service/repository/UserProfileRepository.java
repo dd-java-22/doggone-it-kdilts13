@@ -5,6 +5,9 @@ import edu.cnm.deepdive.doggoneit.model.entity.UserProfile;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+/**
+ * Repository abstraction for user profile CRUD operations.
+ */
 public interface UserProfileRepository {
 
   LiveData<UserProfile> getById(long userProfileId);

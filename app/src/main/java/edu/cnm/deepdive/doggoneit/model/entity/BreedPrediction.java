@@ -29,6 +29,9 @@ import androidx.room.PrimaryKey;
         @Index(value = {"scan_id", "rank"})
     }
 )
+/**
+ * Stores one ranked breed prediction associated with a saved scan.
+ */
 public class BreedPrediction {
 
   @PrimaryKey(autoGenerate = true)
